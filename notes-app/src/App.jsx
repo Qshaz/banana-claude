@@ -17,10 +17,10 @@ export default function App() {
   const [showImport, setShowImport] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
   const [view, setView] = useState('dashboard') // 'dashboard' | 'notes'
+  const [mobilePanel, setMobilePanel] = useState('dashboard') // 'dashboard' | 'list' | 'editor'
 
   const visibleNotes = useMemo(() => {
     let list = notes
-
     if (filter.type === 'pinned') list = list.filter(n => n.pinned)
     else if (filter.type === 'imported') list = list.filter(n => n.source === 'imported')
     else if (filter.type === 'tag') list = list.filter(n => n.tags.includes(filter.tag))
@@ -40,10 +40,7 @@ export default function App() {
       return new Date(b.updatedAt) - new Date(a.updatedAt)
     })
 
-    return [
-      ...sorted.filter(n => n.pinned),
-      ...sorted.filter(n => !n.pinned),
-    ]
+    return [...sorted.filter(n => n.pinned), ...sorted.filter(n => !n.pinned)]
   }, [notes, filter, sort, search])
 
   function handleNewNote() {
@@ -51,33 +48,44 @@ export default function App() {
     setSelectedId(id)
     setView('notes')
     setFilter({ type: 'all' })
+    setMobilePanel('editor')
   }
 
   function handleSelectNote(id) {
     setSelectedId(id)
     setView('notes')
+    setMobilePanel('editor')
   }
 
   function handleFilter(f) {
     setFilter(f)
     setView('notes')
     setSelectedId(null)
+    setMobilePanel('list')
   }
 
-  function handleSidebarFilter(f) {
-    setFilter(f)
-    setView('notes')
-    setSelectedId(null)
+  function handleSidebarNav(f) {
+    if (f.type === 'home') {
+      setView('dashboard')
+      setSelectedId(null)
+      setMobilePanel('dashboard')
+    } else {
+      setFilter(f)
+      setView('notes')
+      setSelectedId(null)
+      setMobilePanel('list')
+    }
   }
 
-  function handleDelete(id) {
-    setDeleteConfirm(id)
-  }
+  function handleDelete(id) { setDeleteConfirm(id) }
 
   function confirmDelete() {
     if (deleteConfirm) {
       deleteNote(deleteConfirm)
-      if (selectedId === deleteConfirm) setSelectedId(null)
+      if (selectedId === deleteConfirm) {
+        setSelectedId(null)
+        setMobilePanel('list')
+      }
       setDeleteConfirm(null)
     }
   }
@@ -92,21 +100,12 @@ export default function App() {
     setFilter({ type: 'imported' })
     setView('notes')
     setSelectedId(null)
+    setMobilePanel('list')
   }
 
   const effectiveSelected = view === 'notes'
     ? (visibleNotes.find(n => n.id === selectedId) ? selectedId : visibleNotes[0]?.id || null)
     : null
-
-  // Home icon in sidebar goes to dashboard
-  function handleSidebarNav(f) {
-    if (f.type === 'home') {
-      setView('dashboard')
-      setSelectedId(null)
-    } else {
-      handleSidebarFilter(f)
-    }
-  }
 
   return (
     <div className="app">
@@ -120,51 +119,94 @@ export default function App() {
       />
 
       <div className="main-area">
-        {view === 'dashboard' ? (
-          <Dashboard
-            notes={notes}
-            allTags={allTags}
-            onSelectNote={handleSelectNote}
-            onNewNote={handleNewNote}
-            onFilter={handleFilter}
+        <Dashboard
+          notes={notes}
+          allTags={allTags}
+          onSelectNote={handleSelectNote}
+          onNewNote={handleNewNote}
+          onFilter={handleFilter}
+          className={mobilePanel === 'dashboard' ? 'mobile-active' : ''}
+          isActive={view === 'dashboard'}
+        />
+
+        {(view === 'notes' || true) && (
+          <NoteList
+            notes={visibleNotes}
+            selectedId={effectiveSelected}
+            onSelect={handleSelectNote}
+            onNew={handleNewNote}
+            filter={filter}
+            sort={sort}
+            setSort={setSort}
+            search={search}
+            setSearch={setSearch}
+            mobileActive={mobilePanel === 'list'}
+            onMobileBack={() => setMobilePanel('dashboard')}
           />
-        ) : (
-          <>
-            <NoteList
-              notes={visibleNotes}
-              selectedId={effectiveSelected}
-              onSelect={handleSelectNote}
-              onNew={handleNewNote}
-              filter={filter}
-              sort={sort}
-              setSort={setSort}
-              search={search}
-              setSearch={setSearch}
-            />
-            <NoteEditor
-              note={notes.find(n => n.id === effectiveSelected) || null}
-              onUpdate={updateNote}
-              onDelete={handleDelete}
-              onPin={handlePin}
-            />
-          </>
         )}
+
+        <NoteEditor
+          note={notes.find(n => n.id === effectiveSelected) || null}
+          onUpdate={updateNote}
+          onDelete={handleDelete}
+          onPin={handlePin}
+          mobileActive={mobilePanel === 'editor'}
+          onMobileBack={() => setMobilePanel('list')}
+        />
       </div>
 
+      {/* Mobile bottom nav */}
+      <nav className="mobile-nav">
+        <button
+          className={`mobile-nav-btn${mobilePanel === 'dashboard' ? ' active' : ''}`}
+          onClick={() => { setMobilePanel('dashboard'); setView('dashboard') }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />
+            <path d="M9 21V12h6v9" />
+          </svg>
+          <span>Home</span>
+        </button>
+
+        <button
+          className={`mobile-nav-btn${mobilePanel === 'list' ? ' active' : ''}`}
+          onClick={() => { setMobilePanel('list'); setView('notes') }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
+          <span>Notes</span>
+        </button>
+
+        <button className="mobile-nav-btn nav-new" onClick={handleNewNote}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>New</span>
+        </button>
+
+        <button className="mobile-nav-btn" onClick={() => setShowImport(true)}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>Import</span>
+        </button>
+      </nav>
+
       {showImport && (
-        <ImportModal
-          onClose={() => setShowImport(false)}
-          onImport={handleImport}
-        />
+        <ImportModal onClose={() => setShowImport(false)} onImport={handleImport} />
       )}
 
       {deleteConfirm && (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setDeleteConfirm(null)}>
           <div className="modal confirm-dialog">
             <div className="modal-header">
-              <div>
-                <div className="modal-title">Delete note?</div>
-              </div>
+              <div><div className="modal-title">Delete note?</div></div>
               <button className="modal-close" onClick={() => setDeleteConfirm(null)}>✕</button>
             </div>
             <div className="confirm-body">

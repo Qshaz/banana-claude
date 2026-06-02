@@ -8,11 +8,13 @@ import NoteEditor from './components/NoteEditor'
 import Dashboard from './components/Dashboard'
 import ImportModal from './components/ImportModal'
 import SettingsModal from './components/SettingsModal'
+import LockScreen, { hasPinSet } from './components/LockScreen'
 import Logo from './components/Logo'
 
 export default function App() {
   const { notes, setNotes, allTags, createNote, updateNote, deleteNote, importNotes } = useNotes()
   const { status: syncStatus } = useGistSync(notes, setNotes)
+  const [locked, setLocked] = useState(hasPinSet)
 
   const [selectedId, setSelectedId] = useState(null)
   const [filter, setFilter] = useState({ type: 'all' })
@@ -111,6 +113,8 @@ export default function App() {
   const effectiveSelected = view === 'notes'
     ? (visibleNotes.find(n => n.id === selectedId) ? selectedId : visibleNotes[0]?.id || null)
     : null
+
+  if (locked) return <LockScreen onUnlock={() => setLocked(false)} />
 
   return (
     <div className="app">

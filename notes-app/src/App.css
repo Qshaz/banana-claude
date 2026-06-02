@@ -1420,3 +1420,139 @@ body {
 .sync-syncing { background: var(--gold); animation: pulse 1s ease-in-out infinite; }
 .sync-synced { background: #27AE60; }
 .sync-error { background: var(--danger); }
+
+/* ── Lock Screen ── */
+.lock-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--sidebar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.lock-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.lock-dots {
+  display: flex;
+  gap: 18px;
+}
+
+.lock-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(184,154,100,0.45);
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.lock-dot.filled {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.lock-dots.shake {
+  animation: shake 0.55s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  18%, 54% { transform: translateX(-10px); }
+  36%, 72% { transform: translateX(10px); }
+}
+
+.lock-hint {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.05em;
+  height: 18px;
+}
+
+.lock-error {
+  font-size: 13px;
+  color: var(--danger);
+  height: 18px;
+}
+
+.pin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  gap: 14px;
+}
+
+.pin-grid-sm {
+  grid-template-columns: repeat(3, 58px);
+  gap: 10px;
+}
+
+.pin-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  font-size: 22px;
+  font-family: 'Playfair Display', Georgia, serif;
+  cursor: pointer;
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pin-btn:hover, .pin-btn:active { background: rgba(255,255,255,0.16); }
+
+.pin-del {
+  font-size: 18px;
+  font-family: inherit;
+  color: rgba(255,255,255,0.6);
+}
+
+.pin-grid-sm .pin-btn {
+  width: 58px;
+  height: 58px;
+  font-size: 18px;
+}
+
+/* PIN setup inside settings (light theme) */
+.pin-setup {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.pin-setup-label {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.pin-setup-dots {
+  display: flex;
+  gap: 14px;
+}
+
+.pin-setup .lock-dot {
+  border-color: rgba(184,154,100,0.4);
+  background: transparent;
+}
+
+.pin-setup .lock-dot.filled {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.pin-setup .pin-btn {
+  background: rgba(17,17,17,0.07);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.pin-setup .pin-btn:hover { background: rgba(17,17,17,0.12); }

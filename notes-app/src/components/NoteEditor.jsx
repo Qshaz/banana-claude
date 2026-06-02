@@ -27,7 +27,6 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
   const [tagInput, setTagInput] = useState('')
   const [listening, setListening] = useState(false)
   const [aiSuggestions, setAiSuggestions] = useState([])
-  const [aiLoading, setAiLoading] = useState(false)
   const titleRef = useRef(null)
   const recognitionRef = useRef(null)
   const suggestTimer = useRef(null)
@@ -48,20 +47,16 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
     }
   }, [note?.id])
 
-  // Debounced AI suggestions
+  // Debounced AI suggestions (local, no API key needed)
   useEffect(() => {
     clearTimeout(suggestTimer.current)
-    if (!note?.content || note.content.trim().length < 80) return
-    const hasKey = !!localStorage.getItem('dah_api_key')
-    if (!hasKey) return
+    setAiSuggestions([])
+    if (!note?.content || note.content.trim().length < 30) return
 
-    suggestTimer.current = setTimeout(async () => {
-      setAiLoading(true)
-      const suggestions = await suggestCategories(note.content, allTags || [])
-      const fresh = suggestions.filter(s => !note.tags.includes(s))
-      setAiSuggestions(fresh)
-      setAiLoading(false)
-    }, 2000)
+    suggestTimer.current = setTimeout(() => {
+      const suggestions = suggestCategories(note.content, note.tags, allTags || [])
+      setAiSuggestions(suggestions)
+    }, 1200)
 
     return () => clearTimeout(suggestTimer.current)
   }, [note?.content, note?.id])
@@ -185,23 +180,17 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
           </div>
         </div>
 
-        {(aiLoading || aiSuggestions.length > 0) && (
+        {aiSuggestions.length > 0 && (
           <div className="ai-suggestion-bar">
             <span className="ai-suggestion-label">
-              <IconSparkle /> AI suggests:
+              <IconSparkle /> Suggested:
             </span>
-            {aiLoading ? (
-              <span className="ai-loading">thinking…</span>
-            ) : (
-              aiSuggestions.map(tag => (
-                <button key={tag} className="ai-suggestion-chip" onClick={() => acceptSuggestion(tag)}>
-                  + {tag}
-                </button>
-              ))
-            )}
-            {!aiLoading && aiSuggestions.length > 0 && (
-              <button className="ai-dismiss" onClick={() => setAiSuggestions([])}>×</button>
-            )}
+            {aiSuggestions.map(tag => (
+              <button key={tag} className="ai-suggestion-chip" onClick={() => acceptSuggestion(tag)}>
+                + {tag}
+              </button>
+            ))}
+            <button className="ai-dismiss" onClick={() => setAiSuggestions([])}>×</button>
           </div>
         )}
       </div>

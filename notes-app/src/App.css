@@ -250,6 +250,31 @@ body {
 .note-card:hover { background: var(--hover); }
 .note-card.active { background: var(--selected); }
 
+.note-card { display: flex; align-items: flex-start; gap: 0; }
+.note-card-main { flex: 1; min-width: 0; }
+
+.note-card-delete {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 18px;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition: opacity var(--transition), color var(--transition), background var(--transition);
+  margin-top: 2px;
+  margin-right: -4px;
+}
+.note-card:hover .note-card-delete { opacity: 1; }
+.note-card-delete:hover { color: var(--danger); background: rgba(192,57,43,0.08); }
+
 .note-card-title {
   font-size: 14px;
   font-weight: 600;
@@ -1084,6 +1109,7 @@ body {
   /* Note list tweaks */
   .list-header { padding: 16px 16px 10px; }
   .note-card { padding: 14px 16px; }
+  .note-card-delete { opacity: 1; }
 
   /* Editor tweaks */
   .editor-inner { padding: 24px 20px 40px; }

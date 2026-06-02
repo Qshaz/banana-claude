@@ -142,6 +142,7 @@ export default function App() {
             setSearch={setSearch}
             mobileActive={mobilePanel === 'list'}
             onMobileBack={() => setMobilePanel('dashboard')}
+            onDelete={handleDelete}
           />
         )}
 

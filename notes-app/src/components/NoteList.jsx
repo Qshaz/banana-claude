@@ -1,6 +1,6 @@
 import { formatRelativeDate } from '../utils'
 
-export default function NoteList({ notes, selectedId, onSelect, onNew, filter, sort, setSort, search, setSearch, mobileActive, onMobileBack }) {
+export default function NoteList({ notes, selectedId, onSelect, onNew, filter, sort, setSort, search, setSearch, mobileActive, onMobileBack, onDelete }) {
   const pinned = notes.filter(n => n.pinned)
   const unpinned = notes.filter(n => !n.pinned)
 
@@ -36,13 +36,13 @@ export default function NoteList({ notes, selectedId, onSelect, onNew, filter, s
         <div className="note-list">
           {pinned.length > 0 && <div className="pinned-divider">Pinned</div>}
           {pinned.map(n => (
-            <NoteCard key={n.id} note={n} active={n.id === selectedId} onSelect={onSelect} />
+            <NoteCard key={n.id} note={n} active={n.id === selectedId} onSelect={onSelect} onDelete={onDelete} />
           ))}
           {pinned.length > 0 && unpinned.length > 0 && (
             <div className="pinned-divider">Notes</div>
           )}
           {unpinned.map(n => (
-            <NoteCard key={n.id} note={n} active={n.id === selectedId} onSelect={onSelect} />
+            <NoteCard key={n.id} note={n} active={n.id === selectedId} onSelect={onSelect} onDelete={onDelete} />
           ))}
         </div>
       )}
@@ -50,24 +50,35 @@ export default function NoteList({ notes, selectedId, onSelect, onNew, filter, s
   )
 }
 
-function NoteCard({ note, active, onSelect }) {
+function NoteCard({ note, active, onSelect, onDelete }) {
   return (
     <div
       className={`note-card${active ? ' active' : ''}`}
       onClick={() => onSelect(note.id)}
     >
-      {note.pinned && <span className="pin-icon">pin</span>}
-      <div className="note-card-title">{note.title || 'Untitled'}</div>
-      <div className="note-card-preview">{note.content}</div>
-      <div className="note-card-meta">
-        <span className="note-date">{formatRelativeDate(note.updatedAt)}</span>
-        {note.tags.slice(0, 1).map(tag => (
-          <span key={tag} className="note-tag">{tag}</span>
-        ))}
-        {note.tags.length > 1 && (
-          <span className="note-tag">+{note.tags.length - 1}</span>
-        )}
+      <div className="note-card-main">
+        {note.pinned && <span className="pin-icon">pin</span>}
+        <div className="note-card-title">{note.title || 'Untitled'}</div>
+        <div className="note-card-preview">{note.content}</div>
+        <div className="note-card-meta">
+          <span className="note-date">{formatRelativeDate(note.updatedAt)}</span>
+          {note.tags.slice(0, 1).map(tag => (
+            <span key={tag} className="note-tag">{tag}</span>
+          ))}
+          {note.tags.length > 1 && (
+            <span className="note-tag">+{note.tags.length - 1}</span>
+          )}
+        </div>
       </div>
+      {onDelete && (
+        <button
+          className="note-card-delete"
+          onClick={e => { e.stopPropagation(); onDelete(note.id) }}
+          title="Delete note"
+        >
+          ×
+        </button>
+      )}
     </div>
   )
 }

@@ -1,115 +1,109 @@
-import { tagColor } from '../hooks/useNotes'
-
-const TAG_COLOR_MAP = {
-  yellow: '#f5a623',
-  blue: '#0071e3',
-  green: '#34c759',
-  pink: '#ff375f',
-  purple: '#af52de',
-  orange: '#ff9500',
-  gray: '#aeaeb2',
-}
-
-export default function Sidebar({ notes, allTags, filter, setFilter, onNewNote, onImport, search, setSearch }) {
-  const counts = {
-    all: notes.length,
-    pinned: notes.filter(n => n.pinned).length,
-    imported: notes.filter(n => n.source === 'imported').length,
-  }
-
-  const tagCounts = Object.fromEntries(
-    allTags.map(tag => [tag, notes.filter(n => n.tags.includes(tag)).length])
-  )
+export default function Sidebar({ filter, setFilter, onNewNote, onImport, allTags, notes }) {
+  const nav = [
+    { id: 'all', tip: 'All Notes', icon: <IconHome /> },
+    { id: 'pinned', tip: 'Pinned', icon: <IconPin /> },
+    { id: 'imported', tip: 'Imported', icon: <IconImported /> },
+  ]
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-header">
-        <div className="sidebar-title">Notes</div>
-      </div>
-
-      <div className="sidebar-search">
-        <div className="search-input-wrap">
-          <input
-            className="search-input"
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
+      <div className="sidebar-logo">
+        <div className="sidebar-logo-mark">K</div>
       </div>
 
       <nav className="sidebar-nav">
-        <div className="sidebar-section">
-          <div className="sidebar-section-label">Library</div>
-        </div>
-
-        <NavItem
-          icon="≡"
-          label="All Notes"
-          count={counts.all}
-          active={filter.type === 'all'}
-          onClick={() => setFilter({ type: 'all' })}
-        />
-        <NavItem
-          icon="·"
-          label="Pinned"
-          count={counts.pinned}
-          active={filter.type === 'pinned'}
-          onClick={() => setFilter({ type: 'pinned' })}
-        />
-        <NavItem
-          icon="↓"
-          label="Imported"
-          count={counts.imported}
-          active={filter.type === 'imported'}
-          onClick={() => setFilter({ type: 'imported' })}
-        />
+        {nav.map(item => (
+          <button
+            key={item.id}
+            className={`sidebar-icon-btn${filter.type === item.id ? ' active' : ''}`}
+            onClick={() => setFilter({ type: item.id })}
+            data-tip={item.tip}
+          >
+            {item.icon}
+          </button>
+        ))}
 
         {allTags.length > 0 && (
           <>
-            <div className="sidebar-section" style={{ marginTop: 8 }}>
-              <div className="sidebar-section-label">Tags</div>
-            </div>
-            {allTags.map(tag => (
-              <NavItem
+            <div className="sidebar-divider" />
+            {allTags.slice(0, 8).map(tag => (
+              <button
                 key={tag}
-                icon={
-                  <span
-                    className="tag-dot"
-                    style={{ background: TAG_COLOR_MAP[tagColor(tag)] }}
-                  />
-                }
-                label={tag}
-                count={tagCounts[tag]}
-                active={filter.type === 'tag' && filter.tag === tag}
+                className={`sidebar-icon-btn${filter.type === 'tag' && filter.tag === tag ? ' active' : ''}`}
                 onClick={() => setFilter({ type: 'tag', tag })}
-              />
+                data-tip={tag}
+              >
+                <IconTag />
+              </button>
             ))}
           </>
         )}
       </nav>
 
-      <div className="sidebar-footer">
-        <button className="sidebar-btn import-btn" onClick={onImport}>
-          ↓ Import from Apple Notes
+      <div className="sidebar-footer-btns">
+        <div className="sidebar-divider" />
+        <button className="sidebar-icon-btn" onClick={onImport} data-tip="Import from Apple Notes">
+          <IconDownload />
         </button>
-        <button className="sidebar-btn" onClick={onNewNote}>
-          + New Note
+        <button className="sidebar-icon-btn" onClick={onNewNote} data-tip="New Note">
+          <IconPlus />
         </button>
       </div>
     </aside>
   )
 }
 
-function NavItem({ icon, label, count, active, onClick }) {
+function IconHome() {
   return (
-    <div className={`nav-item${active ? ' active' : ''}`} onClick={onClick}>
-      <span className="nav-item-icon">{icon}</span>
-      <span className="nav-item-label">{label}</span>
-      {active && count > 0 && (
-        <span className="nav-item-count">({count})</span>
-      )}
-    </div>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />
+      <path d="M9 21V12h6v9" />
+    </svg>
+  )
+}
+
+function IconPin() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+  )
+}
+
+function IconImported() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  )
+}
+
+function IconTag() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+      <line x1="7" y1="7" x2="7.01" y2="7" />
+    </svg>
+  )
+}
+
+function IconDownload() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  )
+}
+
+function IconPlus() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
   )
 }

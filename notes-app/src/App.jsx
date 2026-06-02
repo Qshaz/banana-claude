@@ -4,6 +4,7 @@ import { useNotes } from './hooks/useNotes'
 import Sidebar from './components/Sidebar'
 import NoteList from './components/NoteList'
 import NoteEditor from './components/NoteEditor'
+import Dashboard from './components/Dashboard'
 import ImportModal from './components/ImportModal'
 
 export default function App() {
@@ -15,8 +16,8 @@ export default function App() {
   const [search, setSearch] = useState('')
   const [showImport, setShowImport] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const [view, setView] = useState('dashboard') // 'dashboard' | 'notes'
 
-  // Filter + search + sort
   const visibleNotes = useMemo(() => {
     let list = notes
 
@@ -39,19 +40,34 @@ export default function App() {
       return new Date(b.updatedAt) - new Date(a.updatedAt)
     })
 
-    // Pinned always first (within current filter)
     return [
       ...sorted.filter(n => n.pinned),
       ...sorted.filter(n => !n.pinned),
     ]
   }, [notes, filter, sort, search])
 
-  const selectedNote = notes.find(n => n.id === selectedId) || null
-
   function handleNewNote() {
     const id = createNote()
     setSelectedId(id)
+    setView('notes')
     setFilter({ type: 'all' })
+  }
+
+  function handleSelectNote(id) {
+    setSelectedId(id)
+    setView('notes')
+  }
+
+  function handleFilter(f) {
+    setFilter(f)
+    setView('notes')
+    setSelectedId(null)
+  }
+
+  function handleSidebarFilter(f) {
+    setFilter(f)
+    setView('notes')
+    setSelectedId(null)
   }
 
   function handleDelete(id) {
@@ -74,43 +90,66 @@ export default function App() {
   function handleImport(parsed) {
     importNotes(parsed)
     setFilter({ type: 'imported' })
+    setView('notes')
     setSelectedId(null)
   }
 
-  // Auto-select first note when list changes and nothing is selected
-  const effectiveSelected = visibleNotes.find(n => n.id === selectedId)
-    ? selectedId
-    : visibleNotes[0]?.id || null
+  const effectiveSelected = view === 'notes'
+    ? (visibleNotes.find(n => n.id === selectedId) ? selectedId : visibleNotes[0]?.id || null)
+    : null
+
+  // Home icon in sidebar goes to dashboard
+  function handleSidebarNav(f) {
+    if (f.type === 'home') {
+      setView('dashboard')
+      setSelectedId(null)
+    } else {
+      handleSidebarFilter(f)
+    }
+  }
 
   return (
     <div className="app">
       <Sidebar
         notes={notes}
         allTags={allTags}
-        filter={filter}
-        setFilter={setFilter}
+        filter={view === 'dashboard' ? { type: 'home' } : filter}
+        setFilter={handleSidebarNav}
         onNewNote={handleNewNote}
         onImport={() => setShowImport(true)}
-        search={search}
-        setSearch={setSearch}
       />
 
-      <NoteList
-        notes={visibleNotes}
-        selectedId={effectiveSelected}
-        onSelect={setSelectedId}
-        onNew={handleNewNote}
-        filter={filter}
-        sort={sort}
-        setSort={setSort}
-      />
-
-      <NoteEditor
-        note={notes.find(n => n.id === effectiveSelected) || null}
-        onUpdate={updateNote}
-        onDelete={handleDelete}
-        onPin={handlePin}
-      />
+      <div className="main-area">
+        {view === 'dashboard' ? (
+          <Dashboard
+            notes={notes}
+            allTags={allTags}
+            onSelectNote={handleSelectNote}
+            onNewNote={handleNewNote}
+            onFilter={handleFilter}
+          />
+        ) : (
+          <>
+            <NoteList
+              notes={visibleNotes}
+              selectedId={effectiveSelected}
+              onSelect={handleSelectNote}
+              onNew={handleNewNote}
+              filter={filter}
+              sort={sort}
+              setSort={setSort}
+              search={search}
+              setSearch={setSearch}
+            />
+            <NoteEditor
+              note={notes.find(n => n.id === effectiveSelected) || null}
+              onUpdate={updateNote}
+              onDelete={handleDelete}
+              onPin={handlePin}
+            />
+          </>
+        )}
+      </div>
 
       {showImport && (
         <ImportModal
@@ -129,17 +168,12 @@ export default function App() {
               <button className="modal-close" onClick={() => setDeleteConfirm(null)}>✕</button>
             </div>
             <div className="confirm-body">
-              This will permanently delete "
-              {notes.find(n => n.id === deleteConfirm)?.title || 'Untitled'}".
+              This will permanently delete "{notes.find(n => n.id === deleteConfirm)?.title || 'Untitled'}".
               This action cannot be undone.
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setDeleteConfirm(null)}>
-                Cancel
-              </button>
-              <button className="btn btn-danger" onClick={confirmDelete}>
-                Delete
-              </button>
+              <button className="btn btn-secondary" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+              <button className="btn btn-danger" onClick={confirmDelete}>Delete</button>
             </div>
           </div>
         </div>

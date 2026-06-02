@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Logo from './Logo'
+import { useAI } from '../hooks/useAI'
 
 const COLORS = ['default', 'yellow', 'pink', 'green', 'blue', 'purple']
 const COLOR_VALUES = {
@@ -18,24 +19,26 @@ function formatDateLong(iso) {
   })
 }
 
-export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActive, onMobileBack }) {
+const SpeechAPI = typeof window !== 'undefined'
+  ? (window.SpeechRecognition || window.webkitSpeechRecognition || null)
+  : null
+
+export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActive, onMobileBack, allTags }) {
   const [tagInput, setTagInput] = useState('')
   const [listening, setListening] = useState(false)
+  const [aiSuggestions, setAiSuggestions] = useState([])
+  const [aiLoading, setAiLoading] = useState(false)
   const titleRef = useRef(null)
   const recognitionRef = useRef(null)
-
-  const SpeechRecognitionAPI = typeof window !== 'undefined'
-    ? (window.SpeechRecognition || window.webkitSpeechRecognition)
-    : null
+  const suggestTimer = useRef(null)
+  const { suggestCategories } = useAI()
 
   useEffect(() => {
-    if (note && !note.title && titleRef.current) {
-      titleRef.current.focus()
-    }
+    if (note && !note.title && titleRef.current) titleRef.current.focus()
     setTagInput('')
+    setAiSuggestions([])
   }, [note?.id])
 
-  // Stop recognition if note changes while listening
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {
@@ -45,18 +48,34 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
     }
   }, [note?.id])
 
+  // Debounced AI suggestions
+  useEffect(() => {
+    clearTimeout(suggestTimer.current)
+    if (!note?.content || note.content.trim().length < 80) return
+    const hasKey = !!localStorage.getItem('dah_api_key')
+    if (!hasKey) return
+
+    suggestTimer.current = setTimeout(async () => {
+      setAiLoading(true)
+      const suggestions = await suggestCategories(note.content, allTags || [])
+      const fresh = suggestions.filter(s => !note.tags.includes(s))
+      setAiSuggestions(fresh)
+      setAiLoading(false)
+    }, 2000)
+
+    return () => clearTimeout(suggestTimer.current)
+  }, [note?.content, note?.id])
+
   function handleMicClick() {
-    if (!SpeechRecognitionAPI) return
+    if (!SpeechAPI) return
 
     if (listening) {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop()
-      }
+      recognitionRef.current?.stop()
       setListening(false)
       return
     }
 
-    const recognition = new SpeechRecognitionAPI()
+    const recognition = new SpeechAPI()
     recognition.continuous = true
     recognition.interimResults = false
     recognition.lang = 'en-US'
@@ -69,23 +88,21 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
         .join('')
       if (transcript && note) {
         const current = note.content || ''
-        const separator = current && !current.endsWith(' ') ? ' ' : ''
-        onUpdate(note.id, { content: current + separator + transcript })
+        const sep = current && !current.endsWith(' ') ? ' ' : ''
+        onUpdate(note.id, { content: current + sep + transcript })
       }
     }
 
-    recognition.onerror = () => {
-      setListening(false)
-      recognitionRef.current = null
-    }
-
-    recognition.onend = () => {
-      setListening(false)
-      recognitionRef.current = null
-    }
+    recognition.onerror = () => { setListening(false); recognitionRef.current = null }
+    recognition.onend = () => { setListening(false); recognitionRef.current = null }
 
     recognition.start()
     setListening(true)
+  }
+
+  function acceptSuggestion(tag) {
+    onUpdate(note.id, { tags: [...note.tags, tag] })
+    setAiSuggestions(prev => prev.filter(s => s !== tag))
   }
 
   if (!note) {
@@ -101,84 +118,92 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
   }
 
   const handleAddTag = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault()
-      commitTag()
-    }
+    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); commitTag() }
   }
 
   const commitTag = () => {
     const tag = tagInput.trim().toLowerCase().replace(/^#/, '').replace(/[^a-z0-9_-]/g, '')
-    if (tag && !note.tags.includes(tag)) {
-      onUpdate(note.id, { tags: [...note.tags, tag] })
-    }
+    if (tag && !note.tags.includes(tag)) onUpdate(note.id, { tags: [...note.tags, tag] })
     setTagInput('')
   }
 
-  const removeTag = (tag) => {
-    onUpdate(note.id, { tags: note.tags.filter(t => t !== tag) })
-  }
+  const removeTag = (tag) => onUpdate(note.id, { tags: note.tags.filter(t => t !== tag) })
 
   return (
     <div className={`editor-panel${mobileActive ? ' mobile-active' : ''}`} style={{ background: NOTE_BG[note.color] || '#FFFFFF' }}>
       <div className="editor-toolbar">
-        <div className="tag-input-wrap">
-          {note.tags.map(tag => (
-            <span
-              key={tag}
-              className="tag-chip"
-              onClick={() => removeTag(tag)}
-              title="Click to remove"
-            >
-              {tag}
-              <span className="tag-chip-remove">×</span>
-            </span>
-          ))}
-          <input
-            className="add-tag-input"
-            placeholder="+ category"
-            value={tagInput}
-            onChange={e => setTagInput(e.target.value)}
-            onKeyDown={handleAddTag}
-            onBlur={commitTag}
-          />
-        </div>
-
-        <div className="color-picker">
-          {COLORS.map(c => (
-            <span
-              key={c}
-              className={`color-dot${note.color === c ? ' selected' : ''}`}
-              style={{ background: COLOR_VALUES[c] }}
-              onClick={() => onUpdate(note.id, { color: c })}
-              title={c}
+        <div className="editor-toolbar-row1">
+          <div className="tag-input-wrap">
+            {note.tags.map(tag => (
+              <span key={tag} className="tag-chip" onClick={() => removeTag(tag)} title="Click to remove">
+                {tag}<span className="tag-chip-remove">×</span>
+              </span>
+            ))}
+            <input
+              className="add-tag-input"
+              placeholder="+ category"
+              value={tagInput}
+              onChange={e => setTagInput(e.target.value)}
+              onKeyDown={handleAddTag}
+              onBlur={commitTag}
             />
-          ))}
+          </div>
+
+          <div className="editor-toolbar-controls">
+            <div className="color-picker">
+              {COLORS.map(c => (
+                <span
+                  key={c}
+                  className={`color-dot${note.color === c ? ' selected' : ''}`}
+                  style={{ background: COLOR_VALUES[c] }}
+                  onClick={() => onUpdate(note.id, { color: c })}
+                  title={c}
+                />
+              ))}
+            </div>
+
+            <div className="editor-actions">
+              {SpeechAPI && (
+                <button
+                  className={`editor-action-btn icon-btn${listening ? ' mic-active' : ''}`}
+                  onClick={handleMicClick}
+                  title={listening ? 'Stop recording' : 'Dictate'}
+                >
+                  {listening ? <IconStop /> : <IconMic />}
+                </button>
+              )}
+              <button
+                className={`editor-action-btn${note.pinned ? ' pin-active' : ''}`}
+                onClick={() => onPin(note.id)}
+              >
+                {note.pinned ? 'Unpin' : 'Pin'}
+              </button>
+              <button className="editor-action-btn danger" onClick={() => onDelete(note.id)}>
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="editor-actions">
-          {SpeechRecognitionAPI && (
-            <button
-              className={`editor-action-btn${listening ? ' mic-active' : ''}`}
-              onClick={handleMicClick}
-              title={listening ? 'Stop recording' : 'Dictate with microphone'}
-            >
-              {listening ? <IconStop /> : <IconMic />}
-            </button>
-          )}
-          <button
-            className={`editor-action-btn${note.pinned ? ' pin-active' : ''}`}
-            onClick={() => onPin(note.id)}
-          >
-            {note.pinned ? 'Unpin' : 'Pin'}
-          </button>
-          <button
-            className="editor-action-btn danger"
-            onClick={() => onDelete(note.id)}
-          >
-            Delete
-          </button>
-        </div>
+        {(aiLoading || aiSuggestions.length > 0) && (
+          <div className="ai-suggestion-bar">
+            <span className="ai-suggestion-label">
+              <IconSparkle /> AI suggests:
+            </span>
+            {aiLoading ? (
+              <span className="ai-loading">thinking…</span>
+            ) : (
+              aiSuggestions.map(tag => (
+                <button key={tag} className="ai-suggestion-chip" onClick={() => acceptSuggestion(tag)}>
+                  + {tag}
+                </button>
+              ))
+            )}
+            {!aiLoading && aiSuggestions.length > 0 && (
+              <button className="ai-dismiss" onClick={() => setAiSuggestions([])}>×</button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="editor-body">
@@ -193,12 +218,8 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
           />
 
           <div className="editor-meta">
-            <span className="editor-date">
-              Edited {formatDateLong(note.updatedAt)}
-            </span>
-            {note.source === 'imported' && (
-              <span className="editor-source-badge">Imported</span>
-            )}
+            <span className="editor-date">Edited {formatDateLong(note.updatedAt)}</span>
+            {note.source === 'imported' && <span className="editor-source-badge">Imported</span>}
           </div>
 
           <textarea
@@ -215,7 +236,7 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
 
 function IconMic() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16" height="16" strokeWidth="1.5">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" strokeWidth="1.8">
       <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
       <path d="M19 10v2a7 7 0 01-14 0v-2" />
       <line x1="12" y1="19" x2="12" y2="23" />
@@ -226,8 +247,16 @@ function IconMic() {
 
 function IconStop() {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="16" height="16">
-      <rect x="6" y="6" width="12" height="12" rx="2" />
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="14" height="14">
+      <rect x="5" y="5" width="14" height="14" rx="2" />
+    </svg>
+  )
+}
+
+function IconSparkle() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="12" height="12" strokeWidth="1.5">
+      <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" />
     </svg>
   )
 }

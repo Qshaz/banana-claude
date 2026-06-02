@@ -6,6 +6,7 @@ import NoteList from './components/NoteList'
 import NoteEditor from './components/NoteEditor'
 import Dashboard from './components/Dashboard'
 import ImportModal from './components/ImportModal'
+import SettingsModal from './components/SettingsModal'
 import Logo from './components/Logo'
 
 export default function App() {
@@ -16,9 +17,10 @@ export default function App() {
   const [sort, setSort] = useState('updated')
   const [search, setSearch] = useState('')
   const [showImport, setShowImport] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
-  const [view, setView] = useState('dashboard') // 'dashboard' | 'notes'
-  const [mobilePanel, setMobilePanel] = useState('dashboard') // 'dashboard' | 'list' | 'editor'
+  const [view, setView] = useState('dashboard')
+  const [mobilePanel, setMobilePanel] = useState('dashboard')
 
   const visibleNotes = useMemo(() => {
     let list = notes
@@ -113,6 +115,7 @@ export default function App() {
       <header className="mobile-header">
         <Logo size={28} />
       </header>
+
       <Sidebar
         notes={notes}
         allTags={allTags}
@@ -120,6 +123,7 @@ export default function App() {
         setFilter={handleSidebarNav}
         onNewNote={handleNewNote}
         onImport={() => setShowImport(true)}
+        onSettings={() => setShowSettings(true)}
       />
 
       <div className="main-area">
@@ -157,6 +161,7 @@ export default function App() {
           onPin={handlePin}
           mobileActive={mobilePanel === 'editor'}
           onMobileBack={() => setMobilePanel('list')}
+          allTags={allTags}
         />
       </div>
 
@@ -166,7 +171,7 @@ export default function App() {
           className={`mobile-nav-btn${mobilePanel === 'dashboard' ? ' active' : ''}`}
           onClick={() => { setMobilePanel('dashboard'); setView('dashboard') }}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />
             <path d="M9 21V12h6v9" />
           </svg>
@@ -177,16 +182,14 @@ export default function App() {
           className={`mobile-nav-btn${mobilePanel === 'list' ? ' active' : ''}`}
           onClick={() => { setMobilePanel('list'); setView('notes') }}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-            <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
-            <polyline points="10 9 9 9 8 9" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
           </svg>
           <span>Notes</span>
         </button>
 
         <button className="mobile-nav-btn nav-new" onClick={handleNewNote}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -194,17 +197,29 @@ export default function App() {
         </button>
 
         <button className="mobile-nav-btn" onClick={() => setShowImport(true)}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <polyline points="16 16 12 12 8 16" />
+            <line x1="12" y1="12" x2="12" y2="21" />
+            <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3" />
           </svg>
           <span>Import</span>
+        </button>
+
+        <button className="mobile-nav-btn" onClick={() => setShowSettings(true)}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+          </svg>
+          <span>Settings</span>
         </button>
       </nav>
 
       {showImport && (
         <ImportModal onClose={() => setShowImport(false)} onImport={handleImport} />
+      )}
+
+      {showSettings && (
+        <SettingsModal onClose={() => setShowSettings(false)} />
       )}
 
       {deleteConfirm && (

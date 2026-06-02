@@ -1114,7 +1114,11 @@ body {
   /* Editor tweaks */
   .editor-inner { padding: 24px 20px 40px; }
   .editor-title-input { font-size: 26px; }
-  .editor-toolbar { padding: 10px 14px; gap: 6px; }
+  .editor-toolbar { padding: 10px 14px; gap: 6px; flex-wrap: wrap; }
+  .editor-toolbar-row1 { flex-wrap: wrap; gap: 6px; }
+  .editor-toolbar-controls { width: 100%; justify-content: flex-end; }
+  .color-picker { gap: 8px; }
+  .color-dot { width: 16px; height: 16px; }
 
   /* Mobile back button */
   .mobile-back-btn {
@@ -1236,3 +1240,151 @@ body {
 
 /* No-note logo */
 .no-note-logo { margin-bottom: 16px; opacity: 0.5; }
+
+/* ── Editor toolbar restructure ── */
+.editor-toolbar-row1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.editor-toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.editor-action-btn.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 7px;
+}
+
+/* ── AI suggestion bar ── */
+.ai-suggestion-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  width: 100%;
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+}
+
+.ai-suggestion-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.ai-loading {
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.ai-suggestion-chip {
+  background: var(--gold-light);
+  border: 1px solid rgba(184,154,100,0.3);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.ai-suggestion-chip:hover {
+  background: rgba(184,154,100,0.2);
+  border-color: var(--gold);
+}
+
+.ai-dismiss {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 2px;
+  margin-left: auto;
+}
+
+.ai-dismiss:hover { color: var(--text); }
+
+/* ── Settings modal ── */
+.settings-body {
+  padding: 20px 24px;
+}
+
+.settings-section {
+  margin-bottom: 20px;
+}
+
+.settings-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.settings-hint {
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.settings-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.settings-input:focus { border-color: var(--accent); }
+
+.settings-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.settings-link:hover { text-decoration: underline; }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background var(--transition);
+}
+
+.btn-primary:hover { background: var(--accent-hover); }

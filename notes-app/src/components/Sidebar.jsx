@@ -1,6 +1,6 @@
 import Logo from './Logo'
 
-export default function Sidebar({ filter, setFilter, onNewNote, onImport, allTags, notes }) {
+export default function Sidebar({ filter, setFilter, onNewNote, onImport, onSettings, allTags, notes }) {
   const nav = [
     { id: 'all', tip: 'All Notes', icon: <IconHome /> },
     { id: 'pinned', tip: 'Pinned', icon: <IconPin /> },
@@ -49,6 +49,9 @@ export default function Sidebar({ filter, setFilter, onNewNote, onImport, allTag
         </button>
         <button className="sidebar-icon-btn" onClick={onNewNote} data-tip="New Note">
           <IconPlus />
+        </button>
+        <button className="sidebar-icon-btn" onClick={onSettings} data-tip="Settings">
+          <IconSettings />
         </button>
       </div>
     </aside>
@@ -106,6 +109,15 @@ function IconPlus() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  )
+}
+
+function IconSettings() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
     </svg>
   )
 }

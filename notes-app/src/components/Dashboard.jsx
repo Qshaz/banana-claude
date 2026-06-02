@@ -2,7 +2,7 @@ import { getGreeting, formatRelativeDate } from '../utils'
 
 const NAME = 'Shazia'
 
-export default function Dashboard({ notes, allTags, onSelectNote, onNewNote, onFilter }) {
+export default function Dashboard({ notes, allTags, onSelectNote, onNewNote, onFilter, className, isActive }) {
   const greeting = getGreeting()
 
   const untagged = notes.filter(n => n.tags.length === 0).length
@@ -29,7 +29,7 @@ export default function Dashboard({ notes, allTags, onSelectNote, onNewNote, onF
     .slice(0, 6)
 
   return (
-    <div className="dashboard">
+    <div className={`dashboard${className ? ` ${className}` : ''}`}>
       <div className="dashboard-header">
         <h1 className="dashboard-greeting serif">
           {greeting}, {NAME}

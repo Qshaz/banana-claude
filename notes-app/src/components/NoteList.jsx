@@ -1,6 +1,6 @@
 import { formatRelativeDate } from '../utils'
 
-export default function NoteList({ notes, selectedId, onSelect, onNew, filter, sort, setSort, search, setSearch }) {
+export default function NoteList({ notes, selectedId, onSelect, onNew, filter, sort, setSort, search, setSearch, mobileActive, onMobileBack }) {
   const pinned = notes.filter(n => n.pinned)
   const unpinned = notes.filter(n => !n.pinned)
 
@@ -10,7 +10,7 @@ export default function NoteList({ notes, selectedId, onSelect, onNew, filter, s
     : filter.tag
 
   return (
-    <div className="note-list-panel">
+    <div className={`note-list-panel${mobileActive ? ' mobile-active' : ''}`}>
       <div className="list-header">
         <div className="list-header-row">
           <span className="list-title">{filterLabel}</span>

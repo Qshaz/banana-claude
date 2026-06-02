@@ -17,7 +17,7 @@ function formatDateLong(iso) {
   })
 }
 
-export default function NoteEditor({ note, onUpdate, onDelete, onPin }) {
+export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActive, onMobileBack }) {
   const [tagInput, setTagInput] = useState('')
   const titleRef = useRef(null)
 
@@ -30,7 +30,7 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin }) {
 
   if (!note) {
     return (
-      <div className="editor-panel">
+      <div className={`editor-panel${mobileActive ? ' mobile-active' : ''}`}>
         <div className="no-note">
           <div className="no-note-monogram">K</div>
           <div className="no-note-text">Select a note to read it</div>
@@ -60,7 +60,7 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin }) {
   }
 
   return (
-    <div className="editor-panel" style={{ background: NOTE_BG[note.color] || '#FFFFFF' }}>
+    <div className={`editor-panel${mobileActive ? ' mobile-active' : ''}`} style={{ background: NOTE_BG[note.color] || '#FFFFFF' }}>
       <div className="editor-toolbar">
         <div className="tag-input-wrap">
           {note.tags.map(tag => (

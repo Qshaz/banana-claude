@@ -25,16 +25,14 @@ export default function Sidebar({ notes, allTags, filter, setFilter, onNewNote, 
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-title">Notes</div>
-        <div className="sidebar-subtitle">Your personal notebook</div>
       </div>
 
       <div className="sidebar-search">
         <div className="search-input-wrap">
-          <span className="search-icon">⌕</span>
           <input
             className="search-input"
             type="text"
-            placeholder="Search notes…"
+            placeholder="Search..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -88,7 +86,7 @@ export default function Sidebar({ notes, allTags, filter, setFilter, onNewNote, 
 
       <div className="sidebar-footer">
         <button className="sidebar-btn import-btn" onClick={onImport}>
-          <span>⬇</span> Import from Apple Notes
+          ↓ Import from Apple Notes
         </button>
         <button className="sidebar-btn" onClick={onNewNote}>
           <span>＋</span> New Note
@@ -102,10 +100,12 @@ function NavItem({ icon, label, count, active, onClick }) {
   return (
     <div className={`nav-item${active ? ' active' : ''}`} onClick={onClick}>
       <span className="nav-item-icon">
-        {typeof icon === 'string' ? icon : icon}
+        {icon}
       </span>
       <span className="nav-item-label">{label}</span>
-      {count > 0 && <span className="nav-item-count">{count}</span>}
+      {active && count > 0 && (
+        <span className="nav-item-count">({count})</span>
+      )}
     </div>
   )
 }

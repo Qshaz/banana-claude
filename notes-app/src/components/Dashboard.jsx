@@ -1,4 +1,5 @@
 import { getGreeting, formatRelativeDate } from '../utils'
+import Logo from './Logo'
 
 const NAME = 'Shazia'
 
@@ -31,9 +32,12 @@ export default function Dashboard({ notes, allTags, onSelectNote, onNewNote, onF
   return (
     <div className={`dashboard${className ? ` ${className}` : ''}`}>
       <div className="dashboard-header">
-        <h1 className="dashboard-greeting serif">
-          {greeting}, {NAME}
-        </h1>
+        <div>
+          <Logo size={28} className="dashboard-logo" />
+          <h1 className="dashboard-greeting serif">
+            {greeting}, {NAME}
+          </h1>
+        </div>
         <button className="dashboard-new-btn" onClick={onNewNote}>
           + New Note
         </button>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import Logo from './Logo'
 
 const COLORS = ['default', 'yellow', 'pink', 'green', 'blue', 'purple']
 const COLOR_VALUES = {
@@ -19,7 +20,13 @@ function formatDateLong(iso) {
 
 export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActive, onMobileBack }) {
   const [tagInput, setTagInput] = useState('')
+  const [listening, setListening] = useState(false)
   const titleRef = useRef(null)
+  const recognitionRef = useRef(null)
+
+  const SpeechRecognitionAPI = typeof window !== 'undefined'
+    ? (window.SpeechRecognition || window.webkitSpeechRecognition)
+    : null
 
   useEffect(() => {
     if (note && !note.title && titleRef.current) {
@@ -28,13 +35,66 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
     setTagInput('')
   }, [note?.id])
 
+  // Stop recognition if note changes while listening
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+        recognitionRef.current = null
+      }
+    }
+  }, [note?.id])
+
+  function handleMicClick() {
+    if (!SpeechRecognitionAPI) return
+
+    if (listening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+      setListening(false)
+      return
+    }
+
+    const recognition = new SpeechRecognitionAPI()
+    recognition.continuous = true
+    recognition.interimResults = false
+    recognition.lang = 'en-US'
+    recognitionRef.current = recognition
+
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .slice(event.resultIndex)
+        .map(r => r[0].transcript)
+        .join('')
+      if (transcript && note) {
+        const current = note.content || ''
+        const separator = current && !current.endsWith(' ') ? ' ' : ''
+        onUpdate(note.id, { content: current + separator + transcript })
+      }
+    }
+
+    recognition.onerror = () => {
+      setListening(false)
+      recognitionRef.current = null
+    }
+
+    recognition.onend = () => {
+      setListening(false)
+      recognitionRef.current = null
+    }
+
+    recognition.start()
+    setListening(true)
+  }
+
   if (!note) {
     return (
       <div className={`editor-panel${mobileActive ? ' mobile-active' : ''}`}>
         <div className="no-note">
-          <div className="no-note-monogram">K</div>
-          <div className="no-note-text">Select a note to read it</div>
-          <div className="no-note-hint">or create a new one with + New</div>
+          <Logo iconOnly size={48} className="no-note-logo" />
+          <div className="no-note-text">Select a note</div>
+          <div className="no-note-hint">or create a new one with +</div>
         </div>
       </div>
     )
@@ -97,6 +157,15 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
         </div>
 
         <div className="editor-actions">
+          {SpeechRecognitionAPI && (
+            <button
+              className={`editor-action-btn${listening ? ' mic-active' : ''}`}
+              onClick={handleMicClick}
+              title={listening ? 'Stop recording' : 'Dictate with microphone'}
+            >
+              {listening ? <IconStop /> : <IconMic />}
+            </button>
+          )}
           <button
             className={`editor-action-btn${note.pinned ? ' pin-active' : ''}`}
             onClick={() => onPin(note.id)}
@@ -141,5 +210,24 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
         </div>
       </div>
     </div>
+  )
+}
+
+function IconMic() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16" height="16" strokeWidth="1.5">
+      <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+      <path d="M19 10v2a7 7 0 01-14 0v-2" />
+      <line x1="12" y1="19" x2="12" y2="23" />
+      <line x1="8" y1="23" x2="16" y2="23" />
+    </svg>
+  )
+}
+
+function IconStop() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="16" height="16">
+      <rect x="6" y="6" width="12" height="12" rx="2" />
+    </svg>
   )
 }

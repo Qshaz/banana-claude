@@ -1,3 +1,5 @@
+import Logo from './Logo'
+
 export default function Sidebar({ filter, setFilter, onNewNote, onImport, allTags, notes }) {
   const nav = [
     { id: 'all', tip: 'All Notes', icon: <IconHome /> },
@@ -8,7 +10,7 @@ export default function Sidebar({ filter, setFilter, onNewNote, onImport, allTag
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <div className="sidebar-logo-mark">K</div>
+        <Logo iconOnly size={32} />
       </div>
 
       <nav className="sidebar-nav">
@@ -65,7 +67,7 @@ function IconHome() {
 function IconPin() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
     </svg>
   )
 }
@@ -73,9 +75,9 @@ function IconPin() {
 function IconImported() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" y1="15" x2="12" y2="3" />
+      <polyline points="8 17 12 21 16 17" />
+      <line x1="12" y1="21" x2="12" y2="9" />
+      <path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29" />
     </svg>
   )
 }
@@ -92,9 +94,9 @@ function IconTag() {
 function IconDownload() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" y1="15" x2="12" y2="3" />
+      <polyline points="16 16 12 12 8 16" />
+      <line x1="12" y1="12" x2="12" y2="21" />
+      <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3" />
     </svg>
   )
 }

@@ -1195,3 +1195,44 @@ body {
 
 /* Hide mobile nav on desktop */
 .mobile-nav { display: none; }
+
+/* ── Mobile header ── */
+.mobile-header {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    background: var(--sidebar-bg);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+  }
+
+  .app {
+    flex-direction: column;
+  }
+
+  /* Adjust main-area padding to account for header */
+  .main-area {
+    padding-bottom: 60px;
+  }
+}
+
+/* Voice/mic button active state */
+.editor-action-btn.mic-active {
+  color: var(--danger);
+  background: rgba(192,57,43,0.08);
+}
+
+/* Dashboard logo */
+.dashboard-logo { display: block; margin-bottom: 8px; }
+
+/* No-note logo */
+.no-note-logo { margin-bottom: 16px; opacity: 0.5; }

@@ -6,6 +6,7 @@ import NoteList from './components/NoteList'
 import NoteEditor from './components/NoteEditor'
 import Dashboard from './components/Dashboard'
 import ImportModal from './components/ImportModal'
+import Logo from './components/Logo'
 
 export default function App() {
   const { notes, allTags, createNote, updateNote, deleteNote, importNotes } = useNotes()
@@ -109,6 +110,9 @@ export default function App() {
 
   return (
     <div className="app">
+      <header className="mobile-header">
+        <Logo size={28} />
+      </header>
       <Sidebar
         notes={notes}
         allTags={allTags}

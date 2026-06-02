@@ -1,13 +1,10 @@
 import { useState } from 'react'
 
 export default function SettingsModal({ onClose }) {
-  const [key, setKey] = useState(localStorage.getItem('dah_api_key') || '')
   const [gistToken, setGistToken] = useState(localStorage.getItem('dah_gist_token') || '')
   const [saved, setSaved] = useState(false)
 
   function save() {
-    if (key.trim()) localStorage.setItem('dah_api_key', key.trim())
-    else localStorage.removeItem('dah_api_key')
     if (gistToken.trim()) localStorage.setItem('dah_gist_token', gistToken.trim())
     else { localStorage.removeItem('dah_gist_token'); localStorage.removeItem('dah_gist_id') }
     setSaved(true)
@@ -26,28 +23,8 @@ export default function SettingsModal({ onClose }) {
           <div className="settings-section">
             <div className="settings-label">AI Category Suggestions</div>
             <p className="settings-hint">
-              Enter your Anthropic API key to enable automatic category suggestions as you write.
-              Stored only in your browser — never sent anywhere else.
-            </p>
-            <input
-              className="settings-input"
-              type="password"
-              value={key}
-              onChange={e => setKey(e.target.value)}
-              placeholder="sk-ant-api03-…"
-              spellCheck={false}
-              autoComplete="off"
-            />
-            <p className="settings-hint" style={{ marginTop: 6 }}>
-              Get a key at{' '}
-              <a
-                href="https://console.anthropic.com/settings/keys"
-                target="_blank"
-                rel="noreferrer"
-                className="settings-link"
-              >
-                console.anthropic.com
-              </a>
+              Built-in — no setup needed. As you write, the app suggests categories
+              based on your note content. Tap a suggestion chip to add it.
             </p>
           </div>
 
@@ -55,7 +32,7 @@ export default function SettingsModal({ onClose }) {
             <div className="settings-label">Cross-Device Sync (GitHub Gist)</div>
             <p className="settings-hint">
               Enter a GitHub Personal Access Token with <code>gist</code> scope to sync your notes across devices.
-              Create one at github.com/settings/tokens → Generate new token → check "gist".
+              Go to github.com/settings/tokens → Generate new token (classic) → check "gist" → copy.
             </p>
             <input
               className="settings-input"
@@ -68,7 +45,7 @@ export default function SettingsModal({ onClose }) {
             />
             {gistToken !== (localStorage.getItem('dah_gist_token') || '') && (
               <p className="settings-hint" style={{ color: 'var(--gold)', marginTop: 4 }}>
-                Token changed — save to apply. Clear to disable sync.
+                Token changed — save to apply. Clear field to disable sync.
               </p>
             )}
           </div>

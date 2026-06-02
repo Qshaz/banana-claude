@@ -29,8 +29,15 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
   const [aiSuggestions, setAiSuggestions] = useState([])
   const titleRef = useRef(null)
   const recognitionRef = useRef(null)
+  const listeningRef = useRef(false)
+  const noteContentRef = useRef(note?.content || '')
+  const noteIdRef = useRef(note?.id)
   const suggestTimer = useRef(null)
   const { suggestCategories } = useAI()
+
+  // Keep content ref in sync so mic can always read latest without stale closure
+  useEffect(() => { noteContentRef.current = note?.content || '' }, [note?.content])
+  useEffect(() => { noteIdRef.current = note?.id }, [note?.id])
 
   useEffect(() => {
     if (note && !note.title && titleRef.current) titleRef.current.focus()
@@ -50,49 +57,77 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
   // Debounced AI suggestions (local, no API key needed)
   useEffect(() => {
     clearTimeout(suggestTimer.current)
-    setAiSuggestions([])
-    if (!note?.content || note.content.trim().length < 30) return
+    if (!note?.content || note.content.trim().length < 20) {
+      setAiSuggestions([])
+      return
+    }
 
     suggestTimer.current = setTimeout(() => {
       const suggestions = suggestCategories(note.content, note.tags, allTags || [])
-      setAiSuggestions(suggestions)
-    }, 1200)
+      // Only update if we got results (don't clear existing suggestions on re-runs)
+      if (suggestions.length > 0) setAiSuggestions(suggestions)
+    }, 1500)
 
     return () => clearTimeout(suggestTimer.current)
   }, [note?.content, note?.id])
 
-  function handleMicClick() {
-    if (!SpeechAPI) return
-
-    if (listening) {
-      recognitionRef.current?.stop()
-      setListening(false)
-      return
-    }
+  function startRecognition() {
+    if (!SpeechAPI || !listeningRef.current) return
 
     const recognition = new SpeechAPI()
-    recognition.continuous = true
+    recognition.continuous = false   // iOS Safari requires false
     recognition.interimResults = false
     recognition.lang = 'en-US'
     recognitionRef.current = recognition
 
     recognition.onresult = (event) => {
       const transcript = Array.from(event.results)
-        .slice(event.resultIndex)
         .map(r => r[0].transcript)
-        .join('')
-      if (transcript && note) {
-        const current = note.content || ''
+        .join(' ')
+        .trim()
+      if (transcript && noteIdRef.current) {
+        const current = noteContentRef.current
         const sep = current && !current.endsWith(' ') ? ' ' : ''
-        onUpdate(note.id, { content: current + sep + transcript })
+        const newContent = current + sep + transcript
+        noteContentRef.current = newContent
+        onUpdate(noteIdRef.current, { content: newContent })
       }
     }
 
-    recognition.onerror = () => { setListening(false); recognitionRef.current = null }
-    recognition.onend = () => { setListening(false); recognitionRef.current = null }
+    recognition.onerror = (e) => {
+      if (e.error !== 'no-speech') {
+        listeningRef.current = false
+        setListening(false)
+        recognitionRef.current = null
+      }
+    }
 
-    recognition.start()
+    // iOS stops after each phrase — restart automatically while still listening
+    recognition.onend = () => {
+      if (listeningRef.current) {
+        try { startRecognition() } catch { }
+      } else {
+        recognitionRef.current = null
+      }
+    }
+
+    try { recognition.start() } catch { }
+  }
+
+  function handleMicClick() {
+    if (!SpeechAPI) return
+
+    if (listening) {
+      listeningRef.current = false
+      setListening(false)
+      recognitionRef.current?.stop()
+      recognitionRef.current = null
+      return
+    }
+
+    listeningRef.current = true
     setListening(true)
+    startRecognition()
   }
 
   function acceptSuggestion(tag) {

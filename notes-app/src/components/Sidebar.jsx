@@ -45,17 +45,23 @@ export default function Sidebar({ notes, allTags, filter, setFilter, onNewNote, 
         </div>
 
         <NavItem
-          icon="📝" label="All Notes" count={counts.all}
+          icon="≡"
+          label="All Notes"
+          count={counts.all}
           active={filter.type === 'all'}
           onClick={() => setFilter({ type: 'all' })}
         />
         <NavItem
-          icon="📌" label="Pinned" count={counts.pinned}
+          icon="·"
+          label="Pinned"
+          count={counts.pinned}
           active={filter.type === 'pinned'}
           onClick={() => setFilter({ type: 'pinned' })}
         />
         <NavItem
-          icon="📥" label="Imported" count={counts.imported}
+          icon="↓"
+          label="Imported"
+          count={counts.imported}
           active={filter.type === 'imported'}
           onClick={() => setFilter({ type: 'imported' })}
         />
@@ -89,7 +95,7 @@ export default function Sidebar({ notes, allTags, filter, setFilter, onNewNote, 
           ↓ Import from Apple Notes
         </button>
         <button className="sidebar-btn" onClick={onNewNote}>
-          <span>＋</span> New Note
+          + New Note
         </button>
       </div>
     </aside>
@@ -99,9 +105,7 @@ export default function Sidebar({ notes, allTags, filter, setFilter, onNewNote, 
 function NavItem({ icon, label, count, active, onClick }) {
   return (
     <div className={`nav-item${active ? ' active' : ''}`} onClick={onClick}>
-      <span className="nav-item-icon">
-        {icon}
-      </span>
+      <span className="nav-item-icon">{icon}</span>
       <span className="nav-item-label">{label}</span>
       {active && count > 0 && (
         <span className="nav-item-count">({count})</span>

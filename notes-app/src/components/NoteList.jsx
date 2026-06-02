@@ -38,7 +38,7 @@ export default function NoteList({ notes, selectedId, onSelect, onNew, filter, s
 
       {notes.length === 0 ? (
         <div className="empty-list">
-          <div className="empty-list-icon">📭</div>
+          <div className="empty-list-icon">—</div>
           <div className="empty-list-text">No notes here yet.<br />Hit "New note" to create one.</div>
         </div>
       ) : (
@@ -63,7 +63,7 @@ function NoteCard({ note, active, onSelect }) {
       className={`note-card${active ? ' active' : ''}`}
       onClick={() => onSelect(note.id)}
     >
-      {note.pinned && <span className="pin-icon" aria-label="Pinned">·pin</span>}
+      {note.pinned && <span className="pin-icon" aria-label="Pinned">pin</span>}
       <div className="note-card-title">{note.title || 'Untitled'}</div>
       <div className="note-card-preview">{note.content}</div>
       <div className="note-card-meta">

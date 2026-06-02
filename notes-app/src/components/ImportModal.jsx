@@ -100,7 +100,7 @@ export default function ImportModal({ onClose, onImport }) {
                 onDrop={handleDrop}
                 onClick={() => fileRef.current.click()}
               >
-                <div className="drop-zone-icon">📂</div>
+                <div className="drop-zone-icon">↑</div>
                 <div className="drop-zone-text">Drop files here or click to browse</div>
                 <div className="drop-zone-hint">.txt and .md files supported</div>
                 <input

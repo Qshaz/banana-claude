@@ -43,9 +43,9 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin }) {
     return (
       <div className="editor-panel">
         <div className="no-note">
-          <div className="no-note-icon">📝</div>
+          <div className="no-note-icon">—</div>
           <div className="no-note-text">Select a note to read it</div>
-          <div className="no-note-hint">or create a new one with ＋</div>
+          <div className="no-note-hint">or create a new one with + New note</div>
         </div>
       </div>
     )
@@ -88,7 +88,7 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin }) {
           <input
             ref={tagRef}
             className="add-tag-input"
-            placeholder="＋ tag"
+            placeholder="+ tag"
             value={tagInput}
             onChange={e => setTagInput(e.target.value)}
             onKeyDown={handleAddTag}
@@ -114,22 +114,22 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin }) {
           ))}
         </div>
 
-        <button
-          className="icon-btn"
-          style={note.pinned ? { color: '#f5a623' } : undefined}
-          onClick={() => onPin(note.id)}
-          title={note.pinned ? 'Unpin' : 'Pin'}
-        >
-          📌
-        </button>
-        <button
-          className="icon-btn"
-          style={{ color: '#ff3b30' }}
-          onClick={() => onDelete(note.id)}
-          title="Delete note"
-        >
-          🗑
-        </button>
+        <div className="editor-actions">
+          <button
+            className={`editor-action-btn${note.pinned ? ' pin-active' : ''}`}
+            onClick={() => onPin(note.id)}
+            title={note.pinned ? 'Unpin' : 'Pin'}
+          >
+            {note.pinned ? 'Unpin' : 'Pin'}
+          </button>
+          <button
+            className="editor-action-btn danger"
+            onClick={() => onDelete(note.id)}
+            title="Delete note"
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
       <textarea
@@ -154,7 +154,7 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin }) {
         <textarea
           ref={contentRef}
           className="editor-textarea"
-          placeholder="Start writing…"
+          placeholder="Write something..."
           value={note.content}
           onChange={e => onUpdate(note.id, { content: e.target.value })}
         />

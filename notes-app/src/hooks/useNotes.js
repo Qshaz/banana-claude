@@ -91,7 +91,7 @@ export function useNotes() {
   // All unique tags across all notes
   const allTags = [...new Set(notes.flatMap(n => n.tags))].sort()
 
-  return { notes, allTags, createNote, updateNote, deleteNote, importNotes, deleteAll }
+  return { notes, setNotes, allTags, createNote, updateNote, deleteNote, importNotes, deleteAll }
 }
 
 // Parse pasted/uploaded text into an array of {title, content, tags, createdAt}

@@ -1388,3 +1388,12 @@ body {
 }
 
 .btn-primary:hover { background: var(--accent-hover); }
+
+/* ── Sync status dot ── */
+.sync-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  position: absolute; top: 12px; right: 16px;
+}
+.sync-syncing { background: var(--gold); animation: pulse 1s ease-in-out infinite; }
+.sync-synced { background: #27AE60; }
+.sync-error { background: var(--danger); }

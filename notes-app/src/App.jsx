@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import './App.css'
 import { useNotes } from './hooks/useNotes'
+import { useGistSync } from './hooks/useGistSync'
 import Sidebar from './components/Sidebar'
 import NoteList from './components/NoteList'
 import NoteEditor from './components/NoteEditor'
@@ -10,7 +11,8 @@ import SettingsModal from './components/SettingsModal'
 import Logo from './components/Logo'
 
 export default function App() {
-  const { notes, allTags, createNote, updateNote, deleteNote, importNotes } = useNotes()
+  const { notes, setNotes, allTags, createNote, updateNote, deleteNote, importNotes } = useNotes()
+  const { status: syncStatus } = useGistSync(notes, setNotes)
 
   const [selectedId, setSelectedId] = useState(null)
   const [filter, setFilter] = useState({ type: 'all' })
@@ -114,6 +116,9 @@ export default function App() {
     <div className="app">
       <header className="mobile-header">
         <Logo size={28} />
+        {syncStatus !== 'idle' && (
+          <span className={`sync-dot sync-${syncStatus}`} title={syncStatus} />
+        )}
       </header>
 
       <Sidebar

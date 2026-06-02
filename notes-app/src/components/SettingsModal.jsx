@@ -2,11 +2,14 @@ import { useState } from 'react'
 
 export default function SettingsModal({ onClose }) {
   const [key, setKey] = useState(localStorage.getItem('dah_api_key') || '')
+  const [gistToken, setGistToken] = useState(localStorage.getItem('dah_gist_token') || '')
   const [saved, setSaved] = useState(false)
 
   function save() {
     if (key.trim()) localStorage.setItem('dah_api_key', key.trim())
     else localStorage.removeItem('dah_api_key')
+    if (gistToken.trim()) localStorage.setItem('dah_gist_token', gistToken.trim())
+    else { localStorage.removeItem('dah_gist_token'); localStorage.removeItem('dah_gist_id') }
     setSaved(true)
     setTimeout(onClose, 700)
   }
@@ -46,6 +49,28 @@ export default function SettingsModal({ onClose }) {
                 console.anthropic.com
               </a>
             </p>
+          </div>
+
+          <div className="settings-section">
+            <div className="settings-label">Cross-Device Sync (GitHub Gist)</div>
+            <p className="settings-hint">
+              Enter a GitHub Personal Access Token with <code>gist</code> scope to sync your notes across devices.
+              Create one at github.com/settings/tokens → Generate new token → check "gist".
+            </p>
+            <input
+              className="settings-input"
+              type="password"
+              value={gistToken}
+              onChange={e => setGistToken(e.target.value)}
+              placeholder="ghp_xxxxxxxxxxxx"
+              spellCheck={false}
+              autoComplete="off"
+            />
+            {gistToken !== (localStorage.getItem('dah_gist_token') || '') && (
+              <p className="settings-hint" style={{ color: 'var(--gold)', marginTop: 4 }}>
+                Token changed — save to apply. Clear to disable sync.
+              </p>
+            )}
           </div>
         </div>
 

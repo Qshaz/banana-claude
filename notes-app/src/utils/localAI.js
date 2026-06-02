@@ -56,9 +56,18 @@ export function suggestCategoriesLocal(content, existingTags = [], allNoteTags =
     if (matches > 0) scores[topic] = (scores[topic] || 0) + matches
   }
 
-  return Object.entries(scores)
+  const results = Object.entries(scores)
     .filter(([tag]) => !existingTags.includes(tag))
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3)
     .map(([tag]) => tag)
+
+  // Fallback: if nothing matched taxonomy but user has existing tags,
+  // suggest the most-used one so something always shows for real content
+  if (results.length === 0 && allNoteTags.length > 0) {
+    const unused = allNoteTags.filter(t => !existingTags.includes(t))
+    if (unused.length > 0) return [unused[0]]
+  }
+
+  return results
 }

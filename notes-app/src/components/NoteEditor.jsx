@@ -26,7 +26,9 @@ const SpeechAPI = typeof window !== 'undefined'
 export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActive, onMobileBack, allTags }) {
   const [tagInput, setTagInput] = useState('')
   const [listening, setListening] = useState(false)
+  const [micError, setMicError] = useState('')
   const [aiSuggestions, setAiSuggestions] = useState([])
+  const [aiPending, setAiPending] = useState(false)
   const titleRef = useRef(null)
   const recognitionRef = useRef(null)
   const listeningRef = useRef(false)
@@ -59,12 +61,13 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
     clearTimeout(suggestTimer.current)
     if (!note?.content || note.content.trim().length < 20) {
       setAiSuggestions([])
+      setAiPending(false)
       return
     }
-
+    setAiPending(true)
     suggestTimer.current = setTimeout(() => {
       const suggestions = suggestCategories(note.content, note.tags, allTags || [])
-      // Only update if we got results (don't clear existing suggestions on re-runs)
+      setAiPending(false)
       if (suggestions.length > 0) setAiSuggestions(suggestions)
     }, 1500)
 
@@ -95,7 +98,16 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
     }
 
     recognition.onerror = (e) => {
-      if (e.error !== 'no-speech') {
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+        setMicError('Microphone access denied. Go to iOS Settings → Safari → Microphone → Allow.')
+        listeningRef.current = false
+        setListening(false)
+        recognitionRef.current = null
+      } else if (e.error === 'not-supported') {
+        setMicError('Voice dictation is not supported in this browser.')
+        listeningRef.current = false
+        setListening(false)
+      } else if (e.error !== 'no-speech') {
         listeningRef.current = false
         setListening(false)
         recognitionRef.current = null
@@ -196,10 +208,10 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
               {SpeechAPI && (
                 <button
                   className={`editor-action-btn icon-btn${listening ? ' mic-active' : ''}`}
-                  onClick={handleMicClick}
-                  title={listening ? 'Stop recording' : 'Dictate'}
+                  onClick={() => { setMicError(''); handleMicClick() }}
+                  title={listening ? 'Stop recording' : 'Dictate note'}
                 >
-                  {listening ? <IconStop /> : <IconMic />}
+                  {listening ? <><IconStop /><span style={{fontSize:11,marginLeft:4}}>Listening…</span></> : <IconMic />}
                 </button>
               )}
               <button
@@ -215,11 +227,13 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
           </div>
         </div>
 
+        {micError && (
+          <div className="mic-error">{micError}</div>
+        )}
+
         {aiSuggestions.length > 0 && (
           <div className="ai-suggestion-bar">
-            <span className="ai-suggestion-label">
-              <IconSparkle /> Suggested:
-            </span>
+            <span className="ai-suggestion-label"><IconSparkle /> Suggested:</span>
             {aiSuggestions.map(tag => (
               <button key={tag} className="ai-suggestion-chip" onClick={() => acceptSuggestion(tag)}>
                 + {tag}
@@ -227,6 +241,10 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
             ))}
             <button className="ai-dismiss" onClick={() => setAiSuggestions([])}>×</button>
           </div>
+        )}
+
+        {aiPending && aiSuggestions.length === 0 && (note?.content?.trim().length || 0) >= 20 && (
+          <div className="ai-pending-hint"><IconSparkle /> Analyzing…</div>
         )}
       </div>
 

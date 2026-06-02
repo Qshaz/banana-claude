@@ -1329,6 +1329,29 @@ body {
 
 .ai-dismiss:hover { color: var(--text); }
 
+.mic-error {
+  width: 100%;
+  font-size: 11px;
+  color: var(--danger);
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.ai-pending-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
 /* ── Settings modal ── */
 .settings-body {
   padding: 20px 24px;

@@ -2,8 +2,8 @@ name: Deploy Notes App
 
 on:
   push:
-    branches: [main]
-    paths: [notes-app/**]
+    branches: [main, claude/notes-app-apple-import-Tw5Br]
+    paths: [notes-app/**/*, .github/workflows/deploy-notes.yml]
   workflow_dispatch:
 
 permissions:

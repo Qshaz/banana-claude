@@ -126,7 +126,7 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
     try { recognition.start() } catch { }
   }
 
-  function handleMicClick() {
+  async function handleMicClick() {
     if (!SpeechAPI) return
 
     if (listening) {
@@ -137,6 +137,17 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
       return
     }
 
+    // Explicitly request mic permission first — iOS Safari requires this
+    // before SpeechRecognition will work reliably
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      stream.getTracks().forEach(t => t.stop()) // release immediately, we just needed the prompt
+    } catch {
+      setMicError('Microphone access denied. Go to iOS Settings → Privacy & Security → Microphone → turn on Safari.')
+      return
+    }
+
+    setMicError('')
     listeningRef.current = true
     setListening(true)
     startRecognition()

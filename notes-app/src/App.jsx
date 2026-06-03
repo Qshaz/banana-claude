@@ -9,12 +9,23 @@ import Dashboard from './components/Dashboard'
 import ImportModal from './components/ImportModal'
 import SettingsModal from './components/SettingsModal'
 import LockScreen, { hasPinSet } from './components/LockScreen'
+import ProfileScreen from './components/ProfileScreen'
 import Logo from './components/Logo'
+import { getProfiles } from './utils/profiles'
 
 export default function App() {
-  const { notes, setNotes, allTags, createNote, updateNote, deleteNote, importNotes } = useNotes()
-  const { status: syncStatus } = useGistSync(notes, setNotes)
-  const [locked, setLocked] = useState(hasPinSet)
+  const [profiles, setProfiles] = useState(getProfiles)
+  const [activeProfile, setActiveProfile] = useState(() => {
+    const ps = getProfiles()
+    return ps.length === 1 ? ps[0] : null
+  })
+  const [locked, setLocked] = useState(() =>
+    activeProfile ? hasPinSet(activeProfile.id) : false
+  )
+
+  const profileId = activeProfile?.id || 'default'
+  const { notes, setNotes, allTags, createNote, updateNote, deleteNote, importNotes } = useNotes(profileId)
+  const { status: syncStatus } = useGistSync(notes, setNotes, profileId)
 
   const [selectedId, setSelectedId] = useState(null)
   const [filter, setFilter] = useState({ type: 'all' })
@@ -114,7 +125,26 @@ export default function App() {
     ? (visibleNotes.find(n => n.id === selectedId) ? selectedId : visibleNotes[0]?.id || null)
     : null
 
-  if (locked) return <LockScreen onUnlock={() => setLocked(false)} />
+  // Show profile picker if multiple profiles and none selected
+  if (!activeProfile) {
+    return (
+      <ProfileScreen
+        onSelect={p => {
+          setActiveProfile(p)
+          setLocked(hasPinSet(p.id))
+        }}
+        onProfilesChange={setProfiles}
+      />
+    )
+  }
+
+  if (locked) return (
+    <LockScreen
+      onUnlock={() => setLocked(false)}
+      profileId={activeProfile.id}
+      profileName={profiles.length > 1 ? activeProfile.name : ''}
+    />
+  )
 
   return (
     <div className="app">
@@ -228,7 +258,12 @@ export default function App() {
       )}
 
       {showSettings && (
-        <SettingsModal onClose={() => setShowSettings(false)} />
+        <SettingsModal
+          onClose={() => setShowSettings(false)}
+          profileId={activeProfile.id}
+          profileName={activeProfile.name}
+          onSwitchProfile={profiles.length > 1 ? () => { setShowSettings(false); setActiveProfile(null) } : null}
+        />
       )}
 
       {deleteConfirm && (

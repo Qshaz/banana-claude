@@ -1,17 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { notesKey, gistTokenKey, gistIdKey } from '../utils/profiles'
 
 const GIST_FILENAME = 'dar-al-hikmah-notes.json'
 const GIST_DESCRIPTION = 'Dar Al Hikmah — Notes Sync'
-const STORAGE_KEY = 'banana-notes-v1'
 
 // status: 'idle' | 'syncing' | 'synced' | 'error'
-export function useGistSync(notes, setNotes) {
+export function useGistSync(notes, setNotes, profileId = 'default') {
   const [status, setStatus] = useState('idle')
   const pushTimer = useRef(null)
   const initialized = useRef(false)
 
-  const getToken = () => localStorage.getItem('dah_gist_token') || ''
-  const getGistId = () => localStorage.getItem('dah_gist_id') || ''
+  const getToken = () => localStorage.getItem(gistTokenKey(profileId)) || ''
+  const getGistId = () => localStorage.getItem(gistIdKey(profileId)) || ''
 
   const headers = (token) => ({
     'Authorization': `Bearer ${token}`,
@@ -37,7 +37,7 @@ export function useGistSync(notes, setNotes) {
         const found = gists.find(g => g.description === GIST_DESCRIPTION && g.files[GIST_FILENAME])
         if (found) {
           gistId = found.id
-          localStorage.setItem('dah_gist_id', gistId)
+          localStorage.setItem(gistIdKey(profileId), gistId)
         }
       }
 
@@ -55,7 +55,7 @@ export function useGistSync(notes, setNotes) {
       const remoteNotes = JSON.parse(raw)
       setNotes(localNotes => {
         const merged = mergeNotes(localNotes, remoteNotes)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
+        localStorage.setItem(notesKey(profileId), JSON.stringify(merged))
         return merged
       })
       setStatus('synced')
@@ -84,7 +84,7 @@ export function useGistSync(notes, setNotes) {
         })
         if (!res.ok) throw new Error('create')
         const gist = await res.json()
-        localStorage.setItem('dah_gist_id', gist.id)
+        localStorage.setItem(gistIdKey(profileId), gist.id)
       } else {
         const res = await fetch(`https://api.github.com/gists/${gistId}`, {
           method: 'PATCH', headers: headers(token), body

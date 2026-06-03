@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Logo from './Logo'
+import { pinKey } from '../utils/profiles'
 
 const PIN_LENGTH = 4
 
@@ -8,25 +9,24 @@ async function hashPin(pin) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
-export async function savePin(pin) {
+export async function savePin(pin, profileId = 'default') {
   const hash = await hashPin(pin)
-  localStorage.setItem('dah_pin_hash', hash)
+  localStorage.setItem(pinKey(profileId), hash)
 }
 
-export function removePin() {
-  localStorage.removeItem('dah_pin_hash')
+export function removePin(profileId = 'default') {
+  localStorage.removeItem(pinKey(profileId))
 }
 
-export function hasPinSet() {
-  return !!localStorage.getItem('dah_pin_hash')
+export function hasPinSet(profileId = 'default') {
+  return !!localStorage.getItem(pinKey(profileId))
 }
 
-export default function LockScreen({ onUnlock }) {
+export default function LockScreen({ onUnlock, profileId = 'default', profileName = '' }) {
   const [digits, setDigits] = useState([])
   const [shake, setShake] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
-  // Keyboard support
   useEffect(() => {
     function onKey(e) {
       if (e.key >= '0' && e.key <= '9') addDigit(Number(e.key))
@@ -54,16 +54,12 @@ export default function LockScreen({ onUnlock }) {
   async function verify(enteredDigits) {
     const pin = enteredDigits.join('')
     const hash = await hashPin(pin)
-    if (hash === localStorage.getItem('dah_pin_hash')) {
+    if (hash === localStorage.getItem(pinKey(profileId))) {
       onUnlock()
     } else {
       setShake(true)
       setErrorMsg('Incorrect PIN')
-      setTimeout(() => {
-        setDigits([])
-        setShake(false)
-        setErrorMsg('')
-      }, 700)
+      setTimeout(() => { setDigits([]); setShake(false); setErrorMsg('') }, 700)
     }
   }
 
@@ -73,6 +69,7 @@ export default function LockScreen({ onUnlock }) {
     <div className="lock-screen">
       <div className="lock-content">
         <Logo size={44} />
+        {profileName && <div className="lock-profile-name">{profileName}</div>}
 
         <div className={`lock-dots${shake ? ' shake' : ''}`}>
           {Array.from({ length: PIN_LENGTH }).map((_, i) => (
@@ -92,9 +89,7 @@ export default function LockScreen({ onUnlock }) {
               <button key={i} className="pin-btn pin-del" onClick={deleteDigit}>⌫</button>
             )
             return (
-              <button key={i} className="pin-btn" onClick={() => addDigit(key)}>
-                {key}
-              </button>
+              <button key={i} className="pin-btn" onClick={() => addDigit(key)}>{key}</button>
             )
           })}
         </div>

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-
-const STORAGE_KEY = 'banana-notes-v1'
+import { notesKey } from '../utils/profiles'
 
 function uuid() {
   return crypto.randomUUID()
@@ -21,25 +20,21 @@ export function tagColor(tag) {
   return TAG_COLORS[Math.abs(h) % TAG_COLORS.length]
 }
 
-function load() {
+function load(profileId) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(notesKey(profileId))
     return raw ? JSON.parse(raw) : []
   } catch {
     return []
   }
 }
 
-function save(notes) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes))
-}
-
-export function useNotes() {
-  const [notes, setNotes] = useState(load)
+export function useNotes(profileId = 'default') {
+  const [notes, setNotes] = useState(() => load(profileId))
 
   useEffect(() => {
-    save(notes)
-  }, [notes])
+    localStorage.setItem(notesKey(profileId), JSON.stringify(notes))
+  }, [notes, profileId])
 
   const createNote = useCallback((partial = {}) => {
     const note = {

@@ -145,11 +145,17 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       stream.getTracks().forEach(t => t.stop()) // release immediately, we just needed the prompt
-    } catch {
+    } catch (err) {
       const isMac = /Mac/.test(navigator.platform) && !/iPhone|iPad/.test(navigator.userAgent)
-      setMicError(isMac
-        ? 'Microphone blocked. Go to System Settings → Privacy & Security → Microphone → enable Safari.'
-        : 'Microphone blocked. Go to iOS Settings → Privacy & Security → Microphone → enable Safari.')
+      if (err.name === 'NotFoundError') {
+        setMicError('No microphone found on this device.')
+      } else if (err.name === 'NotAllowedError' || err.name === 'SecurityError') {
+        setMicError(isMac
+          ? 'Microphone blocked. Go to System Settings → Privacy & Security → Microphone → enable Safari.'
+          : 'Microphone blocked. In Safari: tap aA in address bar → Website Settings → Microphone → Allow.')
+      } else {
+        setMicError(`Mic error: ${err.name} — ${err.message}`)
+      }
       return
     }
 

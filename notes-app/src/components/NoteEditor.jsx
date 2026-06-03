@@ -99,7 +99,10 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
 
     recognition.onerror = (e) => {
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-        setMicError('Microphone access denied. Go to iOS Settings → Safari → Microphone → Allow.')
+        const isMac = /Mac/.test(navigator.platform) && !/iPhone|iPad/.test(navigator.userAgent)
+        setMicError(isMac
+          ? 'Microphone blocked. Go to System Settings → Privacy & Security → Microphone → enable Safari.'
+          : 'Microphone blocked. Go to iOS Settings → Privacy & Security → Microphone → enable Safari.')
         listeningRef.current = false
         setListening(false)
         recognitionRef.current = null
@@ -143,7 +146,10 @@ export default function NoteEditor({ note, onUpdate, onDelete, onPin, mobileActi
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       stream.getTracks().forEach(t => t.stop()) // release immediately, we just needed the prompt
     } catch {
-      setMicError('Microphone access denied. Go to iOS Settings → Privacy & Security → Microphone → turn on Safari.')
+      const isMac = /Mac/.test(navigator.platform) && !/iPhone|iPad/.test(navigator.userAgent)
+      setMicError(isMac
+        ? 'Microphone blocked. Go to System Settings → Privacy & Security → Microphone → enable Safari.'
+        : 'Microphone blocked. Go to iOS Settings → Privacy & Security → Microphone → enable Safari.')
       return
     }
 

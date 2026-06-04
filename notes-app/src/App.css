@@ -1355,6 +1355,8 @@ body {
 /* ── Settings modal ── */
 .settings-body {
   padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .settings-section {
@@ -1771,4 +1773,99 @@ body {
 
 .settings-add-profile {
   margin-top: 10px;
+}
+
+/* Welcome / signup screen */
+.welcome-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 48px 32px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.welcome-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.welcome-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.04em;
+  margin-top: -12px;
+  text-align: center;
+}
+
+.welcome-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.welcome-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.welcome-input {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: #fff;
+  font-size: 17px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.welcome-input::placeholder { color: rgba(255,255,255,0.25); }
+.welcome-input:focus { border-color: var(--gold); }
+
+.welcome-btn {
+  background: var(--gold);
+  color: #111;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-top: 4px;
+}
+.welcome-btn:disabled { opacity: 0.4; cursor: default; }
+.welcome-btn:not(:disabled):hover { opacity: 0.88; }
+
+.welcome-link {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px;
+}
+.welcome-link:hover { color: rgba(255,255,255,0.7); }
+
+.profile-chevron {
+  width: 16px;
+  height: 16px;
+  color: rgba(255,255,255,0.3);
+  margin-left: auto;
 }

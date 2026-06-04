@@ -32,6 +32,11 @@ function load(profileId) {
 export function useNotes(profileId = 'default') {
   const [notes, setNotes] = useState(() => load(profileId))
 
+  // Reload notes when profile changes
+  useEffect(() => {
+    setNotes(load(profileId))
+  }, [profileId])
+
   useEffect(() => {
     localStorage.setItem(notesKey(profileId), JSON.stringify(notes))
   }, [notes, profileId])

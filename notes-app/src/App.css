@@ -1869,3 +1869,37 @@ body {
   color: rgba(255,255,255,0.3);
   margin-left: auto;
 }
+
+/* Signup PIN step */
+.signup-pin-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.signup-pin-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+/* Sign Up button on profile list */
+.profile-signup-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: transparent;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 100%;
+  text-align: left;
+}
+.profile-signup-btn:hover { background: rgba(255,255,255,0.05); }

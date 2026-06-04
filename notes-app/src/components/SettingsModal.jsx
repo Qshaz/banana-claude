@@ -1,10 +1,6 @@
 import { useState } from 'react'
 import { savePin, removePin, hasPinSet } from './LockScreen'
-import { gistTokenKey, gistIdKey, getProfiles, addProfile, deleteProfile, profileColor } from '../utils/profiles'
-
-function initials(name) {
-  return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)
-}
+import { gistTokenKey, gistIdKey } from '../utils/profiles'
 
 function PinEntry({ onComplete, label }) {
   const [digits, setDigits] = useState([])
@@ -14,7 +10,7 @@ function PinEntry({ onComplete, label }) {
     if (digits.length >= LEN) return
     const next = [...digits, d]
     setDigits(next)
-    if (next.length === LEN) { setTimeout(() => onComplete(next.join('')), 80) }
+    if (next.length === LEN) setTimeout(() => onComplete(next.join('')), 80)
   }
 
   function del() { setDigits(p => p.slice(0, -1)) }
@@ -51,11 +47,6 @@ export default function SettingsModal({ onClose, profileId = 'default', profileN
   const [pinError, setPinError] = useState('')
   const [pinEnabled, setPinEnabled] = useState(() => hasPinSet(profileId))
 
-  const [profiles, setProfiles] = useState(getProfiles)
-  const [addingProfile, setAddingProfile] = useState(false)
-  const [newProfileName, setNewProfileName] = useState('')
-  const [deleteConfirm, setDeleteConfirm] = useState(null)
-
   function handleFirstPin(pin) { setFirstPin(pin); setPinFlow('set2') }
 
   async function handleConfirmPin(pin) {
@@ -71,19 +62,6 @@ export default function SettingsModal({ onClose, profileId = 'default', profileN
   }
 
   function handleRemovePin() { removePin(profileId); setPinEnabled(false) }
-
-  function handleAddProfile() {
-    if (!newProfileName.trim()) return
-    const p = addProfile(newProfileName)
-    setProfiles(getProfiles())
-    setNewProfileName(''); setAddingProfile(false)
-  }
-
-  function handleDeleteProfile(id) {
-    deleteProfile(id)
-    setProfiles(getProfiles())
-    setDeleteConfirm(null)
-  }
 
   function save() {
     if (gistToken.trim()) localStorage.setItem(tokenKey, gistToken.trim())
@@ -104,56 +82,6 @@ export default function SettingsModal({ onClose, profileId = 'default', profileN
         </div>
 
         <div className="settings-body">
-
-          {/* Profiles */}
-          <div className="settings-section">
-            <div className="settings-label">Profiles</div>
-            <div className="settings-profiles-list">
-              {profiles.map((p, i) => (
-                <div key={p.id} className={`settings-profile-row${p.id === profileId ? ' active' : ''}`}>
-                  <div className="settings-profile-avatar" style={{ background: profileColor(i) }}>
-                    {initials(p.name)}
-                  </div>
-                  <span className="settings-profile-name">{p.name}</span>
-                  <div className="settings-profile-actions">
-                    {p.id !== profileId && onSwitchProfile && (
-                      <button className="btn btn-secondary btn-xs" onClick={onSwitchProfile}>Switch</button>
-                    )}
-                    {p.id === profileId && <span className="settings-profile-badge">Active</span>}
-                    {profiles.length > 1 && (
-                      <button
-                        className="btn btn-xs"
-                        style={{ color: 'var(--danger)' }}
-                        onClick={() => setDeleteConfirm(p.id)}
-                      >Delete</button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {addingProfile ? (
-              <div className="settings-add-profile">
-                <input
-                  className="settings-input"
-                  placeholder="Profile name"
-                  value={newProfileName}
-                  onChange={e => setNewProfileName(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') handleAddProfile(); if (e.key === 'Escape') setAddingProfile(false) }}
-                  autoFocus
-                  maxLength={20}
-                />
-                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                  <button className="btn btn-secondary" onClick={() => { setAddingProfile(false); setNewProfileName('') }}>Cancel</button>
-                  <button className="btn btn-primary" onClick={handleAddProfile} disabled={!newProfileName.trim()}>Add</button>
-                </div>
-              </div>
-            ) : (
-              <button className="btn btn-secondary" style={{ marginTop: 10 }} onClick={() => setAddingProfile(true)}>
-                + Add Profile
-              </button>
-            )}
-          </div>
 
           {/* PIN lock */}
           <div className="settings-section">
@@ -213,6 +141,17 @@ export default function SettingsModal({ onClose, profileId = 'default', profileN
             )}
           </div>
 
+          {/* Switch profile */}
+          {onSwitchProfile && (
+            <div className="settings-section">
+              <div className="settings-label">Account</div>
+              <p className="settings-hint">Signed in as <strong>{profileName}</strong></p>
+              <button className="btn btn-secondary" style={{ marginTop: 8 }} onClick={onSwitchProfile}>
+                Switch Profile
+              </button>
+            </div>
+          )}
+
         </div>
 
         <div className="modal-footer">
@@ -220,24 +159,6 @@ export default function SettingsModal({ onClose, profileId = 'default', profileN
           <button className="btn btn-primary" onClick={save}>{saved ? 'Saved ✓' : 'Save'}</button>
         </div>
       </div>
-
-      {deleteConfirm && (
-        <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setDeleteConfirm(null)}>
-          <div className="modal confirm-dialog" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <div className="modal-title">Delete profile?</div>
-              <button className="modal-close" onClick={() => setDeleteConfirm(null)}>✕</button>
-            </div>
-            <div className="confirm-body">
-              All notes for "{profiles.find(p => p.id === deleteConfirm)?.name}" will be permanently deleted.
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setDeleteConfirm(null)}>Cancel</button>
-              <button className="btn btn-danger" onClick={() => handleDeleteProfile(deleteConfirm)}>Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

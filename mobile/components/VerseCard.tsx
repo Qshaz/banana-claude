@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../constants/colors';
+import { Fonts, Typography, Radii } from '../constants/typography';
 import type { Verse } from '../types';
 
 interface Props {
@@ -16,7 +17,6 @@ export function VerseCard({ verse, onPress, showFull }: Props) {
       onPress={onPress}
       activeOpacity={onPress ? 0.7 : 1}
     >
-      <Text style={styles.ref}>{verse.surah_name} · {verse.verse_key}</Text>
       <Text style={styles.arabic} numberOfLines={showFull ? undefined : 3}>
         {verse.text_arabic}
       </Text>
@@ -24,6 +24,9 @@ export function VerseCard({ verse, onPress, showFull }: Props) {
       <Text style={styles.translation} numberOfLines={showFull ? undefined : 2}>
         {verse.translation}
       </Text>
+      <View style={styles.refChip}>
+        <Text style={styles.refText}>{verse.surah_name} · {verse.verse_key}</Text>
+      </View>
       {!showFull && onPress && (
         <Text style={styles.tapHint}>Tap to explore →</Text>
       )}
@@ -34,27 +37,51 @@ export function VerseCard({ verse, onPress, showFull }: Props) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.SURFACE,
-    borderRadius: 14,
-    padding: 18,
+    borderRadius: Radii.verseCard,
+    padding: 28,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.BORDER,
+    borderColor: Colors.DIVIDER,
     shadowColor: Colors.SHADOW,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowRadius: 18,
+    elevation: 3,
   },
-  ref: { fontSize: 12, color: Colors.ACCENT, fontWeight: '600', marginBottom: 10, letterSpacing: 0.5 },
   arabic: {
-    fontSize: 22,
-    lineHeight: 38,
-    textAlign: 'right',
-    color: Colors.TEXT,
-    fontFamily: undefined, // system will render Arabic correctly
-    marginBottom: 12,
+    ...Typography.arabicVerse,
+    color: Colors.TEXT_ARABIC,
+    marginBottom: 0,
   },
-  divider: { height: 1, backgroundColor: Colors.BORDER, marginBottom: 12 },
-  translation: { fontSize: 14, lineHeight: 22, color: Colors.TEXT_MUTED },
-  tapHint: { fontSize: 12, color: Colors.PRIMARY, marginTop: 10, textAlign: 'right' },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.DIVIDER,
+    marginVertical: 16,
+  },
+  translation: {
+    fontFamily: Fonts.BODY,
+    fontSize: 17,
+    lineHeight: 30,
+    color: Colors.TEXT,
+  },
+  refChip: {
+    backgroundColor: Colors.BACKGROUND_SECONDARY,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: Radii.pill,
+    alignSelf: 'flex-start',
+    marginTop: 12,
+  },
+  refText: {
+    fontFamily: Fonts.BODY,
+    fontSize: 12,
+    color: Colors.TEXT_SECONDARY,
+  },
+  tapHint: {
+    fontSize: 12,
+    color: Colors.PRIMARY,
+    marginTop: 10,
+    textAlign: 'right',
+    fontFamily: Fonts.BODY,
+  },
 });

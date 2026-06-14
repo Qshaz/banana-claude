@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../constants/colors';
+import { Fonts, Radii } from '../constants/typography';
 import { getCategoryIcon, getCategoryName } from '../constants/categories';
 import type { JournalEntry } from '../types';
 
@@ -14,19 +15,32 @@ export function JournalEntryCard({ entry, onPress }: Props) {
     day: 'numeric', month: 'short', year: 'numeric',
   });
 
+  const isPrivate = entry.visibility !== 'community';
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
-      <View style={styles.row}>
-        <Text style={styles.icon}>{getCategoryIcon(entry.category)}</Text>
-        <View style={styles.meta}>
-          <Text style={styles.ref}>{entry.surah_number}:{entry.ayah_number} · {getCategoryName(entry.category)}</Text>
-          <Text style={styles.date}>{date}</Text>
+      {/* Top row */}
+      <View style={styles.topRow}>
+        <View style={styles.topLeft}>
+          <Text style={styles.categoryIcon}>{getCategoryIcon(entry.category)}</Text>
+          <Text style={styles.categoryName}>{getCategoryName(entry.category)}</Text>
         </View>
-        {entry.visibility === 'community' && <Text style={styles.badge}>Community</Text>}
+        <Text style={styles.date}>{date}</Text>
       </View>
+
+      {/* Journal text preview */}
       {entry.journal_text ? (
-        <Text style={styles.preview} numberOfLines={2}>{entry.journal_text}</Text>
+        <Text style={styles.preview} numberOfLines={2}>
+          {entry.journal_text}
+        </Text>
       ) : null}
+
+      {/* Visibility badge */}
+      <View style={[styles.badge, isPrivate ? styles.badgePrivate : styles.badgeCommunity]}>
+        <Text style={[styles.badgeText, isPrivate ? styles.badgeTextPrivate : styles.badgeTextCommunity]}>
+          {isPrivate ? '🔒 Private' : '🌍 Community'}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -34,25 +48,66 @@ export function JournalEntryCard({ entry, onPress }: Props) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.SURFACE,
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: Radii.card,
+    padding: 20,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: Colors.BORDER,
+    borderColor: Colors.DIVIDER,
+    shadowColor: Colors.SHADOW,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 18,
+    elevation: 2,
   },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
-  icon: { fontSize: 22 },
-  meta: { flex: 1 },
-  ref: { fontSize: 14, fontWeight: '600', color: Colors.TEXT },
-  date: { fontSize: 12, color: Colors.TEXT_MUTED, marginTop: 2 },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  topLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  categoryIcon: { fontSize: 16 },
+  categoryName: {
+    fontFamily: Fonts.BODY_DEMIBOLD,
+    fontSize: 13,
+    color: Colors.TEXT_SECONDARY,
+  },
+  date: {
+    fontFamily: Fonts.BODY,
+    fontSize: 12,
+    color: Colors.TEXT_MUTED,
+  },
+  preview: {
+    fontFamily: Fonts.BODY,
+    fontSize: 14,
+    color: Colors.TEXT,
+    lineHeight: 22,
+    marginBottom: 10,
+  },
   badge: {
-    fontSize: 10,
-    color: Colors.PRIMARY,
-    borderWidth: 1,
-    borderColor: Colors.PRIMARY,
-    borderRadius: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radii.badge,
+    alignSelf: 'flex-start',
   },
-  preview: { fontSize: 13, color: Colors.TEXT_MUTED, lineHeight: 20 },
+  badgePrivate: {
+    backgroundColor: Colors.BADGE_PRIVATE,
+  },
+  badgeCommunity: {
+    backgroundColor: Colors.BADGE_COMMUNITY,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontFamily: Fonts.BODY,
+  },
+  badgeTextPrivate: {
+    color: Colors.TEXT_MUTED,
+  },
+  badgeTextCommunity: {
+    color: Colors.SUCCESS,
+  },
 });

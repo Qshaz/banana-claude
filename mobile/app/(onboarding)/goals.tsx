@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { useRouter } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/colors';
+import { Fonts, Radii } from '../../constants/typography';
 
 const GOALS = [
   { id: 'comfort', label: 'Find comfort in hardship', icon: '🤲' },
@@ -12,6 +13,27 @@ const GOALS = [
   { id: 'answers', label: 'Find answers in the Quran', icon: '💡' },
   { id: 'community', label: 'Share with a community', icon: '🌍' },
 ];
+
+function OnboardingProgress({ step }: { step: 1 | 2 | 3 | 4 }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
+      {[1, 2, 3, 4].map((s, i) => (
+        <React.Fragment key={s}>
+          <View style={{
+            width: 10, height: 10, borderRadius: 5,
+            backgroundColor: s <= step ? Colors.PRIMARY : Colors.BORDER,
+          }} />
+          {i < 3 && (
+            <View style={{
+              width: 28, height: 1.5,
+              backgroundColor: s < step ? Colors.PRIMARY : Colors.BORDER,
+            }} />
+          )}
+        </React.Fragment>
+      ))}
+    </View>
+  );
+}
 
 export default function GoalsScreen() {
   const [selected, setSelected] = useState<string[]>([]);
@@ -29,7 +51,7 @@ export default function GoalsScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.step}>2 of 4</Text>
+        <OnboardingProgress step={2} />
         <Text style={styles.title}>What brings you here?</Text>
         <Text style={styles.sub}>Select all that apply</Text>
         {GOALS.map((g) => (
@@ -55,9 +77,8 @@ export default function GoalsScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
   container: { padding: 28, paddingBottom: 40 },
-  step: { fontSize: 12, color: Colors.TEXT_MUTED, marginBottom: 8 },
-  title: { fontSize: 26, fontWeight: '700', color: Colors.TEXT, marginBottom: 6 },
-  sub: { fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 24 },
+  title: { fontFamily: Fonts.HEADING_SEMIBOLD, fontSize: 26, color: Colors.TEXT, marginBottom: 6 },
+  sub: { fontFamily: Fonts.BODY, fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 24 },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -71,9 +92,15 @@ const styles = StyleSheet.create({
   },
   selected: { borderColor: Colors.PRIMARY, backgroundColor: Colors.PRIMARY_ULTRA_LIGHT },
   goalIcon: { fontSize: 22 },
-  goalLabel: { flex: 1, fontSize: 15, color: Colors.TEXT },
-  selectedText: { color: Colors.PRIMARY, fontWeight: '600' },
+  goalLabel: { flex: 1, fontFamily: Fonts.BODY, fontSize: 15, color: Colors.TEXT },
+  selectedText: { fontFamily: Fonts.BODY_MEDIUM, color: Colors.PRIMARY },
   check: { fontSize: 16, color: Colors.PRIMARY },
-  btn: { backgroundColor: Colors.PRIMARY, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 16 },
-  btnText: { color: Colors.SURFACE, fontSize: 16, fontWeight: '600' },
+  btn: {
+    backgroundColor: Colors.PRIMARY,
+    borderRadius: Radii.button,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  btnText: { fontFamily: Fonts.BODY_MEDIUM, color: '#FFFFFF', fontSize: 16 },
 });

@@ -8,6 +8,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useJournal } from '../hooks/useJournal';
 import { useSessionStore } from '../stores/session';
 import { Colors } from '../constants/colors';
+import { Fonts, Radii } from '../constants/typography';
 import { getCategoryBySlug } from '../constants/categories';
 import { VerseCard } from '../components/VerseCard';
 import { TafsirSection } from '../components/TafsirSection';
@@ -303,14 +304,18 @@ export default function SessionScreen() {
     if (step === 'complete') {
       return (
         <View style={styles.completeCentre}>
+          {/* Decorative watermark */}
+          <Text style={styles.completeWatermark}>ما شاء الله</Text>
+
           <Text style={styles.completeIcon}>🤲</Text>
+          <Text style={styles.completeArabic}>ما شاء الله</Text>
           <Text style={styles.completeTitle}>MashaAllah</Text>
           <Text style={styles.completeSub}>
             Your reflection on {selectedVerse?.surah_name} {selectedVerse?.verse_key} has been
             saved.
           </Text>
           <TouchableOpacity
-            style={styles.btn}
+            style={[styles.btn, { marginBottom: 12 }]}
             onPress={() => router.replace('/(tabs)/journal')}
           >
             <Text style={styles.btnText}>View Journal</Text>
@@ -508,29 +513,32 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
   tabBar: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderColor: Colors.BORDER,
   },
   tabPill: {
+    height: 44,
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: Colors.BORDER,
-    backgroundColor: Colors.SURFACE,
+    borderRadius: 22,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
   },
   tabPillActive: {
-    borderColor: Colors.PRIMARY,
     backgroundColor: Colors.PRIMARY,
   },
   tabPillText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: Colors.TEXT_MUTED,
+    fontFamily: Fonts.BODY,
+    fontSize: 14,
+    color: Colors.TEXT_SECONDARY,
   },
   tabPillTextActive: {
-    color: Colors.SURFACE,
+    fontFamily: Fonts.BODY_MEDIUM,
+    fontSize: 14,
+    color: '#FFFFFF',
   },
   tabContent: { flex: 1 },
   container: { padding: 20, paddingBottom: 40 },
@@ -542,22 +550,24 @@ const styles = StyleSheet.create({
   empty: { fontSize: 15, color: Colors.TEXT_MUTED, textAlign: 'center', marginTop: 40 },
   btn: {
     backgroundColor: Colors.PRIMARY,
-    borderRadius: 12,
+    borderRadius: Radii.button,
     padding: 16,
     alignItems: 'center',
     marginTop: 16,
+    width: '100%',
   },
   btnDisabled: { opacity: 0.5 },
-  btnText: { color: Colors.SURFACE, fontSize: 16, fontWeight: '600' },
+  btnText: { fontFamily: Fonts.BODY_MEDIUM, color: '#FFFFFF', fontSize: 16 },
   btnOutline: {
     borderWidth: 1.5,
     borderColor: Colors.PRIMARY,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: Radii.button,
+    padding: 14,
     alignItems: 'center',
     marginTop: 12,
+    width: '100%',
   },
-  btnOutlineText: { color: Colors.PRIMARY, fontSize: 16, fontWeight: '600' },
+  btnOutlineText: { fontFamily: Fonts.BODY_MEDIUM, color: Colors.PRIMARY, fontSize: 16 },
   journalInput: {
     backgroundColor: Colors.SURFACE,
     borderWidth: 1,
@@ -588,12 +598,41 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
-    gap: 16,
+    padding: 48,
+    backgroundColor: Colors.BACKGROUND,
   },
-  completeIcon: { fontSize: 64 },
-  completeTitle: { fontSize: 30, fontWeight: '700', color: Colors.PRIMARY },
-  completeSub: { fontSize: 15, color: Colors.TEXT_MUTED, textAlign: 'center', lineHeight: 24 },
+  completeWatermark: {
+    position: 'absolute',
+    fontFamily: Fonts.ARABIC,
+    fontSize: 120,
+    color: Colors.BORDER,
+    opacity: 0.3,
+    zIndex: -1,
+    textAlign: 'center',
+    alignSelf: 'center',
+  },
+  completeIcon: { fontSize: 48, marginBottom: 24 },
+  completeArabic: {
+    fontFamily: Fonts.ARABIC,
+    fontSize: 36,
+    color: Colors.TEXT,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  completeTitle: {
+    fontFamily: Fonts.HEADING_SEMIBOLD,
+    fontSize: 28,
+    color: Colors.PRIMARY,
+    marginBottom: 12,
+  },
+  completeSub: {
+    fontFamily: Fonts.BODY,
+    fontSize: 15,
+    color: Colors.TEXT_SECONDARY,
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 40,
+  },
   centreMessage: {
     flex: 1,
     justifyContent: 'center',

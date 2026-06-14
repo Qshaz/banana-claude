@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { Colors } from '../constants/colors';
+import { Fonts, Radii } from '../constants/typography';
 import type { Category } from '../constants/categories';
 
 interface Props {
@@ -13,17 +14,14 @@ interface Props {
 export function CategoryCard({ category, onPress, onLongPress, compact }: Props) {
   return (
     <TouchableOpacity
-      style={[styles.card, compact && styles.compact, { borderLeftColor: category.color }]}
+      style={[styles.card, compact && styles.compact]}
       onPress={onPress}
       onLongPress={onLongPress}
       activeOpacity={0.7}
     >
       <Text style={styles.icon}>{category.icon}</Text>
-      <View style={styles.text}>
-        <Text style={styles.name}>{category.name}</Text>
-        {!compact && <Text style={styles.arabic}>{category.arabicName}</Text>}
-        {!compact && <Text style={styles.desc} numberOfLines={1}>{category.description}</Text>}
-      </View>
+      <Text style={styles.name}>{category.name}</Text>
+      {!compact && <Text style={styles.arabic}>{category.arabicName}</Text>}
     </TouchableOpacity>
   );
 }
@@ -31,25 +29,32 @@ export function CategoryCard({ category, onPress, onLongPress, compact }: Props)
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.SURFACE,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    padding: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
+    borderRadius: Radii.card,
+    borderWidth: 1,
+    borderColor: Colors.DIVIDER,
+    padding: 24,
+    minHeight: 180,
     shadowColor: Colors.SHADOW,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 4,
+    shadowRadius: 18,
     elevation: 2,
   },
   compact: {
-    padding: 10,
-    marginBottom: 6,
+    padding: 16,
+    minHeight: 0,
   },
-  icon: { fontSize: 28, marginRight: 12 },
-  text: { flex: 1 },
-  name: { fontSize: 15, fontWeight: '600', color: Colors.TEXT },
-  arabic: { fontSize: 13, color: Colors.TEXT_MUTED, fontStyle: 'italic', marginTop: 1 },
-  desc: { fontSize: 12, color: Colors.TEXT_MUTED, marginTop: 2 },
+  icon: { fontSize: 40, marginBottom: 12 },
+  name: {
+    fontFamily: Fonts.HEADING_MEDIUM,
+    fontSize: 16,
+    color: Colors.TEXT,
+  },
+  arabic: {
+    fontFamily: Fonts.ARABIC,
+    fontSize: 13,
+    color: Colors.TEXT_MUTED,
+    textAlign: 'right',
+    marginTop: 4,
+  },
 });

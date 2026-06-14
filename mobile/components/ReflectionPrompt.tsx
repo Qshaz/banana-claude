@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '../constants/colors';
+import { Fonts, Radii } from '../constants/typography';
 
 interface Props {
   question: string;
@@ -22,14 +23,28 @@ export function ReflectionPrompt({ question, index, total }: Props) {
 
 const styles = StyleSheet.create({
   container: { marginBottom: 20 },
-  counter: { fontSize: 12, color: Colors.TEXT_MUTED, marginBottom: 8 },
+  counter: {
+    fontFamily: Fonts.BODY,
+    fontSize: 12,
+    color: Colors.TEXT_MUTED,
+    marginBottom: 8,
+  },
   card: {
-    backgroundColor: Colors.PRIMARY_ULTRA_LIGHT,
-    borderRadius: 14,
+    backgroundColor: Colors.SURFACE_ELEVATED,
+    borderRadius: 24,
     padding: 20,
     borderLeftWidth: 3,
-    borderLeftColor: Colors.PRIMARY,
+    borderLeftColor: Colors.ACCENT,
   },
-  ornament: { fontSize: 16, color: Colors.ACCENT, marginBottom: 10 },
-  question: { fontSize: 17, lineHeight: 26, color: Colors.TEXT, fontStyle: 'italic' },
+  ornament: {
+    fontSize: 16,
+    color: Colors.ACCENT,
+    marginBottom: 10,
+  },
+  question: {
+    fontFamily: Fonts.HEADING_MEDIUM,
+    fontSize: 18,
+    lineHeight: 28,
+    color: Colors.TEXT,
+  },
 });

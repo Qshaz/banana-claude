@@ -1,8 +1,17 @@
 import { useEffect } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  useFonts,
+  PlayfairDisplay_500Medium,
+  PlayfairDisplay_600SemiBold,
+} from '@expo-google-fonts/playfair-display';
+import { NotoNaskhArabic_400Regular } from '@expo-google-fonts/noto-naskh-arabic';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
+
+SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
@@ -30,6 +39,18 @@ function AuthGate() {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    PlayfairDisplay_500Medium,
+    PlayfairDisplay_600SemiBold,
+    NotoNaskhArabic_400Regular,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) SplashScreen.hideAsync();
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) return null;
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthGate />
@@ -37,7 +58,11 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(onboarding)" />
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="session" options={{ presentation: 'modal', headerShown: true, title: 'Tadabur Session' }} />
+        <Stack.Screen
+          name="session"
+          options={{ presentation: 'modal', headerShown: true, title: 'Tadabur Session' }}
+        />
+        <Stack.Screen name="help" options={{ headerShown: false }} />
       </Stack>
     </QueryClientProvider>
   );

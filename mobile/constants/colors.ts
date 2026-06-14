@@ -1,20 +1,39 @@
 export const Colors = {
-  PRIMARY: '#1C5D52',
-  PRIMARY_LIGHT: '#2A7A6E',
-  ACCENT: '#C9982D',
-  BACKGROUND: '#FAF8F4',
-  SURFACE: '#FFFFFF',
-  TEXT: '#1A1A1A',
-  TEXT_MUTED: '#6B7280',
-  BORDER: '#E5E0D8',
-  SUCCESS: '#4A8C70',
-  ERROR: '#C0392B',
+  // ── Backgrounds ──────────────────────────────────────────────
+  BACKGROUND: '#F8F4EE',          // Cream Paper
+  BACKGROUND_SECONDARY: '#F1EBE1', // Soft Parchment
+  SURFACE: '#FCFAF7',             // Warm Ivory
+  SURFACE_ELEVATED: '#F6F1E8',    // Linen
 
-  // Additional utility colors
-  ACCENT_LIGHT: '#F5EDD5',
-  PRIMARY_ULTRA_LIGHT: '#EAF2F0',
-  OVERLAY: 'rgba(0, 0, 0, 0.5)',
-  SHADOW: 'rgba(28, 93, 82, 0.12)',
+  // ── Text ─────────────────────────────────────────────────────
+  TEXT: '#2C2722',                // Primary Text
+  TEXT_SECONDARY: '#72685B',      // Secondary Text
+  TEXT_MUTED: '#9A9084',          // Muted Text
+  TEXT_ARABIC: '#3B342D',         // Arabic verse text
+
+  // ── Dividers / Borders ───────────────────────────────────────
+  BORDER: '#E5DDD2',
+  DIVIDER: '#E7DED2',
+
+  // ── Brand ────────────────────────────────────────────────────
+  PRIMARY: '#6C7354',             // Olive Sage
+  PRIMARY_LIGHT: '#8A9470',       // Dusty Moss
+  PRIMARY_ULTRA_LIGHT: '#EEF0E8', // Derived light tint
+  ACCENT: '#B59A63',              // Antique Brass
+  ACCENT_LIGHT: '#F5EFDF',        // Derived brass tint
+
+  // ── Status ───────────────────────────────────────────────────
+  SUCCESS: '#6F8A5A',
+  WARNING: '#C19A5B',
+  ERROR: '#B36A5E',
+
+  // ── Utility ──────────────────────────────────────────────────
+  OVERLAY: 'rgba(44, 39, 34, 0.5)',
+  SHADOW: 'rgba(44, 39, 34, 0.05)',
+
+  // ── Journal badge backgrounds ─────────────────────────────────
+  BADGE_PRIVATE: '#F3EFE8',
+  BADGE_COMMUNITY: '#E8F0E2',
 } as const;
 
 export type ColorKey = keyof typeof Colors;

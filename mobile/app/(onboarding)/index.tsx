@@ -6,6 +6,28 @@ import {
 import { useRouter } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/colors';
+import { Fonts, Radii } from '../../constants/typography';
+
+function OnboardingProgress({ step }: { step: 1 | 2 | 3 | 4 }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
+      {[1, 2, 3, 4].map((s, i) => (
+        <React.Fragment key={s}>
+          <View style={{
+            width: 10, height: 10, borderRadius: 5,
+            backgroundColor: s <= step ? Colors.PRIMARY : Colors.BORDER,
+          }} />
+          {i < 3 && (
+            <View style={{
+              width: 28, height: 1.5,
+              backgroundColor: s < step ? Colors.PRIMARY : Colors.BORDER,
+            }} />
+          )}
+        </React.Fragment>
+      ))}
+    </View>
+  );
+}
 
 export default function OnboardingWelcome() {
   const [name, setName] = useState('');
@@ -21,6 +43,7 @@ export default function OnboardingWelcome() {
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.container}>
+        <OnboardingProgress step={1} />
         <Text style={styles.bismillah}>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</Text>
         <Text style={styles.title}>Welcome to Hikmah</Text>
         <Text style={styles.desc}>
@@ -47,21 +70,27 @@ export default function OnboardingWelcome() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
   container: { flex: 1, justifyContent: 'center', padding: 28 },
-  bismillah: { fontSize: 22, textAlign: 'center', color: Colors.PRIMARY, marginBottom: 24 },
-  title: { fontSize: 28, fontWeight: '700', color: Colors.TEXT, textAlign: 'center', marginBottom: 16 },
-  desc: { fontSize: 15, lineHeight: 24, color: Colors.TEXT_MUTED, textAlign: 'center', marginBottom: 36 },
-  label: { fontSize: 16, fontWeight: '600', color: Colors.TEXT, marginBottom: 10 },
+  bismillah: { fontFamily: Fonts.ARABIC, fontSize: 22, textAlign: 'center', color: Colors.PRIMARY, marginBottom: 24 },
+  title: { fontFamily: Fonts.HEADING_SEMIBOLD, fontSize: 28, color: Colors.TEXT, textAlign: 'center', marginBottom: 16 },
+  desc: { fontFamily: Fonts.BODY, fontSize: 15, lineHeight: 24, color: Colors.TEXT_MUTED, textAlign: 'center', marginBottom: 36 },
+  label: { fontFamily: Fonts.BODY_MEDIUM, fontSize: 16, color: Colors.TEXT, marginBottom: 10 },
   input: {
     backgroundColor: Colors.SURFACE,
     borderWidth: 1,
     borderColor: Colors.BORDER,
     borderRadius: 12,
     padding: 14,
+    fontFamily: Fonts.BODY,
     fontSize: 18,
     color: Colors.TEXT,
     marginBottom: 20,
   },
-  btn: { backgroundColor: Colors.PRIMARY, borderRadius: 12, padding: 16, alignItems: 'center' },
+  btn: {
+    backgroundColor: Colors.PRIMARY,
+    borderRadius: Radii.button,
+    padding: 16,
+    alignItems: 'center',
+  },
   btnDisabled: { opacity: 0.4 },
-  btnText: { color: Colors.SURFACE, fontSize: 16, fontWeight: '600' },
+  btnText: { fontFamily: Fonts.BODY_MEDIUM, color: '#FFFFFF', fontSize: 16 },
 });

@@ -1,7 +1,7 @@
 {
   "name": "banana-claude",
-  "version": "1.4.1",
-  "description": "AI image generation Creative Director powered by Google Gemini Nano Banana models. Claude interprets intent, selects domain expertise, constructs optimized prompts, and orchestrates Gemini for best results.",
+  "version": "1.5.0",
+  "description": "AI image generation Creative Director powered by Google Gemini Nano Banana models. Claude interprets intent, selects domain expertise, constructs optimized prompts, and orchestrates Gemini for best results. Also includes the Tadabur Journal skill for guided Quranic contemplation and spiritual journaling.",
   "author": {
     "name": "AgriciDaniel",
     "url": "https://github.com/AgriciDaniel"
@@ -15,6 +15,11 @@
     "gemini",
     "creative-director",
     "prompt-engineering",
-    "mcp"
+    "mcp",
+    "quran",
+    "tadabur",
+    "islamic",
+    "journaling",
+    "spiritual"
   ]
 }

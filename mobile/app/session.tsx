@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, SafeAreaView, ActivityIndicator, Alert,
+  StyleSheet, SafeAreaView, ActivityIndicator, Alert, Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../hooks/useAuth';
@@ -15,6 +15,8 @@ import { AudioPlayer } from '../components/AudioPlayer';
 import { VoiceRecorder } from '../components/VoiceRecorder';
 import { ReflectionPrompt } from '../components/ReflectionPrompt';
 import { searchVerses, getVerse, getTafsir } from '../lib/quran-api';
+import { getClipsForCategory } from '../constants/speakers';
+import { ClipCard } from '../components/ClipCard';
 import type { Verse } from '../types';
 
 export default function SessionScreen() {
@@ -114,6 +116,28 @@ export default function SessionScreen() {
           <VerseCard verse={selectedVerse} showFull />
           <AudioPlayer surah={selectedVerse.surah_number} ayah={selectedVerse.ayah_number} />
           <TafsirSection tafsir={tafsir} loading={tafsirLoading} />
+          {(() => {
+            const clips = getClipsForCategory(category ?? '');
+            if (clips.length === 0) return null;
+            return (
+              <View style={styles.clipsSection}>
+                <Text style={styles.clipsSectionTitle}>Related clips</Text>
+                {clips.slice(0, 3).map((clip) => (
+                  <ClipCard
+                    key={clip.id}
+                    clip={clip}
+                    onPress={() => {
+                      if (clip.youtubeId) {
+                        Linking.openURL(`https://youtube.com/watch?v=${clip.youtubeId}`);
+                      } else {
+                        Alert.alert('Coming soon', 'Check back after the weekly update, in sha Allah.');
+                      }
+                    }}
+                  />
+                ))}
+              </View>
+            );
+          })()}
           <TouchableOpacity style={styles.btn} onPress={() => setStep('reflection')}>
             <Text style={styles.btnText}>Begin Reflection →</Text>
           </TouchableOpacity>
@@ -258,6 +282,8 @@ const styles = StyleSheet.create({
   visBtnActive: { borderColor: Colors.PRIMARY, backgroundColor: Colors.PRIMARY_ULTRA_LIGHT },
   visBtnText: { fontSize: 14, color: Colors.TEXT_MUTED, fontWeight: '500' },
   visBtnTextActive: { color: Colors.PRIMARY, fontWeight: '700' },
+  clipsSection: { marginTop: 24, marginBottom: 8 },
+  clipsSectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.TEXT, marginBottom: 12 },
   skipBtn: { alignItems: 'center', marginTop: 12 },
   skipBtnText: { fontSize: 13, color: Colors.TEXT_MUTED, textDecorationLine: 'underline' },
   completeCentre: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40, gap: 16 },

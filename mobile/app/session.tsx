@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, SafeAreaView, ActivityIndicator, Alert, Linking,
+  View, Text, TextInput, TouchableOpacity, ScrollView, FlatList,
+  StyleSheet, SafeAreaView, ActivityIndicator, Alert, Linking, Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../hooks/useAuth';
@@ -14,10 +14,31 @@ import { TafsirSection } from '../components/TafsirSection';
 import { AudioPlayer } from '../components/AudioPlayer';
 import { VoiceRecorder } from '../components/VoiceRecorder';
 import { ReflectionPrompt } from '../components/ReflectionPrompt';
-import { searchVerses, getVerse, getTafsir } from '../lib/quran-api';
-import { getClipsForCategory } from '../constants/speakers';
 import { ClipCard } from '../components/ClipCard';
+import { searchVerses, getTafsir } from '../lib/quran-api';
+import { fetchCategoryHadith } from '../lib/hadith-api';
+import { getClipsForCategory } from '../constants/speakers';
+import { supabase } from '../lib/supabase';
 import type { Verse } from '../types';
+import type { Hadith } from '../lib/hadith-api';
+import type { Clip } from '../constants/speakers';
+
+type TabId = 'verses' | 'tafsir' | 'hadith' | 'community' | 'motivation';
+
+const TABS: { id: TabId; label: string }[] = [
+  { id: 'verses', label: 'Verses' },
+  { id: 'tafsir', label: 'Tafsir' },
+  { id: 'hadith', label: 'Hadith' },
+  { id: 'community', label: 'Community' },
+  { id: 'motivation', label: 'Motivation' },
+];
+
+interface CommunityEntry {
+  id: string;
+  journal_text: string;
+  created_at: string;
+  profiles: { display_name: string | null } | null;
+}
 
 export default function SessionScreen() {
   const router = useRouter();
@@ -30,14 +51,26 @@ export default function SessionScreen() {
     nextQuestion, setJournalText, appendJournalText, setVisibility,
   } = useSessionStore();
 
+  const [activeTab, setActiveTab] = useState<TabId>('verses');
   const [loading, setLoading] = useState(false);
   const [tafsirLoading, setTafsirLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Hadith tab state
+  const [hadithList, setHadithList] = useState<Hadith[]>([]);
+  const [hadithLoading, setHadithLoading] = useState(false);
+  const [hadithError, setHadithError] = useState(false);
+  const hadithFetched = useRef(false);
+
+  // Community tab state
+  const [communityEntries, setCommunityEntries] = useState<CommunityEntry[]>([]);
+  const [communityLoading, setCommunityLoading] = useState(false);
+  const communityFetched = useRef(false);
+
   const cat = category ? getCategoryBySlug(category) : null;
   const prompts = cat?.reflectionPrompts ?? [
     'What does this verse mean to you today?',
-    'How does it speak to what you\'re going through?',
+    "How does it speak to what you're going through?",
     'What is Allah telling you through this verse?',
   ];
 
@@ -83,10 +116,73 @@ export default function SessionScreen() {
     setStep('complete');
   };
 
-  // ── STEP: VERSES ──
-  if (step === 'verses') {
-    return (
-      <SafeAreaView style={styles.safe}>
+  // Lazy fetch for Hadith tab
+  const loadHadith = async () => {
+    if (hadithFetched.current || !category) return;
+    hadithFetched.current = true;
+    setHadithLoading(true);
+    setHadithError(false);
+    try {
+      const results = await fetchCategoryHadith(category);
+      setHadithList(results);
+    } catch {
+      setHadithError(true);
+    } finally {
+      setHadithLoading(false);
+    }
+  };
+
+  // Lazy fetch for Community tab
+  const loadCommunity = async () => {
+    if (communityFetched.current || !category) return;
+    communityFetched.current = true;
+    setCommunityLoading(true);
+    try {
+      const { data } = await supabase
+        .from('journal_entries')
+        .select('id, journal_text, created_at, profiles(display_name)')
+        .eq('category', category)
+        .eq('visibility', 'community')
+        .order('created_at', { ascending: false })
+        .limit(20);
+      setCommunityEntries((data as CommunityEntry[]) ?? []);
+    } finally {
+      setCommunityLoading(false);
+    }
+  };
+
+  const handleTabPress = (tab: TabId) => {
+    setActiveTab(tab);
+    if (tab === 'hadith') loadHadith();
+    if (tab === 'community') loadCommunity();
+  };
+
+  // ── TOP TAB BAR ──
+  const TabBar = () => (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.tabBar}
+    >
+      {TABS.map((t) => (
+        <TouchableOpacity
+          key={t.id}
+          style={[styles.tabPill, activeTab === t.id && styles.tabPillActive]}
+          onPress={() => handleTabPress(t.id)}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.tabPillText, activeTab === t.id && styles.tabPillTextActive]}>
+            {t.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+
+  // ── VERSES TAB CONTENT ──
+  const renderVersesTab = () => {
+    if (step === 'verses') {
+      return (
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.categoryBadge}>
             <Text style={styles.categoryIcon}>{cat?.icon ?? '📖'}</Text>
@@ -104,53 +200,25 @@ export default function SessionScreen() {
             <Text style={styles.empty}>No verses found. Try starting a new session.</Text>
           )}
         </ScrollView>
-      </SafeAreaView>
-    );
-  }
+      );
+    }
 
-  // ── STEP: VERSE DETAIL ──
-  if (step === 'verse-detail' && selectedVerse) {
-    return (
-      <SafeAreaView style={styles.safe}>
+    if (step === 'verse-detail' && selectedVerse) {
+      return (
         <ScrollView contentContainerStyle={styles.container}>
           <VerseCard verse={selectedVerse} showFull />
           <AudioPlayer surah={selectedVerse.surah_number} ayah={selectedVerse.ayah_number} />
           <TafsirSection tafsir={tafsir} loading={tafsirLoading} />
-          {(() => {
-            const clips = getClipsForCategory(category ?? '');
-            if (clips.length === 0) return null;
-            return (
-              <View style={styles.clipsSection}>
-                <Text style={styles.clipsSectionTitle}>Related clips</Text>
-                {clips.slice(0, 3).map((clip) => (
-                  <ClipCard
-                    key={clip.id}
-                    clip={clip}
-                    onPress={() => {
-                      if (clip.youtubeId) {
-                        Linking.openURL(`https://youtube.com/watch?v=${clip.youtubeId}`);
-                      } else {
-                        Alert.alert('Coming soon', 'Check back after the weekly update, in sha Allah.');
-                      }
-                    }}
-                  />
-                ))}
-              </View>
-            );
-          })()}
           <TouchableOpacity style={styles.btn} onPress={() => setStep('reflection')}>
             <Text style={styles.btnText}>Begin Reflection →</Text>
           </TouchableOpacity>
         </ScrollView>
-      </SafeAreaView>
-    );
-  }
+      );
+    }
 
-  // ── STEP: REFLECTION ──
-  if (step === 'reflection') {
-    const done = currentQuestionIndex >= prompts.length;
-    return (
-      <SafeAreaView style={styles.safe}>
+    if (step === 'reflection') {
+      const done = currentQuestionIndex >= prompts.length;
+      return (
         <ScrollView contentContainerStyle={styles.container}>
           <Text style={styles.stepTitle}>Reflect</Text>
           {done ? (
@@ -169,21 +237,23 @@ export default function SessionScreen() {
               />
               <TouchableOpacity style={styles.btnOutline} onPress={nextQuestion}>
                 <Text style={styles.btnOutlineText}>
-                  {currentQuestionIndex < prompts.length - 1 ? 'Next question →' : 'I\'m ready to write →'}
+                  {currentQuestionIndex < prompts.length - 1
+                    ? 'Next question →'
+                    : "I'm ready to write →"}
                 </Text>
               </TouchableOpacity>
             </>
           )}
         </ScrollView>
-      </SafeAreaView>
-    );
-  }
+      );
+    }
 
-  // ── STEP: JOURNAL ──
-  if (step === 'journal') {
-    return (
-      <SafeAreaView style={styles.safe}>
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+    if (step === 'journal') {
+      return (
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
           <Text style={styles.stepTitle}>Write your reflection</Text>
           <Text style={styles.stepSub}>This is your private space. Write freely.</Text>
           <TextInput
@@ -196,22 +266,26 @@ export default function SessionScreen() {
             textAlignVertical="top"
           />
           <VoiceRecorder onTranscribed={appendJournalText} />
-
           <View style={styles.visibilityRow}>
             <TouchableOpacity
               style={[styles.visBtn, visibility === 'private' && styles.visBtnActive]}
               onPress={() => setVisibility('private')}
             >
-              <Text style={[styles.visBtnText, visibility === 'private' && styles.visBtnTextActive]}>🔒 Private</Text>
+              <Text style={[styles.visBtnText, visibility === 'private' && styles.visBtnTextActive]}>
+                🔒 Private
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.visBtn, visibility === 'community' && styles.visBtnActive]}
               onPress={() => setVisibility('community')}
             >
-              <Text style={[styles.visBtnText, visibility === 'community' && styles.visBtnTextActive]}>🌍 Community</Text>
+              <Text
+                style={[styles.visBtnText, visibility === 'community' && styles.visBtnTextActive]}
+              >
+                🌍 Community
+              </Text>
             </TouchableOpacity>
           </View>
-
           <TouchableOpacity
             style={[styles.btn, saving && styles.btnDisabled]}
             onPress={save}
@@ -223,36 +297,242 @@ export default function SessionScreen() {
             <Text style={styles.skipBtnText}>Skip writing, just save the verse</Text>
           </TouchableOpacity>
         </ScrollView>
-      </SafeAreaView>
-    );
-  }
+      );
+    }
 
-  // ── STEP: COMPLETE ──
-  if (step === 'complete') {
-    return (
-      <SafeAreaView style={styles.safe}>
+    if (step === 'complete') {
+      return (
         <View style={styles.completeCentre}>
           <Text style={styles.completeIcon}>🤲</Text>
           <Text style={styles.completeTitle}>MashaAllah</Text>
           <Text style={styles.completeSub}>
-            Your reflection on {selectedVerse?.surah_name} {selectedVerse?.verse_key} has been saved.
+            Your reflection on {selectedVerse?.surah_name} {selectedVerse?.verse_key} has been
+            saved.
           </Text>
-          <TouchableOpacity style={styles.btn} onPress={() => router.replace('/(tabs)/journal')}>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => router.replace('/(tabs)/journal')}
+          >
             <Text style={styles.btnText}>View Journal</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnOutline} onPress={() => { router.replace('/(tabs)/tadabur'); }}>
+          <TouchableOpacity
+            style={styles.btnOutline}
+            onPress={() => router.replace('/(tabs)/tadabur')}
+          >
             <Text style={styles.btnOutlineText}>New session</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
-    );
-  }
+      );
+    }
 
-  return null;
+    return null;
+  };
+
+  // ── TAFSIR TAB CONTENT ──
+  const renderTafsirTab = () => {
+    if (!selectedVerse) {
+      return (
+        <View style={styles.centreMessage}>
+          <Text style={styles.centreMessageText}>
+            Select a verse in the Verses tab to view its tafsir
+          </Text>
+        </View>
+      );
+    }
+    return (
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.verseRefHeader}>
+          <Text style={styles.verseRefText}>
+            {selectedVerse.surah_name} — {selectedVerse.verse_key}
+          </Text>
+        </View>
+        <TafsirSection tafsir={tafsir} loading={tafsirLoading} />
+      </ScrollView>
+    );
+  };
+
+  // ── HADITH TAB CONTENT ──
+  const renderHadithTab = () => {
+    if (hadithLoading) {
+      return (
+        <View style={styles.centreMessage}>
+          <ActivityIndicator size="large" color={Colors.PRIMARY} />
+        </View>
+      );
+    }
+    if (hadithError) {
+      return (
+        <View style={styles.centreMessage}>
+          <Text style={styles.centreMessageText}>
+            Could not load hadith. Add your Sunnah API key to .env
+          </Text>
+        </View>
+      );
+    }
+    if (hadithList.length === 0 && hadithFetched.current) {
+      return (
+        <View style={styles.centreMessage}>
+          <Text style={styles.centreMessageText}>No hadith found for this category.</Text>
+        </View>
+      );
+    }
+    return (
+      <FlatList
+        data={hadithList}
+        keyExtractor={(h) => `${h.collection}-${h.hadithNumber}`}
+        contentContainerStyle={styles.container}
+        renderItem={({ item }) => (
+          <View style={styles.hadithCard}>
+            <Text style={styles.hadithRef}>
+              {item.collection} · #{item.hadithNumber}
+            </Text>
+            <Text style={styles.hadithBody}>{item.body}</Text>
+            {item.grades.length > 0 && (
+              <View style={styles.gradeBadge}>
+                <Text style={styles.gradeText}>{item.grades[0].grade}</Text>
+              </View>
+            )}
+          </View>
+        )}
+      />
+    );
+  };
+
+  // ── COMMUNITY TAB CONTENT ──
+  const renderCommunityTab = () => {
+    if (communityLoading) {
+      return (
+        <View style={styles.centreMessage}>
+          <ActivityIndicator size="large" color={Colors.PRIMARY} />
+        </View>
+      );
+    }
+    if (communityEntries.length === 0) {
+      return (
+        <View style={styles.centreMessage}>
+          <Text style={styles.centreMessageText}>
+            No community reflections yet for this category. Be the first to share.
+          </Text>
+        </View>
+      );
+    }
+    return (
+      <FlatList
+        data={communityEntries}
+        keyExtractor={(e) => e.id}
+        contentContainerStyle={styles.container}
+        renderItem={({ item }) => {
+          const name = item.profiles?.display_name ?? 'Anonymous';
+          const initial = name.charAt(0).toUpperCase();
+          const date = new Date(item.created_at).toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          });
+          return (
+            <View style={styles.communityCard}>
+              <View style={styles.communityHeader}>
+                <View style={styles.avatarCircle}>
+                  <Text style={styles.avatarInitial}>{initial}</Text>
+                </View>
+                <View style={styles.communityMeta}>
+                  <Text style={styles.communityName}>{name}</Text>
+                  <Text style={styles.communityDate}>{date}</Text>
+                </View>
+              </View>
+              <Text style={styles.communityText} numberOfLines={3}>
+                {item.journal_text}
+              </Text>
+            </View>
+          );
+        }}
+      />
+    );
+  };
+
+  // ── MOTIVATION TAB CONTENT ──
+  const renderMotivationTab = () => {
+    const clips: Clip[] = getClipsForCategory(category ?? '');
+    if (clips.length === 0) {
+      return (
+        <View style={styles.centreMessage}>
+          <Text style={styles.centreMessageText}>Clips coming soon, in sha Allah</Text>
+        </View>
+      );
+    }
+    return (
+      <FlatList
+        data={clips}
+        keyExtractor={(c) => c.id}
+        contentContainerStyle={styles.container}
+        renderItem={({ item }) => (
+          <ClipCard
+            clip={item}
+            onPress={() => {
+              if (item.youtubeId) {
+                Linking.openURL(`https://youtube.com/watch?v=${item.youtubeId}`);
+              } else {
+                Alert.alert('Coming soon', 'Check back after the weekly update, in sha Allah.');
+              }
+            }}
+          />
+        )}
+      />
+    );
+  };
+
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case 'verses':
+        return renderVersesTab();
+      case 'tafsir':
+        return renderTafsirTab();
+      case 'hadith':
+        return renderHadithTab();
+      case 'community':
+        return renderCommunityTab();
+      case 'motivation':
+        return renderMotivationTab();
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.safe}>
+      <TabBar />
+      <View style={styles.tabContent}>{renderActiveTab()}</View>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
+  tabBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 8,
+  },
+  tabPill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: Colors.BORDER,
+    backgroundColor: Colors.SURFACE,
+  },
+  tabPillActive: {
+    borderColor: Colors.PRIMARY,
+    backgroundColor: Colors.PRIMARY,
+  },
+  tabPillText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.TEXT_MUTED,
+  },
+  tabPillTextActive: {
+    color: Colors.SURFACE,
+  },
+  tabContent: { flex: 1 },
   container: { padding: 20, paddingBottom: 40 },
   categoryBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
   categoryIcon: { fontSize: 28 },
@@ -260,10 +540,23 @@ const styles = StyleSheet.create({
   stepTitle: { fontSize: 24, fontWeight: '700', color: Colors.TEXT, marginBottom: 6 },
   stepSub: { fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 20 },
   empty: { fontSize: 15, color: Colors.TEXT_MUTED, textAlign: 'center', marginTop: 40 },
-  btn: { backgroundColor: Colors.PRIMARY, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 16 },
+  btn: {
+    backgroundColor: Colors.PRIMARY,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 16,
+  },
   btnDisabled: { opacity: 0.5 },
   btnText: { color: Colors.SURFACE, fontSize: 16, fontWeight: '600' },
-  btnOutline: { borderWidth: 1.5, borderColor: Colors.PRIMARY, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 12 },
+  btnOutline: {
+    borderWidth: 1.5,
+    borderColor: Colors.PRIMARY,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 12,
+  },
   btnOutlineText: { color: Colors.PRIMARY, fontSize: 16, fontWeight: '600' },
   journalInput: {
     backgroundColor: Colors.SURFACE,
@@ -278,16 +571,93 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   visibilityRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
-  visBtn: { flex: 1, padding: 12, borderRadius: 10, borderWidth: 1.5, borderColor: Colors.BORDER, alignItems: 'center' },
+  visBtn: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: Colors.BORDER,
+    alignItems: 'center',
+  },
   visBtnActive: { borderColor: Colors.PRIMARY, backgroundColor: Colors.PRIMARY_ULTRA_LIGHT },
   visBtnText: { fontSize: 14, color: Colors.TEXT_MUTED, fontWeight: '500' },
   visBtnTextActive: { color: Colors.PRIMARY, fontWeight: '700' },
-  clipsSection: { marginTop: 24, marginBottom: 8 },
-  clipsSectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.TEXT, marginBottom: 12 },
   skipBtn: { alignItems: 'center', marginTop: 12 },
   skipBtnText: { fontSize: 13, color: Colors.TEXT_MUTED, textDecorationLine: 'underline' },
-  completeCentre: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40, gap: 16 },
+  completeCentre: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+    gap: 16,
+  },
   completeIcon: { fontSize: 64 },
   completeTitle: { fontSize: 30, fontWeight: '700', color: Colors.PRIMARY },
   completeSub: { fontSize: 15, color: Colors.TEXT_MUTED, textAlign: 'center', lineHeight: 24 },
+  centreMessage: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  centreMessageText: {
+    fontSize: 15,
+    color: Colors.TEXT_MUTED,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  verseRefHeader: { marginBottom: 16 },
+  verseRefText: { fontSize: 16, fontWeight: '700', color: Colors.TEXT },
+  hadithCard: {
+    backgroundColor: Colors.SURFACE,
+    borderWidth: 1,
+    borderColor: Colors.BORDER,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 14,
+  },
+  hadithRef: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.ACCENT,
+    textTransform: 'capitalize',
+    marginBottom: 8,
+  },
+  hadithBody: {
+    fontSize: 15,
+    color: Colors.TEXT,
+    lineHeight: 24,
+  },
+  gradeBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.PRIMARY_ULTRA_LIGHT,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginTop: 10,
+  },
+  gradeText: { fontSize: 11, fontWeight: '600', color: Colors.PRIMARY },
+  communityCard: {
+    backgroundColor: Colors.SURFACE,
+    borderWidth: 1,
+    borderColor: Colors.BORDER,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 14,
+  },
+  communityHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  avatarCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.PRIMARY,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  avatarInitial: { fontSize: 15, fontWeight: '700', color: Colors.SURFACE },
+  communityMeta: { flex: 1 },
+  communityName: { fontSize: 14, fontWeight: '600', color: Colors.TEXT },
+  communityDate: { fontSize: 12, color: Colors.TEXT_MUTED, marginTop: 1 },
+  communityText: { fontSize: 14, color: Colors.TEXT, lineHeight: 22 },
 });

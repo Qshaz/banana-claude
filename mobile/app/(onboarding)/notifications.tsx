@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Switch } from '
 import { useRouter } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/colors';
+import { Fonts, Radii } from '../../constants/typography';
 
 const TIMES = ['06:00', '08:00', '12:00', '16:00', '21:00', '22:00'];
 const TIME_LABELS: Record<string, string> = {
@@ -13,6 +14,27 @@ const TIME_LABELS: Record<string, string> = {
   '21:00': 'Evening 🌙',
   '22:00': 'Night 🌃',
 };
+
+function OnboardingProgress({ step }: { step: 1 | 2 | 3 | 4 }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
+      {[1, 2, 3, 4].map((s, i) => (
+        <React.Fragment key={s}>
+          <View style={{
+            width: 10, height: 10, borderRadius: 5,
+            backgroundColor: s <= step ? Colors.PRIMARY : Colors.BORDER,
+          }} />
+          {i < 3 && (
+            <View style={{
+              width: 28, height: 1.5,
+              backgroundColor: s < step ? Colors.PRIMARY : Colors.BORDER,
+            }} />
+          )}
+        </React.Fragment>
+      ))}
+    </View>
+  );
+}
 
 export default function NotificationsScreen() {
   const [enabled, setEnabled] = useState(true);
@@ -34,7 +56,7 @@ export default function NotificationsScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        <Text style={styles.step}>4 of 4</Text>
+        <OnboardingProgress step={4} />
         <Text style={styles.title}>Daily Tadabur Reminder</Text>
         <Text style={styles.sub}>A gentle nudge to reflect with the Quran each day</Text>
 
@@ -73,9 +95,8 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
   container: { flex: 1, padding: 28 },
-  step: { fontSize: 12, color: Colors.TEXT_MUTED, marginBottom: 8 },
-  title: { fontSize: 26, fontWeight: '700', color: Colors.TEXT, marginBottom: 6 },
-  sub: { fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 28 },
+  title: { fontFamily: Fonts.HEADING_SEMIBOLD, fontSize: 26, color: Colors.TEXT, marginBottom: 6 },
+  sub: { fontFamily: Fonts.BODY, fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 28 },
   toggle: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -87,8 +108,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.BORDER,
   },
-  toggleLabel: { fontSize: 15, color: Colors.TEXT, fontWeight: '500' },
-  sectionLabel: { fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 10 },
+  toggleLabel: { fontFamily: Fonts.BODY_MEDIUM, fontSize: 15, color: Colors.TEXT },
+  sectionLabel: { fontFamily: Fonts.BODY, fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 10 },
   timeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -101,9 +122,15 @@ const styles = StyleSheet.create({
     borderColor: Colors.BORDER,
   },
   timeBtnSelected: { borderColor: Colors.PRIMARY, backgroundColor: Colors.PRIMARY_ULTRA_LIGHT },
-  timeLabel: { fontSize: 14, color: Colors.TEXT },
-  timeLabelSelected: { color: Colors.PRIMARY, fontWeight: '600' },
+  timeLabel: { fontFamily: Fonts.BODY, fontSize: 14, color: Colors.TEXT },
+  timeLabelSelected: { fontFamily: Fonts.BODY_MEDIUM, color: Colors.PRIMARY },
   check: { fontSize: 14, color: Colors.PRIMARY },
-  btn: { backgroundColor: Colors.PRIMARY, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 'auto' },
-  btnText: { color: Colors.SURFACE, fontSize: 16, fontWeight: '600' },
+  btn: {
+    backgroundColor: Colors.PRIMARY,
+    borderRadius: Radii.button,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 'auto',
+  },
+  btnText: { fontFamily: Fonts.BODY_MEDIUM, color: '#FFFFFF', fontSize: 16 },
 });

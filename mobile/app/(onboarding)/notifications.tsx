@@ -1,0 +1,109 @@
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Switch } from 'react-native';
+import { useRouter } from 'expo-router';
+import { supabase } from '../../lib/supabase';
+import { Colors } from '../../constants/colors';
+
+const TIMES = ['06:00', '08:00', '12:00', '16:00', '21:00', '22:00'];
+const TIME_LABELS: Record<string, string> = {
+  '06:00': 'Fajr time 🌅',
+  '08:00': 'Morning ☀️',
+  '12:00': 'Dhuhr 🌞',
+  '16:00': 'Afternoon 🌤',
+  '21:00': 'Evening 🌙',
+  '22:00': 'Night 🌃',
+};
+
+export default function NotificationsScreen() {
+  const [enabled, setEnabled] = useState(true);
+  const [time, setTime] = useState('08:00');
+  const router = useRouter();
+
+  const finish = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from('profiles').update({
+        notification_enabled: enabled,
+        notification_time: time,
+        onboarding_complete: true,
+      }).eq('id', user.id);
+    }
+    router.replace('/(tabs)/');
+  };
+
+  return (
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.container}>
+        <Text style={styles.step}>4 of 4</Text>
+        <Text style={styles.title}>Daily Tadabur Reminder</Text>
+        <Text style={styles.sub}>A gentle nudge to reflect with the Quran each day</Text>
+
+        <View style={styles.toggle}>
+          <Text style={styles.toggleLabel}>Enable daily reminder</Text>
+          <Switch value={enabled} onValueChange={setEnabled} trackColor={{ true: Colors.PRIMARY }} />
+        </View>
+
+        {enabled && (
+          <>
+            <Text style={styles.sectionLabel}>Preferred time</Text>
+            {TIMES.map((t) => (
+              <TouchableOpacity
+                key={t}
+                style={[styles.timeBtn, time === t && styles.timeBtnSelected]}
+                onPress={() => setTime(t)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.timeLabel, time === t && styles.timeLabelSelected]}>
+                  {TIME_LABELS[t]} — {t}
+                </Text>
+                {time === t && <Text style={styles.check}>✓</Text>}
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
+
+        <TouchableOpacity style={styles.btn} onPress={finish}>
+          <Text style={styles.btnText}>Start your journey →</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
+  container: { flex: 1, padding: 28 },
+  step: { fontSize: 12, color: Colors.TEXT_MUTED, marginBottom: 8 },
+  title: { fontSize: 26, fontWeight: '700', color: Colors.TEXT, marginBottom: 6 },
+  sub: { fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 28 },
+  toggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.SURFACE,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: Colors.BORDER,
+  },
+  toggleLabel: { fontSize: 15, color: Colors.TEXT, fontWeight: '500' },
+  sectionLabel: { fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 10 },
+  timeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.SURFACE,
+    borderRadius: 10,
+    padding: 13,
+    marginBottom: 8,
+    borderWidth: 1.5,
+    borderColor: Colors.BORDER,
+  },
+  timeBtnSelected: { borderColor: Colors.PRIMARY, backgroundColor: Colors.PRIMARY_ULTRA_LIGHT },
+  timeLabel: { fontSize: 14, color: Colors.TEXT },
+  timeLabelSelected: { color: Colors.PRIMARY, fontWeight: '600' },
+  check: { fontSize: 14, color: Colors.PRIMARY },
+  btn: { backgroundColor: Colors.PRIMARY, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 'auto' },
+  btnText: { color: Colors.SURFACE, fontSize: 16, fontWeight: '600' },
+});

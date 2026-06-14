@@ -149,3 +149,38 @@ insert into public.verse_of_day (date, surah_number, ayah_number, theme, note) v
   (current_date + 3, 2, 153, 'Seek help through patience and prayer', 'The tools of the believer'),
   (current_date + 4, 65, 3, 'Whoever relies on Allah, He is sufficient', 'Tawakkul — reliance on Allah')
 on conflict (date) do nothing;
+
+-- ============================================================
+-- SPEAKERS
+-- ============================================================
+CREATE TABLE IF NOT EXISTS speakers (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  short_name TEXT NOT NULL,
+  language TEXT NOT NULL DEFAULT 'en',
+  thumbnail_url TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- ============================================================
+-- CLIPS (YouTube shorts/lectures mapped to categories)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS clips (
+  id TEXT PRIMARY KEY,
+  speaker_id TEXT NOT NULL REFERENCES speakers(id),
+  title TEXT NOT NULL,
+  youtube_id TEXT NOT NULL DEFAULT '',
+  duration_seconds INTEGER NOT NULL DEFAULT 0,
+  categories TEXT[] NOT NULL DEFAULT '{}',
+  tags TEXT[] NOT NULL DEFAULT '{}',
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS clips_categories_idx ON clips USING GIN(categories);
+CREATE INDEX IF NOT EXISTS clips_speaker_idx ON clips(speaker_id);
+
+-- RLS
+ALTER TABLE speakers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clips ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "speakers_public_read" ON speakers FOR SELECT USING (true);
+CREATE POLICY "clips_public_read" ON clips FOR SELECT USING (is_active = true);

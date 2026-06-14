@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, Switch } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { useProfile } from '../../hooks/useProfile';
 import { supabase } from '../../lib/supabase';
@@ -7,6 +8,7 @@ import { Colors } from '../../constants/colors';
 import { getCategoryIcon, getCategoryName } from '../../constants/categories';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { userId } = useAuth();
   const { profile, update } = useProfile(userId);
 
@@ -69,6 +71,12 @@ export default function ProfileScreen() {
           )}
         </View>
 
+        <TouchableOpacity style={styles.helpRow} onPress={() => router.push('/help')}>
+          <Text style={styles.helpIcon}>❓</Text>
+          <Text style={styles.helpLabel}>Help & Support</Text>
+          <Text style={styles.helpArrow}>›</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.signOut} onPress={signOut}>
           <Text style={styles.signOutText}>Sign out</Text>
         </TouchableOpacity>
@@ -100,6 +108,14 @@ const styles = StyleSheet.create({
   },
   settingLabel: { fontSize: 15, color: Colors.TEXT },
   settingValue: { fontSize: 15, color: Colors.TEXT_MUTED },
+  helpRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 12, width: '100%',
+    backgroundColor: Colors.SURFACE, borderRadius: 12, padding: 16,
+    borderWidth: 1, borderColor: Colors.BORDER, marginBottom: 12,
+  },
+  helpIcon: { fontSize: 18 },
+  helpLabel: { flex: 1, fontSize: 15, color: Colors.TEXT, fontWeight: '500' },
+  helpArrow: { fontSize: 20, color: Colors.TEXT_MUTED },
   signOut: { marginTop: 8, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: Colors.ERROR, width: '100%', alignItems: 'center' },
   signOutText: { color: Colors.ERROR, fontSize: 15, fontWeight: '600' },
 });

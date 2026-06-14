@@ -184,3 +184,16 @@ ALTER TABLE speakers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clips ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "speakers_public_read" ON speakers FOR SELECT USING (true);
 CREATE POLICY "clips_public_read" ON clips FOR SELECT USING (is_active = true);
+
+-- ============================================================
+-- FEEDBACK
+-- ============================================================
+CREATE TABLE IF NOT EXISTS public.feedback (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+ALTER TABLE public.feedback ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users insert own feedback" ON public.feedback FOR INSERT WITH CHECK (true);
+CREATE POLICY "Feedback readable by authenticated" ON public.feedback FOR SELECT USING (auth.uid() = user_id);

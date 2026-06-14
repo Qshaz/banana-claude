@@ -4,83 +4,94 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hikmah — Tadabur Journal Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+:root {
+  --bg: #F8F4EE;
+  --bg2: #F1EBE1;
+  --surf: #FCFAF7;
+  --surf2: #F6F1E8;
+  --text: #2C2722;
+  --text2: #72685B;
+  --muted: #9A9084;
+  --border: #E5DDD2;
+  --divider: #E7DED2;
+  --primary: #6C7354;
+  --primary-l: #8A9470;
+  --primary-u: #EEF0E8;
+  --accent: #B59A63;
+  --accent-l: #F5EFDF;
+  --success: #6F8A5A;
+  --error: #B36A5E;
+  --badge-priv: #F3EFE8;
+  --badge-comm: #E8F0E2;
+  --shadow: rgba(44,39,34,0.06);
+}
+
 body {
-  background: #1a1a2e;
+  background: #2C2420;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 20px 60px;
+  padding: 36px 20px 60px;
   min-height: 100vh;
 }
 
-h1 { color: #C9982D; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
-.subtitle { color: #6B7280; font-size: 12px; margin-bottom: 28px; }
-
-/* ── NAV BUTTONS ── */
-.nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; }
-.nav a {
-  padding: 7px 15px;
-  border-radius: 20px;
-  background: #2a2a3e;
-  color: #9CA3AF;
-  font-size: 12px;
+.page-title {
+  font-family: 'Playfair Display', serif;
+  color: var(--accent);
+  font-size: 18px;
   font-weight: 600;
-  text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
 }
-.nav a:hover { background: #1C5D52; color: #fff; }
+.page-sub { color: #9A8070; font-size: 12px; margin-bottom: 24px; }
 
-/* ── PHONE SHELL ── */
+/* ── NAV ── */
+.nav { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; margin-bottom: 26px; }
+.nav a {
+  padding: 7px 14px; border-radius: 999px;
+  background: #3A302A; color: #9A8070;
+  font-size: 12px; font-weight: 600;
+  text-decoration: none; transition: all 0.15s;
+}
+.nav a:hover { background: var(--primary); color: #fff; }
+
+/* ── PHONE ── */
 .phone {
-  position: relative;
-  width: 375px;
-  background: #000;
+  width: 375px; background: #1A1410;
   border-radius: 54px;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.6), inset 0 0 0 2px #333;
-  overflow: hidden;
-  flex-shrink: 0;
+  box-shadow: 0 48px 96px rgba(0,0,0,0.7), inset 0 0 0 2px #3A3028;
+  overflow: hidden; flex-shrink: 0;
 }
 .phone-inner {
-  position: relative;
-  margin: 12px;
-  border-radius: 44px;
-  overflow: hidden;
-  background: #FAF8F4;
-  height: 756px;
+  margin: 12px; border-radius: 44px;
+  overflow: hidden; background: var(--bg);
+  height: 756px; position: relative;
 }
 .notch {
-  position: absolute;
-  top: 0; left: 50%;
+  position: absolute; top: 0; left: 50%;
   transform: translateX(-50%);
   width: 120px; height: 34px;
-  background: #000;
+  background: #1A1410;
   border-radius: 0 0 20px 20px;
   z-index: 100;
 }
 
-/* ── SCREEN SYSTEM (CSS :target) ── */
+/* ── SCREEN SYSTEM ── */
 .screen {
-  display: none;
-  position: absolute;
-  inset: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: #FAF8F4;
-  scroll-behavior: smooth;
+  display: none; position: absolute; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  background: var(--bg); scroll-behavior: smooth;
 }
 .screen::-webkit-scrollbar { display: none; }
-
-/* Default: show login when nothing targeted */
 #login { display: block; }
-
-/* When any screen is targeted, show it */
 .screen:target { display: block; }
-
-/* Hide login when another screen is targeted */
 #onboard1:target ~ #login,
 #onboard2:target ~ #login,
 #onboard3:target ~ #login,
@@ -89,6 +100,7 @@ h1 { color: #C9982D; font-size: 13px; letter-spacing: 2px; text-transform: upper
 #tadabur:target ~ #login,
 #sess-verses:target ~ #login,
 #sess-detail:target ~ #login,
+#sess-hadith:target ~ #login,
 #sess-reflect1:target ~ #login,
 #sess-reflect2:target ~ #login,
 #sess-journal:target ~ #login,
@@ -96,242 +108,314 @@ h1 { color: #C9982D; font-size: 13px; letter-spacing: 2px; text-transform: upper
 #journal:target ~ #login,
 #profile:target ~ #login { display: none; }
 
-/* ── SAFE AREA ── */
-.safe { padding: 48px 18px 18px; }
-.safe-tabs { padding: 48px 18px 72px; }
+/* ── LAYOUT ── */
+.safe { padding: 52px 20px 20px; }
+.safe-tabs { padding: 52px 20px 80px; }
 
-/* ── COLOURS ── */
-:root {
-  --P: #1C5D52; --PL: #2A7A6E; --A: #C9982D;
-  --BG: #FAF8F4; --S: #fff;
-  --T: #1A1A1A; --M: #6B7280;
-  --B: #E5E0D8; --AL: #F5EDD5; --PU: #EAF2F0;
-}
+/* ── TYPOGRAPHY ── */
+.serif { font-family: 'Playfair Display', serif; }
+.arabic { font-family: 'Noto Naskh Arabic', serif; }
 
 /* ── SHARED ATOMS ── */
 .btn {
-  display: block; width: 100%; background: var(--P); color: #fff;
-  border: none; border-radius: 12px; padding: 15px;
-  font-size: 15px; font-weight: 600; text-align: center;
-  text-decoration: none; margin-top: 12px; cursor: pointer;
+  display: block; width: 100%;
+  background: var(--primary); color: #fff;
+  border-radius: 20px; padding: 15px;
+  font-size: 15px; font-weight: 600;
+  text-align: center; text-decoration: none;
+  margin-top: 12px; border: none; cursor: pointer;
 }
-.btn-a { background: var(--A); }
 .btn-outline {
-  display: block; width: 100%; background: transparent;
-  color: var(--P); border: 1.5px solid var(--P);
-  border-radius: 12px; padding: 13px;
-  font-size: 14px; font-weight: 600; text-align: center;
-  text-decoration: none; margin-top: 10px;
+  display: block; width: 100%;
+  background: transparent; color: var(--primary);
+  border: 1.5px solid var(--primary);
+  border-radius: 20px; padding: 13px;
+  font-size: 14px; font-weight: 600;
+  text-align: center; text-decoration: none; margin-top: 10px;
 }
 .btn-ghost {
-  display: block; width: 100%; background: transparent;
-  color: var(--M); border: 1px solid var(--B);
-  border-radius: 12px; padding: 12px;
+  display: block; width: 100%;
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 12px;
   font-size: 13px; text-align: center;
   text-decoration: none; margin-top: 10px;
 }
-.card { background: var(--S); border-radius: 12px; padding: 14px; border: 1px solid var(--B); margin-bottom: 10px; }
-.sec-title { font-size: 15px; font-weight: 700; color: var(--T); margin-bottom: 10px; margin-top: 4px; }
-.muted { color: var(--M); font-size: 12px; }
+.card {
+  background: var(--surf); border-radius: 24px;
+  padding: 18px; border: 1px solid var(--divider);
+  margin-bottom: 10px;
+  box-shadow: 0 4px 18px var(--shadow);
+}
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; font-weight: 500;
+  color: var(--text); margin-bottom: 10px; margin-top: 4px;
+}
+.muted { color: var(--muted); font-size: 12px; }
+.chip-pill {
+  display: inline-block;
+  background: var(--bg2); color: var(--text2);
+  border-radius: 999px; padding: 4px 12px;
+  font-size: 11px; font-weight: 500;
+}
 
 /* ── TAB BAR ── */
 .tab-bar {
   position: absolute; bottom: 0; left: 0; right: 0;
-  background: #fff; border-top: 1px solid var(--B);
-  display: flex; padding: 8px 0 10px;
-  z-index: 50;
+  background: var(--surf); border-top: 1px solid var(--border);
+  display: flex; padding: 8px 0 14px; z-index: 50;
 }
 .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; }
-.tab-icon { font-size: 20px; }
-.tab-label { font-size: 10px; font-weight: 600; color: var(--M); }
-.tab-item.cur .tab-label { color: var(--P); }
+.tab-icon { font-size: 19px; }
+.tab-label { font-size: 10px; font-weight: 600; color: var(--muted); }
+.tab-item.cur .tab-label { color: var(--primary); }
 
-/* ════════════════════════════════════
-   SCREEN STYLES
-════════════════════════════════════ */
+/* ── SESSION TAB PILLS ── */
+.sess-tabs {
+  display: flex; gap: 0; overflow-x: auto;
+  padding: 12px 20px; border-bottom: 1px solid var(--border);
+  background: var(--surf); position: sticky; top: 0; z-index: 10;
+}
+.sess-tabs::-webkit-scrollbar { display: none; }
+.sess-tab {
+  flex-shrink: 0; padding: 10px 16px; border-radius: 22px;
+  font-size: 13px; font-weight: 600; text-decoration: none;
+  color: var(--text2); margin-right: 8px; white-space: nowrap;
+  background: transparent;
+}
+.sess-tab.active {
+  background: var(--primary); color: #fff;
+}
 
-/* LOGIN */
-#login .logo-ar { font-size: 52px; text-align: center; color: var(--P); margin-bottom: 4px; }
-#login h2 { font-size: 26px; font-weight: 700; text-align: center; color: var(--T); margin-bottom: 4px; }
-#login .tagline { font-size: 13px; color: var(--M); text-align: center; margin-bottom: 32px; }
+/* ── ONBOARDING ── */
+.ob-progress {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 28px;
+}
+.ob-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--border);
+}
+.ob-dot.done { background: var(--primary); }
+.ob-line { width: 28px; height: 2px; background: var(--border); }
+.ob-line.done { background: var(--primary); }
+.ob-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.ob-sub { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+.bismillah { font-family: 'Noto Naskh Arabic', serif; font-size: 18px; text-align: center; color: var(--primary); margin-bottom: 20px; line-height: 1.8; }
 .fake-input {
-  width: 100%; background: var(--S); border: 1px solid var(--B);
-  border-radius: 12px; padding: 13px 14px; font-size: 15px;
-  color: var(--M); margin-bottom: 10px;
+  width: 100%; background: var(--surf); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px; font-size: 15px;
+  color: var(--muted); margin-bottom: 10px;
 }
-
-/* ONBOARDING */
-.ob-step { font-size: 11px; color: var(--M); margin-bottom: 6px; }
-.ob-title { font-size: 24px; font-weight: 700; color: var(--T); margin-bottom: 4px; }
-.ob-sub { font-size: 13px; color: var(--M); line-height: 1.5; margin-bottom: 20px; }
-.bismillah { font-size: 18px; text-align: center; color: var(--P); margin-bottom: 20px; }
-
-.goal { display: flex; align-items: center; gap: 10px; background: var(--S); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; border: 1.5px solid var(--B); }
-.goal.on { border-color: var(--P); background: var(--PU); }
+.goal {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surf); border-radius: 16px;
+  padding: 13px 16px; margin-bottom: 8px;
+  border: 1.5px solid var(--border);
+}
+.goal.on { border-color: var(--primary); background: var(--primary-u); }
 .goal-ic { font-size: 20px; }
-.goal-lb { flex: 1; font-size: 13px; color: var(--T); }
-.chk { font-size: 14px; color: var(--P); }
+.goal-lb { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
+.chk { font-size: 13px; color: var(--primary); font-weight: 700; }
 
-.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-.chip { background: var(--S); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; border: 1.5px solid var(--B); }
-.chip.on { background: #4A8C70; border-color: #4A8C70; }
-.chip.on .chip-lb { color: #fff; font-weight: 700; }
-.chip-ic { font-size: 22px; }
-.chip-lb { font-size: 10px; color: var(--T); text-align: center; font-weight: 500; }
-
-.time-row { display: flex; justify-content: space-between; align-items: center; background: var(--S); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; border: 1.5px solid var(--B); }
-.time-row.on { border-color: var(--P); background: var(--PU); }
-.time-lb { font-size: 13px; color: var(--T); }
-.time-row.on .time-lb { color: var(--P); font-weight: 600; }
-.tog { width: 42px; height: 23px; background: var(--P); border-radius: 12px; position: relative; }
-.tog-thumb { width: 19px; height: 19px; background: #fff; border-radius: 10px; position: absolute; top: 2px; right: 2px; }
-.set-row { display: flex; justify-content: space-between; align-items: center; background: var(--S); border-radius: 12px; padding: 13px 14px; border: 1px solid var(--B); margin-bottom: 8px; }
-.set-lb { font-size: 14px; color: var(--T); }
-
-/* DASHBOARD */
-.dash-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
-.greeting { font-size: 18px; font-weight: 700; color: var(--T); }
-.date-s { font-size: 12px; color: var(--M); margin-top: 2px; }
-.logo-s { font-size: 24px; color: var(--P); }
-
-.votd { background: var(--P); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
-.votd-lbl { font-size: 10px; color: var(--A); font-weight: 700; letter-spacing: 0.6px; margin-bottom: 10px; }
-.votd-ar { font-size: 18px; line-height: 34px; text-align: right; color: #fff; margin-bottom: 8px; }
-.votd-div { height: 1px; background: rgba(255,255,255,0.2); margin-bottom: 8px; }
-.votd-tr { font-size: 12px; line-height: 18px; color: rgba(255,255,255,0.9); font-style: italic; }
-.votd-ref { font-size: 10px; color: var(--A); text-align: right; margin-top: 6px; }
-
-.stats { display: flex; gap: 8px; margin-bottom: 14px; }
-.stat { flex: 1; background: var(--S); border-radius: 10px; padding: 12px; text-align: center; border: 1px solid var(--B); }
-.stat-ic { font-size: 20px; margin-bottom: 3px; }
-.stat-v { font-size: 20px; font-weight: 700; color: var(--P); }
-.stat-l { font-size: 9px; color: var(--M); }
-
-.cta-big { background: var(--A); border-radius: 12px; padding: 16px; text-align: center; color: #fff; font-size: 16px; font-weight: 700; text-decoration: none; display: block; margin-bottom: 16px; }
-
-.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-.bar-name { font-size: 11px; color: var(--T); width: 72px; }
-.bar { height: 5px; background: var(--P); border-radius: 3px; }
-.bar-ct { font-size: 10px; color: var(--M); }
-
-.e-card { background: var(--S); border-radius: 10px; padding: 12px; margin-bottom: 8px; border: 1px solid var(--B); }
-.e-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-.e-ic { font-size: 20px; }
-.e-ref { font-size: 13px; font-weight: 600; color: var(--T); }
-.e-date { font-size: 11px; color: var(--M); margin-top: 1px; }
-.e-prev { font-size: 12px; color: var(--M); line-height: 17px; }
-
-/* TADABUR PICKER */
-.srch { width: 100%; background: var(--S); border: 1px solid var(--B); border-radius: 12px; padding: 12px 14px; font-size: 13px; color: var(--M); margin-bottom: 14px; }
-.or-lbl { font-size: 12px; color: var(--M); text-align: center; margin-bottom: 10px; }
-
-.cat-item {
-  display: flex; align-items: center; background: var(--S);
-  border-radius: 12px; border: 1px solid var(--B);
-  border-left: 4px solid #4A8C70;
-  padding: 12px 14px; margin-bottom: 8px;
-  text-decoration: none; gap: 10px;
+.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.cat-chip {
+  background: var(--surf); border-radius: 16px;
+  padding: 14px 10px; display: flex;
+  flex-direction: column; align-items: center; gap: 5px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 4px 18px var(--shadow);
 }
-.cat-item:hover { background: var(--PU); }
-.cat-ic { font-size: 24px; }
-.cat-nm { font-size: 13px; font-weight: 600; color: var(--T); }
-.cat-ar { font-size: 11px; color: var(--M); margin-top: 1px; }
-.cat-ds { font-size: 10px; color: var(--M); margin-top: 1px; }
-.arr { margin-left: auto; color: var(--M); font-size: 16px; }
+.cat-chip.on { background: var(--primary-u); border-color: var(--primary); }
+.cat-chip-ic { font-size: 28px; }
+.cat-chip-en { font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 500; color: var(--text); text-align: center; }
+.cat-chip-ar { font-family: 'Noto Naskh Arabic', serif; font-size: 12px; color: var(--muted); }
 
-/* SESSION — VERSES */
-.cat-badge { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.cat-badge-ic { font-size: 26px; }
-.cat-badge-nm { font-size: 17px; font-weight: 700; color: var(--T); }
+.time-row {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--surf); border-radius: 14px;
+  padding: 13px 16px; margin-bottom: 8px;
+  border: 1.5px solid var(--border);
+}
+.time-row.on { border-color: var(--primary); background: var(--primary-u); }
+.time-lb { font-size: 13px; color: var(--text); }
+.time-row.on .time-lb { color: var(--primary); font-weight: 600; }
+.tog { width: 42px; height: 24px; background: var(--primary); border-radius: 12px; position: relative; flex-shrink: 0; }
+.tog-thumb { width: 20px; height: 20px; background: #fff; border-radius: 10px; position: absolute; top: 2px; right: 2px; }
+
+/* ── DASHBOARD ── */
+.dash-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.dash-greet { font-size: 13px; color: var(--muted); margin-bottom: 3px; }
+.dash-name { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; color: var(--text); }
+.dash-arabic { font-family: 'Noto Naskh Arabic', serif; font-size: 26px; color: var(--accent); }
+
+.tadabur-hero {
+  background: var(--primary); border-radius: 24px;
+  padding: 24px 20px; margin-bottom: 18px;
+  text-align: center;
+}
+.hero-arabic { font-family: 'Noto Naskh Arabic', serif; font-size: 42px; color: var(--accent); line-height: 1.3; margin-bottom: 6px; }
+.hero-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 5px; }
+.hero-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 18px; }
+.hero-btn {
+  display: inline-block; background: var(--surf);
+  border-radius: 999px; padding: 10px 28px;
+  font-size: 13px; font-weight: 600; color: var(--primary);
+  text-decoration: none;
+}
+
+.votd { background: var(--primary); border-radius: 24px; padding: 20px; margin-bottom: 16px; }
+.votd-lbl { font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1px; margin-bottom: 12px; }
+.votd-ar { font-family: 'Noto Naskh Arabic', serif; font-size: 20px; line-height: 1.9; text-align: right; color: #fff; margin-bottom: 10px; }
+.votd-div { height: 1px; background: rgba(255,255,255,0.18); margin-bottom: 10px; }
+.votd-tr { font-size: 13px; line-height: 20px; color: rgba(255,255,255,0.85); font-style: italic; }
+.votd-ref { font-size: 11px; color: var(--accent); text-align: right; margin-top: 8px; }
+
+.stats { display: flex; gap: 8px; margin-bottom: 16px; }
+.stat { flex: 1; background: var(--surf); border-radius: 16px; padding: 13px; text-align: center; border: 1px solid var(--border); box-shadow: 0 4px 18px var(--shadow); }
+.stat-ic { font-size: 18px; margin-bottom: 3px; }
+.stat-v { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--primary); }
+.stat-l { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+.bar-track { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--primary); border-radius: 3px; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bar-name { font-size: 12px; color: var(--text2); width: 80px; text-transform: capitalize; }
+.bar-ct { font-size: 11px; color: var(--muted); }
+
+.e-card {
+  background: var(--surf); border-radius: 24px;
+  padding: 18px; margin-bottom: 10px;
+  border: 1px solid var(--divider);
+  box-shadow: 0 4px 18px var(--shadow);
+}
+.e-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.e-cat { display: flex; align-items: center; gap: 6px; }
+.e-cat-ic { font-size: 14px; }
+.e-cat-nm { font-size: 12px; font-weight: 600; color: var(--text2); }
+.e-date { font-size: 11px; color: var(--muted); }
+.e-prev { font-size: 13px; color: var(--text); line-height: 20px; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.e-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+.e-badge.priv { background: var(--badge-priv); color: var(--muted); }
+.e-badge.comm { background: var(--badge-comm); color: var(--success); }
+
+/* ── TADABUR PICKER ── */
+.picker-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.srch {
+  width: 100%; background: var(--surf); border: 1px solid var(--border);
+  border-radius: 14px; padding: 13px 16px; font-size: 13px;
+  color: var(--muted); margin-bottom: 14px;
+}
+.or-lbl { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 12px; }
+.cat-row {
+  display: flex; align-items: center; background: var(--surf);
+  border-radius: 20px; border: 1px solid var(--divider);
+  border-left: 4px solid var(--primary);
+  padding: 14px 16px; margin-bottom: 8px;
+  text-decoration: none; gap: 12px;
+  box-shadow: 0 4px 18px var(--shadow);
+}
+.cat-row-ic { font-size: 24px; }
+.cat-row-en { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 500; color: var(--text); }
+.cat-row-ar { font-family: 'Noto Naskh Arabic', serif; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.cat-row-ds { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.arr { margin-left: auto; color: var(--muted); font-size: 18px; }
+
+/* ── SESSION VERSE CARD ── */
 .v-card {
-  background: var(--S); border-radius: 12px; padding: 16px;
-  margin-bottom: 10px; border: 1px solid var(--B);
+  background: var(--surf); border-radius: 28px;
+  padding: 22px; margin-bottom: 12px;
+  border: 1px solid var(--divider);
   text-decoration: none; display: block;
+  box-shadow: 0 4px 18px var(--shadow);
 }
-.v-card:hover { border-color: var(--P); }
-.v-ref { font-size: 11px; color: var(--A); font-weight: 600; margin-bottom: 8px; letter-spacing: 0.4px; }
-.v-ar { font-size: 18px; line-height: 32px; text-align: right; color: var(--T); margin-bottom: 10px; }
-.v-div { height: 1px; background: var(--B); margin-bottom: 8px; }
-.v-tr { font-size: 12px; line-height: 18px; color: var(--M); }
-.v-tap { font-size: 11px; color: var(--P); text-align: right; margin-top: 6px; }
+.v-ref-chip { display: inline-block; background: var(--bg2); color: var(--text2); border-radius: 999px; padding: 4px 12px; font-size: 11px; margin-bottom: 12px; }
+.v-ar { font-family: 'Noto Naskh Arabic', serif; font-size: 22px; line-height: 1.85; text-align: right; color: #3B342D; margin-bottom: 12px; }
+.v-div { height: 1px; background: var(--divider); margin-bottom: 12px; }
+.v-tr { font-size: 13px; line-height: 21px; color: var(--text2); font-style: italic; }
 
-/* SESSION — DETAIL */
-.v-ar-big {
-  font-size: 22px; line-height: 38px; text-align: right;
-  color: var(--T); padding: 18px; background: var(--PU);
-  border-radius: 12px; margin-bottom: 12px;
-}
-.v-trans { font-size: 14px; line-height: 22px; color: var(--T); font-style: italic; margin-bottom: 14px; }
-.audio-btn-fake {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--P); color: #fff; border-radius: 24px;
-  padding: 9px 16px; font-size: 12px; font-weight: 500;
-  text-decoration: none; margin-bottom: 14px;
-}
-.tafsir-box { border-radius: 12px; overflow: hidden; margin-bottom: 14px; border: 1px solid var(--A); }
-.tafsir-hdr { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--AL); }
-.tafsir-title { font-size: 13px; font-weight: 600; color: var(--T); }
-.tafsir-body { padding: 14px; background: var(--AL); border-top: 1px solid var(--A); font-size: 12px; line-height: 20px; color: var(--T); }
-/* tafsir toggle with CSS only */
+/* ── SESSION DETAIL ── */
+.v-ar-big { font-family: 'Noto Naskh Arabic', serif; font-size: 26px; line-height: 1.9; text-align: right; color: #3B342D; padding: 20px; background: var(--surf2); border-radius: 20px; margin-bottom: 14px; }
+.v-trans-big { font-size: 14px; line-height: 24px; color: var(--text); font-style: italic; margin-bottom: 16px; }
+.audio-fake { display: inline-flex; align-items: center; gap: 7px; background: var(--primary); color: #fff; border-radius: 999px; padding: 9px 18px; font-size: 12px; font-weight: 600; text-decoration: none; margin-bottom: 16px; }
+.tafsir-box { border-radius: 20px; overflow: hidden; margin-bottom: 14px; border: 1px solid var(--accent); }
+.tafsir-hdr { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--accent-l); cursor: pointer; }
+.tafsir-t { font-size: 13px; font-weight: 600; color: var(--text); }
+.tafsir-body { padding: 16px; background: var(--accent-l); border-top: 1px solid var(--accent); font-size: 12px; line-height: 20px; color: var(--text); display: none; }
 .tafsir-toggle { display: none; }
 .tafsir-toggle:checked ~ .tafsir-box .tafsir-body { display: block; }
-.tafsir-body { display: none; }
-.tafsir-lbl { cursor: pointer; }
-.tafsir-toggle:checked ~ .tafsir-box .tafsir-hdr .arr-t::after { content: '▲'; }
-.tafsir-hdr .arr-t::after { content: '▼'; }
+.tafsir-toggle:checked ~ .tafsir-box .arr-t::after { content: '▲'; }
+.arr-t::after { content: '▼'; color: var(--muted); font-size: 11px; }
 
-/* REFLECTION */
-.p-cnt { font-size: 11px; color: var(--M); margin-bottom: 6px; }
-.p-card { background: var(--PU); border-radius: 12px; padding: 18px; border-left: 3px solid var(--P); margin-bottom: 18px; }
-.p-orn { font-size: 14px; color: var(--A); margin-bottom: 8px; }
-.p-q { font-size: 16px; line-height: 24px; color: var(--T); font-style: italic; }
+/* ── HADITH ── */
+.hadith-card { background: var(--surf2); border-radius: 20px; padding: 18px; border: 1px solid var(--divider); margin-bottom: 12px; }
+.hadith-ref { font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 10px; }
+.hadith-text { font-size: 13px; line-height: 22px; color: var(--text); }
+.hadith-grade { display: inline-block; background: var(--badge-comm); color: var(--success); border-radius: 999px; padding: 3px 10px; font-size: 10px; font-weight: 600; margin-top: 10px; }
 
-/* JOURNAL WRITE */
-.j-input {
-  width: 100%; background: var(--S); border: 1px solid var(--B);
-  border-radius: 12px; padding: 14px; font-size: 14px;
-  color: var(--T); min-height: 130px; resize: none;
-  line-height: 22px; margin-bottom: 10px; font-family: inherit;
-  display: block;
-}
-.mic-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.mic-btn-fake { width: 44px; height: 44px; border-radius: 22px; background: var(--P); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-.vis-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.vis-b { flex: 1; padding: 11px; border-radius: 10px; border: 1.5px solid var(--B); text-align: center; font-size: 12px; font-weight: 600; color: var(--M); }
-.vis-b.on { border-color: var(--P); background: var(--PU); color: var(--P); }
+/* ── REFLECTION ── */
+.p-cnt { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.p-card { background: var(--surf2); border-radius: 24px; padding: 22px; border-left: 3px solid var(--accent); margin-bottom: 18px; box-shadow: 0 4px 18px var(--shadow); }
+.p-orn { font-size: 16px; color: var(--accent); margin-bottom: 10px; }
+.p-q { font-family: 'Playfair Display', serif; font-size: 17px; line-height: 1.6; color: var(--text); }
 
-/* COMPLETE */
-.done-c { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 36px; min-height: 600px; text-align: center; gap: 14px; }
-.done-ic { font-size: 60px; }
-.done-title { font-size: 28px; font-weight: 700; color: var(--P); }
-.done-sub { font-size: 14px; color: var(--M); line-height: 22px; }
+/* ── JOURNAL WRITE ── */
+.j-input { width: 100%; background: var(--surf); border: 1px solid var(--border); border-radius: 20px; padding: 16px; font-size: 14px; color: var(--text); min-height: 130px; resize: none; line-height: 24px; margin-bottom: 12px; font-family: inherit; display: block; }
+.mic-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.mic-fake { width: 44px; height: 44px; border-radius: 22px; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.vis-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.vis-b { flex: 1; padding: 11px; border-radius: 14px; border: 1.5px solid var(--border); text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); }
+.vis-b.on { border-color: var(--primary); background: var(--primary-u); color: var(--primary); }
 
-/* JOURNAL LIST */
-.pills { display: flex; gap: 8px; margin-bottom: 14px; }
-.pill { flex: 1; padding: 9px; border-radius: 10px; background: var(--S); text-align: center; font-size: 12px; font-weight: 600; color: var(--M); border: 1px solid var(--B); }
-.pill.on { background: var(--P); color: #fff; border-color: var(--P); }
+/* ── MASHALLAH SCREEN ── */
+.done-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 48px 32px; text-align: center; position: relative; overflow: hidden; }
+.done-watermark { font-family: 'Noto Naskh Arabic', serif; position: absolute; font-size: 110px; color: var(--border); opacity: 0.35; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 0; white-space: nowrap; pointer-events: none; }
+.done-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0; }
+.done-seal { font-size: 44px; color: var(--accent); margin-bottom: 20px; }
+.done-ar { font-family: 'Noto Naskh Arabic', serif; font-size: 36px; color: var(--text); line-height: 1.4; margin-bottom: 8px; }
+.done-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: var(--primary); margin-bottom: 12px; }
+.done-sub { font-size: 14px; color: var(--text2); line-height: 22px; margin-bottom: 36px; max-width: 260px; }
 
-/* PROFILE */
-.av-c { width: 76px; height: 76px; border-radius: 38px; background: var(--P); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
-.av-lt { font-size: 30px; color: #fff; font-weight: 700; }
-.p-name { font-size: 20px; font-weight: 700; text-align: center; color: var(--T); margin-bottom: 3px; }
-.p-join { font-size: 12px; color: var(--M); text-align: center; margin-bottom: 18px; }
+/* ── JOURNAL LIST ── */
+.j-pills { display: flex; gap: 8px; margin-bottom: 16px; }
+.j-pill { flex: 1; padding: 10px; border-radius: 14px; background: var(--surf); text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); border: 1px solid var(--border); }
+.j-pill.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ── PROFILE ── */
+.av-c { width: 78px; height: 78px; border-radius: 39px; background: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.av-lt { font-family: 'Playfair Display', serif; font-size: 32px; color: #fff; font-weight: 600; }
+.p-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; text-align: center; color: var(--text); margin-bottom: 3px; }
+.p-join { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 20px; }
 .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
-.tag { background: var(--PU); border-radius: 20px; padding: 5px 11px; font-size: 11px; color: var(--P); font-weight: 500; }
-.so-btn { display: block; width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #C0392B; color: #C0392B; background: none; font-size: 14px; font-weight: 600; text-align: center; text-decoration: none; margin-top: 8px; }
+.tag { background: var(--primary-u); border-radius: 999px; padding: 6px 12px; font-size: 12px; color: var(--primary); font-weight: 500; }
+.set-row { display: flex; justify-content: space-between; align-items: center; background: var(--surf); border-radius: 16px; padding: 14px 16px; border: 1px solid var(--border); margin-bottom: 8px; box-shadow: 0 4px 18px var(--shadow); }
+.set-lb { font-size: 14px; color: var(--text); }
+.help-row { display: flex; align-items: center; gap: 12px; background: var(--surf); border-radius: 16px; padding: 14px 16px; border: 1px solid var(--border); margin-top: 8px; margin-bottom: 8px; text-decoration: none; box-shadow: 0 4px 18px var(--shadow); }
+.so-btn { display: block; padding: 14px; border-radius: 20px; border: 1px solid var(--error); color: var(--error); background: none; font-size: 14px; font-weight: 600; text-align: center; text-decoration: none; margin-top: 8px; }
+
+/* ── INSPIRE ── */
+.clip-card { display: flex; align-items: center; gap: 12px; background: var(--surf); border-radius: 20px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid var(--divider); box-shadow: 0 4px 18px var(--shadow); text-decoration: none; }
+.clip-play { width: 40px; height: 40px; border-radius: 20px; background: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; color: #fff; }
+.clip-info { flex: 1; }
+.clip-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.clip-spkr { font-size: 11px; color: var(--muted); }
+.clip-badge { font-size: 10px; background: var(--badge-priv); color: var(--muted); padding: 3px 8px; border-radius: 999px; }
 </style>
 </head>
 <body>
 
-<h1>✦ Hikmah · Tadabur Journal</h1>
-<p class="subtitle">Tap a screen below to jump to it, or navigate inside the phone</p>
+<div class="page-title">✦ Hikmah — Tadabur Journal</div>
+<p class="page-sub">Tap a screen in the nav, or use buttons inside the phone</p>
 
 <div class="nav">
   <a href="#login">Login</a>
   <a href="#onboard1">Onboarding</a>
-  <a href="#dashboard">Dashboard</a>
+  <a href="#dashboard">Home</a>
   <a href="#tadabur">Tadabur</a>
   <a href="#sess-verses">Session</a>
+  <a href="#sess-hadith">Hadith tab</a>
+  <a href="#sess-done">MashaAllah</a>
   <a href="#journal">Journal</a>
   <a href="#profile">Profile</a>
 </div>
@@ -340,359 +424,468 @@ h1 { color: #C9982D; font-size: 13px; letter-spacing: 2px; text-transform: upper
   <div class="notch"></div>
   <div class="phone-inner">
 
-    <!-- The screens must be ordered so sibling CSS can hide #login when others are :target -->
+  <!-- ══════════ ONBOARD 1 ══════════ -->
+  <div class="screen" id="onboard1">
+    <div class="safe">
+      <div class="ob-progress">
+        <div class="ob-dot done"></div><div class="ob-line"></div>
+        <div class="ob-dot"></div><div class="ob-line"></div>
+        <div class="ob-dot"></div><div class="ob-line"></div>
+        <div class="ob-dot"></div>
+      </div>
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+      <div class="ob-title">Welcome to Hikmah</div>
+      <div class="ob-sub">A space for deep Quranic reflection — finding verses that speak to your heart, understanding them through tafsir, and writing what Allah brings to your mind.</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;">What should we call you?</div>
+      <div class="fake-input">Shazia</div>
+      <a class="btn" href="#onboard2">Continue →</a>
+    </div>
+  </div>
 
-    <!-- ════ ONBOARDING ════ -->
-    <div class="screen" id="onboard1">
-      <div class="safe">
-        <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
-        <div class="ob-step">1 of 4</div>
-        <div class="ob-title">Welcome to Hikmah</div>
-        <div class="ob-sub">A space for deep Quranic reflection — finding verses that speak to your heart, understanding them through tafsir, and writing what Allah brings to your mind.</div>
-        <div style="font-size:14px;font-weight:600;color:#1A1A1A;margin-bottom:8px;">What should we call you?</div>
-        <div class="fake-input">Shazia</div>
-        <a class="btn" href="#onboard2">Continue →</a>
+  <!-- ══════════ ONBOARD 2 ══════════ -->
+  <div class="screen" id="onboard2">
+    <div class="safe">
+      <div class="ob-progress">
+        <div class="ob-dot done"></div><div class="ob-line done"></div>
+        <div class="ob-dot done"></div><div class="ob-line"></div>
+        <div class="ob-dot"></div><div class="ob-line"></div>
+        <div class="ob-dot"></div>
+      </div>
+      <div class="ob-title">What brings you here?</div>
+      <div class="ob-sub">Select all that apply</div>
+      <div class="goal on"><span class="goal-ic">✨</span><span class="goal-lb">Find comfort in hardship</span><span class="chk">✓</span></div>
+      <div class="goal"><span class="goal-ic">💚</span><span class="goal-lb">Deepen my connection with Allah</span></div>
+      <div class="goal on"><span class="goal-ic">📅</span><span class="goal-lb">Build a daily Quran habit</span><span class="chk">✓</span></div>
+      <div class="goal"><span class="goal-ic">🌹</span><span class="goal-lb">Process grief or loss</span></div>
+      <div class="goal on"><span class="goal-ic">💡</span><span class="goal-lb">Find Quranic answers to life's questions</span><span class="chk">✓</span></div>
+      <div class="goal"><span class="goal-ic">🌍</span><span class="goal-lb">Share reflections with a community</span></div>
+      <a class="btn" href="#onboard3" style="margin-top:14px;">Continue →</a>
+    </div>
+  </div>
+
+  <!-- ══════════ ONBOARD 3 ══════════ -->
+  <div class="screen" id="onboard3">
+    <div class="safe">
+      <div class="ob-progress">
+        <div class="ob-dot done"></div><div class="ob-line done"></div>
+        <div class="ob-dot done"></div><div class="ob-line done"></div>
+        <div class="ob-dot done"></div><div class="ob-line"></div>
+        <div class="ob-dot"></div>
+      </div>
+      <div class="ob-title">Which resonate with you?</div>
+      <div class="ob-sub">We'll suggest relevant verses based on your themes</div>
+      <div class="cat-grid">
+        <div class="cat-chip on"><span class="cat-chip-ic">🌊</span><span class="cat-chip-en">Anxiety</span><span class="cat-chip-ar">القلق</span></div>
+        <div class="cat-chip on"><span class="cat-chip-ic">🌿</span><span class="cat-chip-en">Patience</span><span class="cat-chip-ar">الصبر</span></div>
+        <div class="cat-chip"><span class="cat-chip-ic">🌅</span><span class="cat-chip-en">Hope</span><span class="cat-chip-ar">الرجاء</span></div>
+        <div class="cat-chip on"><span class="cat-chip-ic">🍂</span><span class="cat-chip-en">Depression</span><span class="cat-chip-ar">الاكتئاب</span></div>
+        <div class="cat-chip"><span class="cat-chip-ic">🌾</span><span class="cat-chip-en">Rizq</span><span class="cat-chip-ar">الرزق</span></div>
+        <div class="cat-chip on"><span class="cat-chip-ic">🤍</span><span class="cat-chip-en">Forgiveness</span><span class="cat-chip-ar">العفو</span></div>
+        <div class="cat-chip"><span class="cat-chip-ic">🌱</span><span class="cat-chip-en">Childlessness</span><span class="cat-chip-ar">العقم</span></div>
+        <div class="cat-chip"><span class="cat-chip-ic">🌙</span><span class="cat-chip-en">Loneliness</span><span class="cat-chip-ar">الوحدة</span></div>
+      </div>
+      <a class="btn" href="#onboard4">Continue (4 selected) →</a>
+    </div>
+  </div>
+
+  <!-- ══════════ ONBOARD 4 ══════════ -->
+  <div class="screen" id="onboard4">
+    <div class="safe">
+      <div class="ob-progress">
+        <div class="ob-dot done"></div><div class="ob-line done"></div>
+        <div class="ob-dot done"></div><div class="ob-line done"></div>
+        <div class="ob-dot done"></div><div class="ob-line done"></div>
+        <div class="ob-dot done"></div>
+      </div>
+      <div class="ob-title">Daily Reminder</div>
+      <div class="ob-sub">A gentle nudge to sit with the Quran each day</div>
+      <div class="set-row" style="margin-bottom:14px;">
+        <span class="set-lb">Enable daily reminder</span>
+        <div class="tog"><div class="tog-thumb"></div></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Preferred time</div>
+      <div class="time-row"><span class="time-lb">After Fajr — 06:00</span></div>
+      <div class="time-row on"><span class="time-lb">Morning — 08:00</span><span class="chk">✓</span></div>
+      <div class="time-row"><span class="time-lb">Dhuhr — 12:00</span></div>
+      <div class="time-row"><span class="time-lb">After Isha — 21:00</span></div>
+      <a class="btn" href="#dashboard" style="margin-top:18px;">Begin your journey →</a>
+    </div>
+  </div>
+
+  <!-- ══════════ DASHBOARD ══════════ -->
+  <div class="screen" id="dashboard">
+    <div class="safe-tabs">
+      <div class="dash-hdr">
+        <div>
+          <div class="dash-greet">Assalamu alaikum,</div>
+          <div class="dash-name">Shazia</div>
+        </div>
+        <div class="dash-arabic">حكمة</div>
+      </div>
+
+      <!-- Tadabur hero -->
+      <div class="tadabur-hero">
+        <div class="hero-arabic">تدبّر</div>
+        <div class="hero-title">Begin Tadabur</div>
+        <div class="hero-sub">Sit with the Quran. Reflect. Write.</div>
+        <a class="hero-btn" href="#tadabur">Open session  ›</a>
+      </div>
+
+      <div class="sec-title">Verse of the day</div>
+      <div class="votd">
+        <div class="votd-lbl">✦ TODAY</div>
+        <div class="votd-ar">أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</div>
+        <div class="votd-div"></div>
+        <div class="votd-tr">"Verily, in the remembrance of Allah do hearts find rest."</div>
+        <div class="votd-ref">— Ar-Ra'd 13:28</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-ic">📖</div><div class="stat-v">12</div><div class="stat-l">Reflections</div></div>
+        <div class="stat"><div class="stat-ic">🔥</div><div class="stat-v">7</div><div class="stat-l">Day streak</div></div>
+        <div class="stat"><div class="stat-ic">◈</div><div class="stat-v">4</div><div class="stat-l">Themes</div></div>
+      </div>
+
+      <div class="sec-title" style="margin-top:4px;">Most explored themes</div>
+      <div class="bar-row"><span class="bar-name">Anxiety</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-ct">5</span></div>
+      <div class="bar-row"><span class="bar-name">Patience</span><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><span class="bar-ct">3</span></div>
+      <div class="bar-row"><span class="bar-name">Forgiveness</span><div class="bar-track"><div class="bar-fill" style="width:40%"></div></div><span class="bar-ct">2</span></div>
+
+      <div class="sec-title" style="margin-top:16px;">Recent reflections</div>
+      <div class="e-card">
+        <div class="e-top">
+          <div class="e-cat"><span class="e-cat-ic">🌊</span><span class="e-cat-nm">Anxiety · 13:28</span></div>
+          <span class="e-date">14 Jun</span>
+        </div>
+        <div class="e-prev">"When I read 'hearts find rest in the remembrance of Allah' I kept thinking about how I spend so much time scrolling when I feel anxious…"</div>
+        <span class="e-badge priv">🔒 Private</span>
+      </div>
+      <div class="e-card">
+        <div class="e-top">
+          <div class="e-cat"><span class="e-cat-ic">🌿</span><span class="e-cat-nm">Patience · 2:153</span></div>
+          <span class="e-date">11 Jun</span>
+        </div>
+        <div class="e-prev">"Seek help through patience and prayer. I've been struggling so much with waiting for an answer I need…"</div>
+        <span class="e-badge comm">🌍 Community</span>
       </div>
     </div>
-
-    <div class="screen" id="onboard2">
-      <div class="safe">
-        <div class="ob-step">2 of 4</div>
-        <div class="ob-title">What brings you here?</div>
-        <div class="ob-sub">Select all that apply</div>
-        <div class="goal on"><span class="goal-ic">🤲</span><span class="goal-lb">Find comfort in hardship</span><span class="chk">✓</span></div>
-        <div class="goal"><span class="goal-ic">💚</span><span class="goal-lb">Deepen my connection with Allah</span></div>
-        <div class="goal on"><span class="goal-ic">📅</span><span class="goal-lb">Build a daily Quran habit</span><span class="chk">✓</span></div>
-        <div class="goal"><span class="goal-ic">🕊️</span><span class="goal-lb">Process grief or loss</span></div>
-        <div class="goal on"><span class="goal-ic">💡</span><span class="goal-lb">Find answers in the Quran</span><span class="chk">✓</span></div>
-        <div class="goal"><span class="goal-ic">🌍</span><span class="goal-lb">Share with a community</span></div>
-        <a class="btn" href="#onboard3" style="margin-top:14px;">Continue →</a>
-      </div>
+    <div class="tab-bar">
+      <a class="tab-item cur" href="#dashboard"><div class="tab-icon">🏠</div><div class="tab-label" style="color:var(--primary);">Home</div></a>
+      <a class="tab-item" href="#tadabur"><div class="tab-icon">📖</div><div class="tab-label">Tadabur</div></a>
+      <a class="tab-item" href="#journal"><div class="tab-icon">📔</div><div class="tab-label">Journal</div></a>
+      <a class="tab-item" href="#profile"><div class="tab-icon">▶</div><div class="tab-label">Inspire</div></a>
+      <a class="tab-item" href="#profile"><div class="tab-icon">◉</div><div class="tab-label">Profile</div></a>
     </div>
+  </div>
 
-    <div class="screen" id="onboard3">
-      <div class="safe">
-        <div class="ob-step">3 of 4</div>
-        <div class="ob-title">Which resonate with you?</div>
-        <div class="ob-sub">We'll suggest relevant verses based on your selection</div>
-        <div class="cat-grid">
-          <div class="chip on"><span class="chip-ic">🌊</span><span class="chip-lb">Anxiety</span></div>
-          <div class="chip on"><span class="chip-ic">🌿</span><span class="chip-lb">Patience</span></div>
-          <div class="chip"><span class="chip-ic">🌅</span><span class="chip-lb">Hope</span></div>
-          <div class="chip on"><span class="chip-ic">🍂</span><span class="chip-lb">Depression</span></div>
-          <div class="chip"><span class="chip-ic">🌾</span><span class="chip-lb">Rizq</span></div>
-          <div class="chip on"><span class="chip-ic">🤍</span><span class="chip-lb">Forgiveness</span></div>
-          <div class="chip"><span class="chip-ic">🌱</span><span class="chip-lb">Childlessness</span></div>
-          <div class="chip"><span class="chip-ic">🌙</span><span class="chip-lb">Loneliness</span></div>
-        </div>
-        <a class="btn" href="#onboard4">Continue (4 selected) →</a>
-      </div>
+  <!-- ══════════ TADABUR PICKER ══════════ -->
+  <div class="screen" id="tadabur">
+    <div class="safe-tabs">
+      <div class="picker-title">Tadabur</div>
+      <div class="muted" style="margin-bottom:14px;">Choose a theme or describe what you're going through</div>
+      <div class="srch">e.g. I'm feeling anxious about the future…</div>
+      <div class="or-lbl">— or pick a theme —</div>
+      <a class="cat-row" href="#sess-verses" style="border-left-color:#5B8DB8;"><span class="cat-row-ic">🌊</span><div><div class="cat-row-en">Anxiety</div><div class="cat-row-ar">القلق</div></div><span class="arr">›</span></a>
+      <a class="cat-row" href="#sess-verses" style="border-left-color:var(--primary);"><span class="cat-row-ic">🌿</span><div><div class="cat-row-en">Patience</div><div class="cat-row-ar">الصبر</div></div><span class="arr">›</span></a>
+      <a class="cat-row" href="#sess-verses" style="border-left-color:var(--accent);"><span class="cat-row-ic">🌅</span><div><div class="cat-row-en">Hope</div><div class="cat-row-ar">الرجاء</div></div><span class="arr">›</span></a>
+      <a class="cat-row" href="#sess-verses" style="border-left-color:#8A7090;"><span class="cat-row-ic">🍂</span><div><div class="cat-row-en">Depression</div><div class="cat-row-ar">الاكتئاب</div></div><span class="arr">›</span></a>
+      <a class="cat-row" href="#sess-verses" style="border-left-color:var(--accent);"><span class="cat-row-ic">🌾</span><div><div class="cat-row-en">Rizq &amp; Provision</div><div class="cat-row-ar">الرزق</div></div><span class="arr">›</span></a>
+      <a class="cat-row" href="#sess-verses" style="border-left-color:#7B9E87;"><span class="cat-row-ic">🌱</span><div><div class="cat-row-en">Childlessness</div><div class="cat-row-ar">العقم</div></div><span class="arr">›</span></a>
+      <a class="cat-row" href="#sess-verses" style="border-left-color:#9A9084;"><span class="cat-row-ic">🕯️</span><div><div class="cat-row-en">Widowhood</div><div class="cat-row-ar">الترمل</div></div><span class="arr">›</span></a>
+      <a class="cat-row" href="#sess-verses" style="border-left-color:#9B8EAE;"><span class="cat-row-ic">🤍</span><div><div class="cat-row-en">Forgiveness</div><div class="cat-row-ar">العفو</div></div><span class="arr">›</span></a>
     </div>
-
-    <div class="screen" id="onboard4">
-      <div class="safe">
-        <div class="ob-step">4 of 4</div>
-        <div class="ob-title">Daily Tadabur Reminder</div>
-        <div class="ob-sub">A gentle nudge to reflect with the Quran each day</div>
-        <div class="set-row" style="margin-bottom:14px;">
-          <span class="set-lb">Enable daily reminder</span>
-          <div class="tog"><div class="tog-thumb"></div></div>
-        </div>
-        <div style="font-size:12px;color:#6B7280;margin-bottom:8px;">Preferred time</div>
-        <div class="time-row"><span class="time-lb">Fajr time 🌅 — 06:00</span></div>
-        <div class="time-row on"><span class="time-lb">Morning ☀️ — 08:00</span><span class="chk">✓</span></div>
-        <div class="time-row"><span class="time-lb">Dhuhr 🌞 — 12:00</span></div>
-        <div class="time-row"><span class="time-lb">Evening 🌙 — 21:00</span></div>
-        <a class="btn" href="#dashboard" style="margin-top:18px;">Start your journey →</a>
-      </div>
+    <div class="tab-bar">
+      <a class="tab-item" href="#dashboard"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></a>
+      <a class="tab-item cur" href="#tadabur"><div class="tab-icon">📖</div><div class="tab-label" style="color:var(--primary);">Tadabur</div></a>
+      <a class="tab-item" href="#journal"><div class="tab-icon">📔</div><div class="tab-label">Journal</div></a>
+      <a class="tab-item" href="#profile"><div class="tab-icon">▶</div><div class="tab-label">Inspire</div></a>
+      <a class="tab-item" href="#profile"><div class="tab-icon">◉</div><div class="tab-label">Profile</div></a>
     </div>
+  </div>
 
-    <!-- ════ DASHBOARD ════ -->
-    <div class="screen" id="dashboard">
-      <div class="safe-tabs">
-        <div class="dash-hdr">
-          <div><div class="greeting">Good morning, Shazia 👋</div><div class="date-s">Sunday, 14 June 2026</div></div>
-          <div class="logo-s">حكمة</div>
-        </div>
-
-        <div class="votd">
-          <div class="votd-lbl">✨ VERSE OF THE DAY</div>
-          <div class="votd-ar">أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</div>
-          <div class="votd-div"></div>
-          <div class="votd-tr">"Verily, in the remembrance of Allah do hearts find rest."</div>
-          <div class="votd-ref">— Ar-Ra'd 13:28</div>
-        </div>
-
-        <div class="stats">
-          <div class="stat"><div class="stat-ic">📖</div><div class="stat-v">12</div><div class="stat-l">Reflections</div></div>
-          <div class="stat"><div class="stat-ic">🔥</div><div class="stat-v">7</div><div class="stat-l">Day streak</div></div>
-          <div class="stat"><div class="stat-ic">🗂</div><div class="stat-v">4</div><div class="stat-l">Categories</div></div>
-        </div>
-
-        <div class="sec-title">Your most explored themes</div>
-        <div class="bar-row"><span class="bar-name">Anxiety</span><div class="bar" style="width:100px;"></div><span class="bar-ct">5</span></div>
-        <div class="bar-row"><span class="bar-name">Patience</span><div class="bar" style="width:66px;"></div><span class="bar-ct">3</span></div>
-        <div class="bar-row"><span class="bar-name">Forgiveness</span><div class="bar" style="width:44px;"></div><span class="bar-ct">2</span></div>
-
-        <a class="cta-big" href="#tadabur">✦&nbsp;&nbsp;Begin Tadabur Session</a>
-
-        <div class="sec-title">Recent reflections</div>
-        <div class="e-card">
-          <div class="e-row"><span class="e-ic">🌊</span><div><div class="e-ref">13:28 · Anxiety</div><div class="e-date">14 Jun 2026</div></div></div>
-          <div class="e-prev">"When I read 'hearts find rest in the remembrance of Allah' today I kept thinking about how I spend so much time scrolling when I feel anxious…"</div>
-        </div>
-        <div class="e-card">
-          <div class="e-row"><span class="e-ic">🌿</span><div><div class="e-ref">2:153 · Patience</div><div class="e-date">11 Jun 2026</div></div></div>
-          <div class="e-prev">"Seek help through patience and prayer. I've been struggling so much with waiting for an answer I need…"</div>
-        </div>
-      </div>
-      <div class="tab-bar">
-        <a class="tab-item cur" href="#dashboard"><div class="tab-icon">🏠</div><div class="tab-label" style="color:#1C5D52;">Home</div></a>
-        <a class="tab-item" href="#tadabur"><div class="tab-icon">📖</div><div class="tab-label">Tadabur</div></a>
-        <a class="tab-item" href="#journal"><div class="tab-icon">📔</div><div class="tab-label">Journal</div></a>
-        <a class="tab-item" href="#profile"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></a>
-      </div>
+  <!-- ══════════ SESSION: VERSES ══════════ -->
+  <div class="screen" id="sess-verses">
+    <div class="sess-tabs">
+      <a class="sess-tab active" href="#sess-verses">Verses</a>
+      <a class="sess-tab" href="#sess-detail">Tafsir</a>
+      <a class="sess-tab" href="#sess-hadith">Hadith</a>
+      <a class="sess-tab" href="#sess-verses">Community</a>
+      <a class="sess-tab" href="#sess-verses">Motivation</a>
     </div>
+    <div style="padding:16px 20px 32px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <span style="font-size:24px;">🌊</span>
+        <span style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);">Anxiety</span>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:500;color:var(--text);margin-bottom:3px;">Verses for your heart</div>
+      <div class="muted" style="margin-bottom:16px;">Select one to explore in depth</div>
 
-    <!-- ════ TADABUR PICKER ════ -->
-    <div class="screen" id="tadabur">
-      <div class="safe-tabs">
-        <div style="font-size:24px;font-weight:700;color:#1A1A1A;margin-bottom:4px;">Begin Tadabur</div>
-        <div class="muted" style="margin-bottom:14px;">Choose a theme or describe what you're going through</div>
-        <div class="srch">e.g. I'm feeling anxious about the future…</div>
-        <div class="or-lbl">— or pick a theme —</div>
-        <a class="cat-item" href="#sess-verses" style="border-left-color:#5B8DB8;"><span class="cat-ic">🌊</span><div><div class="cat-nm">Anxiety</div><div class="cat-ar">القلق</div><div class="cat-ds">Calming the restless heart</div></div><span class="arr">›</span></a>
-        <a class="cat-item" href="#sess-verses" style="border-left-color:#4A8C70;"><span class="cat-ic">🌿</span><div><div class="cat-nm">Patience</div><div class="cat-ar">الصبر</div><div class="cat-ds">Enduring hardship with steadfastness</div></div><span class="arr">›</span></a>
-        <a class="cat-item" href="#sess-verses" style="border-left-color:#C9982D;"><span class="cat-ic">🌅</span><div><div class="cat-nm">Hope</div><div class="cat-ar">الرجاء</div><div class="cat-ds">Finding light when all feels dark</div></div><span class="arr">›</span></a>
-        <a class="cat-item" href="#sess-verses" style="border-left-color:#8B6F8B;"><span class="cat-ic">🍂</span><div><div class="cat-nm">Depression</div><div class="cat-ar">الاكتئاب</div><div class="cat-ds">When the soul feels heavy</div></div><span class="arr">›</span></a>
-        <a class="cat-item" href="#sess-verses" style="border-left-color:#C9982D;"><span class="cat-ic">🌾</span><div><div class="cat-nm">Rizq &amp; Provision</div><div class="cat-ar">الرزق</div><div class="cat-ds">Trust in Allah's provision</div></div><span class="arr">›</span></a>
-        <a class="cat-item" href="#sess-verses" style="border-left-color:#7B9E87;"><span class="cat-ic">🌱</span><div><div class="cat-nm">Childlessness</div><div class="cat-ar">العقم</div><div class="cat-ds">The ache of unfulfilled parenthood</div></div><span class="arr">›</span></a>
-        <a class="cat-item" href="#sess-verses" style="border-left-color:#8B8B8B;"><span class="cat-ic">🕊️</span><div><div class="cat-nm">Widowhood</div><div class="cat-ar">الترمل</div><div class="cat-ds">Navigating loss and rebuilding</div></div><span class="arr">›</span></a>
-      </div>
-      <div class="tab-bar">
-        <a class="tab-item" href="#dashboard"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></a>
-        <a class="tab-item cur" href="#tadabur"><div class="tab-icon">📖</div><div class="tab-label" style="color:#1C5D52;">Tadabur</div></a>
-        <a class="tab-item" href="#journal"><div class="tab-icon">📔</div><div class="tab-label">Journal</div></a>
-        <a class="tab-item" href="#profile"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></a>
-      </div>
+      <a class="v-card" href="#sess-detail">
+        <div class="v-ref-chip">AR-RA'D · 13:28</div>
+        <div class="v-ar">أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</div>
+        <div class="v-div"></div>
+        <div class="v-tr">"Verily, in the remembrance of Allah do hearts find rest."</div>
+      </a>
+      <a class="v-card" href="#sess-detail">
+        <div class="v-ref-chip">AL-BAQARAH · 2:286</div>
+        <div class="v-ar">لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا</div>
+        <div class="v-div"></div>
+        <div class="v-tr">"Allah does not burden a soul beyond that it can bear."</div>
+      </a>
+      <a class="v-card" href="#sess-detail">
+        <div class="v-ref-chip">TA-HA · 20:46</div>
+        <div class="v-ar">قَالَ لَا تَخَافَا ۖ إِنَّنِي مَعَكُمَا أَسْمَعُ وَأَرَىٰ</div>
+        <div class="v-div"></div>
+        <div class="v-tr">"Fear not. I am with you both — hearing and seeing."</div>
+      </a>
     </div>
+  </div>
 
-    <!-- ════ SESSION: VERSE LIST ════ -->
-    <div class="screen" id="sess-verses">
-      <div class="safe">
-        <div class="cat-badge"><span class="cat-badge-ic">🌊</span><span class="cat-badge-nm">Anxiety</span></div>
-        <div style="font-size:20px;font-weight:700;color:#1A1A1A;margin-bottom:3px;">Verses for your heart</div>
-        <div class="muted" style="margin-bottom:14px;">Select one to explore in depth</div>
-
-        <a class="v-card" href="#sess-detail">
-          <div class="v-ref">AR-RA'D · 13:28</div>
-          <div class="v-ar">أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</div>
-          <div class="v-div"></div>
-          <div class="v-tr">"Verily, in the remembrance of Allah do hearts find rest."</div>
-          <div class="v-tap">Tap to explore →</div>
-        </a>
-
-        <a class="v-card" href="#sess-detail">
-          <div class="v-ref">AL-BAQARAH · 2:286</div>
-          <div class="v-ar">لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا</div>
-          <div class="v-div"></div>
-          <div class="v-tr">"Allah does not burden a soul beyond that it can bear."</div>
-          <div class="v-tap">Tap to explore →</div>
-        </a>
-
-        <a class="v-card" href="#sess-detail">
-          <div class="v-ref">TA-HA · 20:46</div>
-          <div class="v-ar">قَالَ لَا تَخَافَا ۖ إِنَّنِي مَعَكُمَا أَسْمَعُ وَأَرَىٰ</div>
-          <div class="v-div"></div>
-          <div class="v-tr">"Fear not. I am with you both, hearing and seeing."</div>
-          <div class="v-tap">Tap to explore →</div>
-        </a>
-
-        <a class="v-card" href="#sess-detail">
-          <div class="v-ref">AL-INSHIRAH · 94:5-6</div>
-          <div class="v-ar">فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ۝ إِنَّ مَعَ الْعُسْرِ يُسْرًا</div>
-          <div class="v-div"></div>
-          <div class="v-tr">"Verily, with every hardship comes ease. Verily, with every hardship comes ease."</div>
-          <div class="v-tap">Tap to explore →</div>
-        </a>
-      </div>
+  <!-- ══════════ SESSION: VERSE DETAIL ══════════ -->
+  <div class="screen" id="sess-detail">
+    <div class="sess-tabs">
+      <a class="sess-tab" href="#sess-verses">Verses</a>
+      <a class="sess-tab active" href="#sess-detail">Tafsir</a>
+      <a class="sess-tab" href="#sess-hadith">Hadith</a>
+      <a class="sess-tab" href="#sess-verses">Community</a>
+      <a class="sess-tab" href="#sess-verses">Motivation</a>
     </div>
+    <div style="padding:16px 20px 32px;">
+      <div class="v-ref-chip" style="margin-bottom:14px;">AR-RA'D · 13:28</div>
+      <div class="v-ar-big">أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</div>
+      <div class="v-trans-big">"Verily, in the remembrance of Allah do hearts find rest."</div>
+      <div class="audio-fake">▶  Mishari Rashid al-Afasy</div>
 
-    <!-- ════ SESSION: VERSE DETAIL ════ -->
-    <div class="screen" id="sess-detail">
-      <div class="safe">
-        <div style="font-size:11px;color:#C9982D;font-weight:600;margin-bottom:14px;letter-spacing:0.4px;">AR-RA'D · 13:28</div>
-        <div class="v-ar-big">أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</div>
-        <div class="v-trans">"Verily, in the remembrance of Allah do hearts find rest."</div>
-        <div class="audio-btn-fake">▶&nbsp;&nbsp;Listen · Mishari Rashid al-Afasy</div>
-
-        <!-- Pure CSS tafsir accordion -->
-        <input type="checkbox" id="tafsir-toggle" style="display:none;">
+      <input type="checkbox" id="tafsir-toggle" style="display:none;">
+      <label for="tafsir-toggle" style="display:block;">
         <div class="tafsir-box">
-          <label class="tafsir-hdr tafsir-lbl" for="tafsir-toggle">
-            <span class="tafsir-title">📚 Ibn Kathir Tafsir</span>
+          <div class="tafsir-hdr">
+            <span class="tafsir-t">📚 Ibn Kathir — Tafsir</span>
             <span class="arr-t"></span>
-          </label>
-          <div class="tafsir-body" id="tafsir-content">
-            Ibn Kathir explains that this verse refers to the hearts of believers finding tranquility through dhikr (remembrance) of Allah — which includes recitation of the Quran, glorification, and all acts of worship. The word <em>tatma'inn</em> (تَطْمَئِنُّ) means to become settled and at rest, as opposed to the anxiety that comes from heedlessness of Allah.<br><br>
-            The occasion of revelation: This verse was revealed addressing those who demanded miraculous signs. Allah's response was that guidance has already come — and the believers who turn to Allah experience the heart's rest that is itself the greatest sign.<br><br>
-            Ibn Kathir cites the hadith of the Prophet ﷺ: <em>"Truly in the body there is a piece of flesh: if it is sound, the whole body is sound, and if it is corrupt, the whole body is corrupt. Truly it is the heart."</em> (Bukhari &amp; Muslim)
+          </div>
+          <div class="tafsir-body">
+            Ibn Kathir explains that this verse refers to hearts of believers finding tranquility through dhikr of Allah — Quran recitation, glorification, and all acts of worship. The word <em>tatma'inn</em> means to become settled and at rest, as opposed to the anxiety that comes from heedlessness of Allah.<br><br>
+            The occasion of revelation: this verse addressed those demanding miraculous signs. Allah's response: guidance has come — and the believers who turn to Allah experience heart's rest, itself the greatest sign.
           </div>
         </div>
+      </label>
 
-        <a class="btn" href="#sess-reflect1">Begin Reflection →</a>
+      <div style="margin-top:4px;"></div>
+      <div class="sec-title">Related clips</div>
+      <div class="clip-card">
+        <div class="clip-play">▶</div>
+        <div class="clip-info">
+          <div class="clip-title">Islamic Solutions to Overcome Anxiety</div>
+          <div class="clip-spkr">Nouman Ali Khan</div>
+        </div>
+        <div class="clip-badge">YouTube</div>
+      </div>
+      <div class="clip-card">
+        <div class="clip-play">▶</div>
+        <div class="clip-info">
+          <div class="clip-title">Do Not Over Think!</div>
+          <div class="clip-spkr">Iram bint Safia</div>
+        </div>
+        <div class="clip-badge">YouTube</div>
+      </div>
+      <a class="btn" href="#sess-reflect1">Begin Reflection →</a>
+    </div>
+  </div>
+
+  <!-- ══════════ SESSION: HADITH TAB ══════════ -->
+  <div class="screen" id="sess-hadith">
+    <div class="sess-tabs">
+      <a class="sess-tab" href="#sess-verses">Verses</a>
+      <a class="sess-tab" href="#sess-detail">Tafsir</a>
+      <a class="sess-tab active" href="#sess-hadith">Hadith</a>
+      <a class="sess-tab" href="#sess-verses">Community</a>
+      <a class="sess-tab" href="#sess-verses">Motivation</a>
+    </div>
+    <div style="padding:16px 20px 32px;">
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:500;color:var(--text);margin-bottom:4px;">Related Hadith</div>
+      <div class="muted" style="margin-bottom:16px;">From Sahih Bukhari, Muslim & Tirmidhi</div>
+      <div class="hadith-card">
+        <div class="hadith-ref">BUKHARI · 6369</div>
+        <div class="hadith-text">"O Allah, I seek refuge in You from anxiety and sorrow, from weakness and laziness, from miserliness and cowardice, from the burden of debts and from being overpowered by men."</div>
+        <div class="hadith-grade">Sahih</div>
+      </div>
+      <div class="hadith-card">
+        <div class="hadith-ref">TIRMIDHI · 3524</div>
+        <div class="hadith-text">The Prophet ﷺ said: "Whoever among you wakes up secure in himself, healthy in body, and has food for his day — it is as if the world has been gathered for him."</div>
+        <div class="hadith-grade">Sahih</div>
+      </div>
+      <div class="hadith-card">
+        <div class="hadith-ref">MUSLIM · 2664</div>
+        <div class="hadith-text">"No calamity befalls a Muslim but that Allah expiates some of his sins because of it, even if it is the prick he receives from a thorn."</div>
+        <div class="hadith-grade">Sahih</div>
       </div>
     </div>
+  </div>
 
-    <!-- ════ SESSION: REFLECTION 1 ════ -->
-    <div class="screen" id="sess-reflect1">
-      <div class="safe">
-        <div style="font-size:22px;font-weight:700;color:#1A1A1A;margin-bottom:3px;">Reflect</div>
-        <div class="muted" style="margin-bottom:18px;">Take your time with each question</div>
-        <div class="p-cnt">Question 1 of 3</div>
-        <div class="p-card">
-          <div class="p-orn">✦</div>
-          <div class="p-q">"What specific worry keeps returning to your mind today? When you sit with this verse, what does Allah's promise of heart-rest mean for that worry?"</div>
-        </div>
-        <a class="btn-outline" href="#sess-reflect2">Next question →</a>
+  <!-- ══════════ SESSION: REFLECT 1 ══════════ -->
+  <div class="screen" id="sess-reflect1">
+    <div class="safe">
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:3px;">Reflect</div>
+      <div class="muted" style="margin-bottom:18px;">Take your time with each question</div>
+      <div class="p-cnt">Question 1 of 3</div>
+      <div class="p-card">
+        <div class="p-orn">✦</div>
+        <div class="p-q">"What specific worry keeps returning to your mind today? When you sit with this verse, what does Allah's promise of heart-rest mean for that worry?"</div>
       </div>
+      <a class="btn-outline" href="#sess-reflect2">Next question →</a>
     </div>
+  </div>
 
-    <!-- ════ SESSION: REFLECTION 2 ════ -->
-    <div class="screen" id="sess-reflect2">
-      <div class="safe">
-        <div style="font-size:22px;font-weight:700;color:#1A1A1A;margin-bottom:3px;">Reflect</div>
-        <div class="muted" style="margin-bottom:18px;">Take your time with each question</div>
-        <div class="p-cnt">Question 2 of 3</div>
-        <div class="p-card">
-          <div class="p-orn">✦</div>
-          <div class="p-q">"How much of what you fear is within your control, and how much is in Allah's hands? What would it feel like to truly hand the latter over to Him?"</div>
-        </div>
-        <a class="btn-outline" href="#sess-journal">I'm ready to write →</a>
+  <!-- ══════════ SESSION: REFLECT 2 ══════════ -->
+  <div class="screen" id="sess-reflect2">
+    <div class="safe">
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:3px;">Reflect</div>
+      <div class="muted" style="margin-bottom:18px;">Take your time with each question</div>
+      <div class="p-cnt">Question 2 of 3</div>
+      <div class="p-card">
+        <div class="p-orn">✦</div>
+        <div class="p-q">"How much of what you fear is within your control, and how much is in Allah's hands? What would it feel like to truly hand it over to Him?"</div>
       </div>
+      <a class="btn-outline" href="#sess-journal">I'm ready to write →</a>
     </div>
+  </div>
 
-    <!-- ════ SESSION: JOURNAL WRITE ════ -->
-    <div class="screen" id="sess-journal">
-      <div class="safe">
-        <div style="font-size:22px;font-weight:700;color:#1A1A1A;margin-bottom:3px;">Write your reflection</div>
-        <div class="muted" style="margin-bottom:12px;">This is your private space. Write freely.</div>
-        <div class="j-input" style="display:block;">When I read "hearts find rest in the remembrance of Allah" today I kept thinking about how I spend so much time on my phone when I feel anxious — scrolling, distracting myself. But that never actually helps.<br><br>I think Allah is telling me that the thing I keep running away from — stillness, prayer, Quran — is exactly the thing that would help.</div>
-        <div class="mic-row">
-          <div class="mic-btn-fake">🎙</div>
-          <span class="muted">Tap to record · auto-transcribes</span>
-        </div>
-        <div class="vis-row">
-          <div class="vis-b on">🔒 Private</div>
-          <div class="vis-b">🌍 Community</div>
-        </div>
-        <a class="btn" href="#sess-done">Save reflection ✓</a>
-        <a class="btn-ghost" href="#sess-done">Skip writing, just save the verse</a>
+  <!-- ══════════ SESSION: JOURNAL WRITE ══════════ -->
+  <div class="screen" id="sess-journal">
+    <div class="safe">
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:3px;">Write your reflection</div>
+      <div class="muted" style="margin-bottom:12px;">This is your private space. Write freely.</div>
+      <textarea class="j-input">When I read "hearts find rest in the remembrance of Allah" today I kept thinking about how I spend so much time on my phone when I feel anxious — scrolling, distracting myself. But that never actually helps.
+
+I think Allah is telling me that the thing I keep running away from — stillness, prayer, Quran — is exactly the thing that would help.</textarea>
+      <div class="mic-row">
+        <div class="mic-fake">🎙</div>
+        <span class="muted">Tap to record — auto-transcribes</span>
       </div>
+      <div class="vis-row">
+        <div class="vis-b on">🔒 Private</div>
+        <div class="vis-b">🌍 Community</div>
+      </div>
+      <a class="btn" href="#sess-done">Save reflection ✓</a>
+      <a class="btn-ghost" href="#sess-done">Skip writing, just save the verse</a>
     </div>
+  </div>
 
-    <!-- ════ SESSION: COMPLETE ════ -->
-    <div class="screen" id="sess-done">
-      <div class="done-c">
-        <div class="done-ic">🤲</div>
+  <!-- ══════════ SESSION: MASHALLAH ══════════ -->
+  <div class="screen" id="sess-done">
+    <div class="done-wrap">
+      <div class="done-watermark">ما شاء الله</div>
+      <div class="done-inner">
+        <div class="done-seal">✦</div>
+        <div class="done-ar">ما شاء الله</div>
         <div class="done-title">MashaAllah</div>
-        <div class="done-sub">Your reflection on Ar-Ra'd 13:28 has been saved to your journal.</div>
-        <a class="btn" href="#journal" style="width:100%;margin-top:0;">View Journal</a>
-        <a class="btn-outline" href="#tadabur" style="width:100%;">New session</a>
+        <div class="done-sub">Your reflection on Ar-Ra'd 13:28 has been saved.<br>Take a moment with what you've learned.</div>
+        <a class="btn" href="#journal" style="width:260px;">View Journal</a>
+        <a class="btn-outline" href="#tadabur" style="width:260px;">New session</a>
       </div>
     </div>
+  </div>
 
-    <!-- ════ JOURNAL LIST ════ -->
-    <div class="screen" id="journal">
-      <div class="safe-tabs">
-        <div style="font-size:24px;font-weight:700;color:#1A1A1A;margin-bottom:14px;">Journal</div>
-        <div class="pills">
-          <div class="pill on">🔒 Private</div>
-          <div class="pill">🌍 Community</div>
-        </div>
-        <div class="e-card">
-          <div class="e-row"><span class="e-ic">🌊</span><div><div class="e-ref">13:28 · Anxiety</div><div class="e-date">14 Jun 2026</div></div></div>
-          <div class="e-prev">"When I read 'hearts find rest in the remembrance of Allah' today I kept thinking about how I spend so much time scrolling when I feel anxious…"</div>
-        </div>
-        <div class="e-card">
-          <div class="e-row"><span class="e-ic">🌊</span><div><div class="e-ref">2:286 · Anxiety</div><div class="e-date">13 Jun 2026</div></div></div>
-          <div class="e-prev">"Allah does not burden a soul beyond that it can bear — when I read this I felt like He was speaking directly to me about my exam…"</div>
-        </div>
-        <div class="e-card">
-          <div class="e-row"><span class="e-ic">🌿</span><div><div class="e-ref">2:153 · Patience</div><div class="e-date">11 Jun 2026</div></div></div>
-          <div class="e-prev">"Seek help through patience and prayer. I've been struggling so much with waiting for an answer I need…"</div>
-        </div>
-        <div class="e-card">
-          <div class="e-row"><span class="e-ic">🤍</span><div><div class="e-ref">39:53 · Forgiveness</div><div class="e-date">8 Jun 2026</div></div></div>
-          <div class="e-prev">"Do not despair of Allah's mercy — He forgives all sins. I needed this so badly today. I've been carrying guilt for months…"</div>
-        </div>
+  <!-- ══════════ JOURNAL LIST ══════════ -->
+  <div class="screen" id="journal">
+    <div class="safe-tabs">
+      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:600;color:var(--text);margin-bottom:16px;">Journal</div>
+      <div class="j-pills">
+        <div class="j-pill on">🔒 Private</div>
+        <div class="j-pill">🌍 Community</div>
       </div>
-      <div class="tab-bar">
-        <a class="tab-item" href="#dashboard"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></a>
-        <a class="tab-item" href="#tadabur"><div class="tab-icon">📖</div><div class="tab-label">Tadabur</div></a>
-        <a class="tab-item cur" href="#journal"><div class="tab-icon">📔</div><div class="tab-label" style="color:#1C5D52;">Journal</div></a>
-        <a class="tab-item" href="#profile"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></a>
+      <div class="e-card">
+        <div class="e-top"><div class="e-cat"><span class="e-cat-ic">🌊</span><span class="e-cat-nm">Anxiety</span></div><span class="e-date">14 Jun 2026</span></div>
+        <div class="e-prev">"When I read 'hearts find rest in the remembrance of Allah' today I kept thinking about how I spend so much time scrolling when I feel anxious…"</div>
+        <span class="e-badge priv">🔒 Private</span>
+      </div>
+      <div class="e-card">
+        <div class="e-top"><div class="e-cat"><span class="e-cat-ic">🌊</span><span class="e-cat-nm">Anxiety</span></div><span class="e-date">13 Jun 2026</span></div>
+        <div class="e-prev">"Allah does not burden a soul beyond that it can bear — when I read this I felt like He was speaking directly to me about my exam…"</div>
+        <span class="e-badge priv">🔒 Private</span>
+      </div>
+      <div class="e-card">
+        <div class="e-top"><div class="e-cat"><span class="e-cat-ic">🌿</span><span class="e-cat-nm">Patience</span></div><span class="e-date">11 Jun 2026</span></div>
+        <div class="e-prev">"Seek help through patience and prayer. I've been struggling so much with waiting for an answer I need…"</div>
+        <span class="e-badge comm">🌍 Community</span>
+      </div>
+      <div class="e-card">
+        <div class="e-top"><div class="e-cat"><span class="e-cat-ic">🤍</span><span class="e-cat-nm">Forgiveness</span></div><span class="e-date">8 Jun 2026</span></div>
+        <div class="e-prev">"Do not despair of Allah's mercy — I needed this so badly today. I've been carrying guilt for months…"</div>
+        <span class="e-badge priv">🔒 Private</span>
       </div>
     </div>
+    <div class="tab-bar">
+      <a class="tab-item" href="#dashboard"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></a>
+      <a class="tab-item" href="#tadabur"><div class="tab-icon">📖</div><div class="tab-label">Tadabur</div></a>
+      <a class="tab-item cur" href="#journal"><div class="tab-icon">📔</div><div class="tab-label" style="color:var(--primary);">Journal</div></a>
+      <a class="tab-item" href="#profile"><div class="tab-icon">▶</div><div class="tab-label">Inspire</div></a>
+      <a class="tab-item" href="#profile"><div class="tab-icon">◉</div><div class="tab-label">Profile</div></a>
+    </div>
+  </div>
 
-    <!-- ════ PROFILE ════ -->
-    <div class="screen" id="profile">
-      <div class="safe-tabs">
-        <div class="av-c"><div class="av-lt">S</div></div>
-        <div class="p-name">Shazia Lakhani</div>
-        <div class="p-join">Member since June 2026</div>
-        <div class="stats" style="margin-bottom:18px;">
-          <div class="stat"><div class="stat-v">12</div><div class="stat-l">Reflections</div></div>
-          <div class="stat"><div class="stat-v">7 🔥</div><div class="stat-l">Day streak</div></div>
-        </div>
-        <div class="sec-title">Your themes</div>
-        <div class="tags" style="margin-bottom:18px;">
-          <div class="tag">🌊 Anxiety</div>
-          <div class="tag">🌿 Patience</div>
-          <div class="tag">🍂 Depression</div>
-          <div class="tag">🤍 Forgiveness</div>
-        </div>
-        <div class="sec-title">Settings</div>
-        <div class="set-row"><span class="set-lb">Daily reminder</span><div class="tog"><div class="tog-thumb"></div></div></div>
-        <div class="set-row"><span class="set-lb">Reminder time</span><span style="font-size:13px;color:#6B7280;">08:00 ☀️</span></div>
-        <div class="set-row"><span class="set-lb">Language</span><span style="font-size:13px;color:#6B7280;">English</span></div>
-        <a class="so-btn" href="#login">Sign out</a>
+  <!-- ══════════ PROFILE ══════════ -->
+  <div class="screen" id="profile">
+    <div class="safe-tabs">
+      <div class="av-c"><div class="av-lt">S</div></div>
+      <div class="p-name">Shazia Lakhani</div>
+      <div class="p-join">Member since June 2026</div>
+      <div class="stats" style="margin-bottom:20px;">
+        <div class="stat"><div class="stat-v">12</div><div class="stat-l">Reflections</div></div>
+        <div class="stat"><div class="stat-v">7 🔥</div><div class="stat-l">Day streak</div></div>
       </div>
-      <div class="tab-bar">
-        <a class="tab-item" href="#dashboard"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></a>
-        <a class="tab-item" href="#tadabur"><div class="tab-icon">📖</div><div class="tab-label">Tadabur</div></a>
-        <a class="tab-item" href="#journal"><div class="tab-icon">📔</div><div class="tab-label">Journal</div></a>
-        <a class="tab-item cur" href="#profile"><div class="tab-icon">👤</div><div class="tab-label" style="color:#1C5D52;">Profile</div></a>
+      <div class="sec-title">Your themes</div>
+      <div class="tags" style="margin-bottom:20px;">
+        <div class="tag">🌊 Anxiety</div>
+        <div class="tag">🌿 Patience</div>
+        <div class="tag">🍂 Depression</div>
+        <div class="tag">🤍 Forgiveness</div>
       </div>
+      <div class="sec-title">Daily reminder</div>
+      <div class="set-row"><span class="set-lb">Enable reminders</span><div class="tog"><div class="tog-thumb"></div></div></div>
+      <div class="set-row"><span class="set-lb">Reminder time</span><span style="font-size:13px;color:var(--muted);">08:00</span></div>
+      <a class="help-row" href="#profile">
+        <span style="font-size:18px;">❓</span>
+        <span style="flex:1;font-size:14px;font-weight:500;color:var(--text);">Help &amp; Support</span>
+        <span style="font-size:20px;color:var(--muted);">›</span>
+      </a>
+      <a class="so-btn" href="#login">Sign out</a>
     </div>
+    <div class="tab-bar">
+      <a class="tab-item" href="#dashboard"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></a>
+      <a class="tab-item" href="#tadabur"><div class="tab-icon">📖</div><div class="tab-label">Tadabur</div></a>
+      <a class="tab-item" href="#journal"><div class="tab-icon">📔</div><div class="tab-label">Journal</div></a>
+      <a class="tab-item" href="#profile"><div class="tab-icon">▶</div><div class="tab-label">Inspire</div></a>
+      <a class="tab-item cur" href="#profile"><div class="tab-icon">◉</div><div class="tab-label" style="color:var(--primary);">Profile</div></a>
+    </div>
+  </div>
 
-    <!-- ════ LOGIN (last so siblings above can override) ════ -->
-    <div class="screen" id="login">
-      <div class="safe" style="display:flex;flex-direction:column;justify-content:center;min-height:100%;">
-        <div class="logo-ar" style="font-size:52px;text-align:center;color:#1C5D52;margin-bottom:4px;">حكمة</div>
-        <h2 style="font-size:26px;font-weight:700;text-align:center;color:#1A1A1A;margin-bottom:4px;">Hikmah</h2>
-        <p style="font-size:13px;color:#6B7280;text-align:center;margin-bottom:32px;">Your Quranic reflection journal</p>
-        <div class="fake-input">Email address</div>
-        <div class="fake-input">Password</div>
-        <a class="btn" href="#onboard1">Sign In</a>
-        <p style="text-align:center;margin-top:14px;font-size:13px;color:#6B7280;">
-          Don't have an account? <a href="#onboard1" style="color:#1C5D52;font-weight:600;">Sign up</a>
-        </p>
-      </div>
+  <!-- ══════════ LOGIN (last) ══════════ -->
+  <div class="screen" id="login">
+    <div class="safe" style="display:flex;flex-direction:column;justify-content:center;min-height:100%;">
+      <div style="font-family:'Noto Naskh Arabic',serif;font-size:54px;text-align:center;color:var(--primary);margin-bottom:4px;line-height:1.3;">حكمة</div>
+      <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:600;text-align:center;color:var(--text);margin-bottom:4px;">Hikmah</div>
+      <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:36px;">Your Quranic reflection journal</p>
+      <div class="fake-input">Email address</div>
+      <div class="fake-input">Password</div>
+      <a class="btn" href="#onboard1">Sign In</a>
+      <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted);">
+        No account? <a href="#onboard1" style="color:var(--primary);font-weight:600;">Sign up</a>
+      </p>
     </div>
+  </div>
 
   </div><!-- /phone-inner -->
 </div><!-- /phone -->
 
-<!-- CSS tafsir accordion wiring -->
 <style>
-  #tafsir-toggle:checked + .tafsir-box .tafsir-body { display: block; }
-  #tafsir-toggle:checked + .tafsir-box .arr-t::after { content: '▲'; }
+  #tafsir-toggle:checked ~ label .tafsir-body { display: block; }
+  #tafsir-toggle:checked ~ label .arr-t::after { content: '▲'; }
 </style>
 
-<p style="color:#6B7280;font-size:11px;margin-top:22px;text-align:center;line-height:18px;">
+<p style="color:#6B7280;font-size:11px;margin-top:22px;text-align:center;line-height:20px;">
   Use the buttons above or tap links inside the phone to navigate<br>
-  <span style="color:#C9982D;">Real Arabic Quran text · Ibn Kathir tafsir · Audio recitation · Voice journal · Community sharing</span>
+  <span style="color:var(--accent);">Playfair Display · Noto Naskh Arabic · Olive Sage palette · New session tabs · MashaAllah screen</span>
 </p>
 
 </body>

@@ -2,7 +2,7 @@ export interface Speaker {
   id: string;
   name: string;
   shortName: string;
-  language?: string;   // 'en' | 'ur' | 'ar' etc — for filtering
+  language?: string;
   thumbnail?: string;
 }
 
@@ -10,9 +10,9 @@ export interface Clip {
   id: string;
   speakerId: string;
   title: string;
-  youtubeId: string;      // YouTube video ID only (not full URL). Empty = coming soon.
+  youtubeId: string;    // YouTube video ID (empty = coming soon)
   durationSeconds: number;
-  categories: string[];   // category slugs from categories.ts
+  categories: string[];
   tags: string[];
 }
 
@@ -28,98 +28,155 @@ export const SPEAKERS: Speaker[] = [
   { id: 'iram-bint-safia', name: 'Iram bint Safia', shortName: 'Iram', language: 'en' },
 ];
 
-// YouTube IDs are intentionally empty — fill these in with real video IDs
-// when you have the official links. Cards show "Coming soon" until populated.
 export const CLIPS: Clip[] = [
+  // ── Nouman Ali Khan ──
   {
-    id: 'c1', speakerId: 'nouman', title: 'When You Feel Hopeless',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['hopelessness', 'depression'], tags: ['hope', 'dark times'],
+    id: 'nak-1', speakerId: 'nouman',
+    title: 'Islamic Solutions to Overcome Depression and Anxiety',
+    youtubeId: 'extEBKq_5e0', durationSeconds: 0,
+    categories: ['depression', 'anxiety'], tags: ['mental health', 'quran', 'peace'],
   },
   {
-    id: 'c2', speakerId: 'nouman', title: 'The Quran and Anxiety',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['anxiety', 'stress'], tags: ['peace', 'calm', 'overthinking'],
+    id: 'nak-2', speakerId: 'nouman',
+    title: 'Struggling With Anxiety? This Will Change Your Life',
+    youtubeId: 'qrI4a1JVBi4', durationSeconds: 0,
+    categories: ['anxiety', 'stress'], tags: ['calm', 'overthinking', 'worry'],
   },
+
+  // ── Tim Humble ──
   {
-    id: 'c3', speakerId: 'tim-humble', title: 'Dealing with Depression Islamically',
-    youtubeId: '', durationSeconds: 0,
+    id: 'tim-1', speakerId: 'tim-humble',
+    title: 'Depression — The Cause and the Cure',
+    youtubeId: 'bytWFF9eB4w', durationSeconds: 0,
     categories: ['depression', 'healing'], tags: ['mental health', 'ruqyah', 'recovery'],
   },
   {
-    id: 'c4', speakerId: 'tim-humble', title: 'When Life Feels Too Hard',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['patience', 'stress', 'hopelessness'], tags: ['sabr', 'hardship'],
+    id: 'tim-2', speakerId: 'tim-humble',
+    title: 'Feeling Depressed and Anxious',
+    youtubeId: 'pCWC64DHo1c', durationSeconds: 0,
+    categories: ['depression', 'anxiety', 'healing'], tags: ['emotional', 'faith', 'iman'],
   },
+
+  // ── Aaisha Aamir (Urdu) ──
   {
-    id: 'c5', speakerId: 'belal-assad', title: 'Trusting Allah in Dark Times',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['trust-in-allah', 'hope', 'anxiety'], tags: ['tawakkul', 'faith'],
-  },
-  {
-    id: 'c6', speakerId: 'belal-assad', title: 'Healing a Broken Heart',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['betrayal', 'healing', 'forgiveness'], tags: ['heart', 'pain', 'release'],
-  },
-  {
-    id: 'c7', speakerId: 'abu-bakr-zoud', title: 'The Power of Patience',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['patience', 'death-loss'], tags: ['sabr', 'trial', 'strength'],
-  },
-  {
-    id: 'c8', speakerId: 'abu-bakr-zoud', title: 'Never Lose Hope in Allah',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['hopelessness', 'hope', 'trust-in-allah'], tags: ['rahma', 'mercy', 'promise'],
-  },
-  {
-    id: 'c9', speakerId: 'haifa-younis', title: 'Women and Grief',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['death-loss', 'widowhood', 'healing'], tags: ['grief', 'women', 'loss'],
-  },
-  {
-    id: 'c10', speakerId: 'haifa-younis', title: 'Purifying the Heart from Resentment',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['forgiveness', 'betrayal', 'healing'], tags: ['heart', 'grudge', 'tazkiyah'],
-  },
-  {
-    id: 'c11', speakerId: 'saad-tasleem', title: 'Social Anxiety and Islam',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['anxiety', 'loneliness', 'stress'], tags: ['social', 'nervous', 'confidence'],
-  },
-  {
-    id: 'c12', speakerId: 'saad-tasleem', title: 'Finding Your People',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['loneliness'], tags: ['community', 'belonging', 'friendship'],
-  },
-  {
-    id: 'c13', speakerId: 'suleiman-hani', title: 'Overcoming Guilt and Shame',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['scandal', 'forgiveness', 'fear-of-allah'], tags: ['tawbah', 'guilt', 'shame'],
-  },
-  {
-    id: 'c14', speakerId: 'suleiman-hani', title: 'Rizq: Why Allah Delays Provision',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['rizq', 'trust-in-allah', 'patience'], tags: ['money', 'job', 'provision', 'delay'],
-  },
-  {
-    id: 'c15', speakerId: 'iram-bint-safia', title: 'Finding Peace in Difficult Times',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['anxiety', 'stress', 'hope'], tags: ['peace', 'calm', 'resilience'],
-  },
-  {
-    id: 'c16', speakerId: 'iram-bint-safia', title: 'The Gift of Gratitude',
-    youtubeId: '', durationSeconds: 0,
-    categories: ['gratitude'], tags: ['shukr', 'blessing', 'contentment'],
-  },
-  {
-    id: 'c17', speakerId: 'aaisha-aamir', title: 'Sabr aur Shukar',
+    id: 'aaisha-1', speakerId: 'aaisha-aamir',
+    title: 'Sabr aur Shukar',
     youtubeId: '', durationSeconds: 0,
     categories: ['patience', 'gratitude'], tags: ['urdu', 'sabr', 'shukar'],
   },
   {
-    id: 'c18', speakerId: 'aaisha-aamir', title: 'Tawakkul — Allah par Bharosa',
+    id: 'aaisha-2', speakerId: 'aaisha-aamir',
+    title: 'Tawakkul — Allah par Bharosa',
     youtubeId: '', durationSeconds: 0,
     categories: ['trust-in-allah', 'rizq', 'anxiety'], tags: ['urdu', 'tawakkul', 'bharosa'],
+  },
+
+  // ── Belal Assad ──
+  {
+    id: 'belal-1', speakerId: 'belal-assad',
+    title: 'Stop Doubting — Trust Allah With What You Cannot Control',
+    youtubeId: '_RgShYqxFdk', durationSeconds: 0,
+    categories: ['trust-in-allah', 'anxiety', 'stress'], tags: ['tawakkul', 'control', 'surrender'],
+  },
+  {
+    id: 'belal-2', speakerId: 'belal-assad',
+    title: 'The Ruling of Forgiveness in Islam',
+    youtubeId: 'ZPFP4ixB6rA', durationSeconds: 0,
+    categories: ['forgiveness', 'betrayal'], tags: ['afw', 'pardon', 'grudge'],
+  },
+  {
+    id: 'belal-3', speakerId: 'belal-assad',
+    title: 'Healing After Child Loss',
+    youtubeId: 'g-CkKJWmLTk', durationSeconds: 0,
+    categories: ['death-loss', 'childlessness', 'healing'], tags: ['grief', 'loss', 'sabr'],
+  },
+  {
+    id: 'belal-4', speakerId: 'belal-assad',
+    title: "You Spoke Behind Someone's Back? Here's How to Repent",
+    youtubeId: 'E1bCjLsG5YU', durationSeconds: 0,
+    categories: ['gossip', 'scandal', 'forgiveness'], tags: ['ghibah', 'tawbah', 'tongue'],
+  },
+
+  // ── Abu Bakr Zoud ──
+  {
+    id: 'abz-1', speakerId: 'abu-bakr-zoud',
+    title: 'Patience — How to Deal With Tests',
+    youtubeId: 'VtVEcg17NAY', durationSeconds: 0,
+    categories: ['patience', 'stress', 'trust-in-allah'], tags: ['sabr', 'trial', 'hardship'],
+  },
+  {
+    id: 'abz-2', speakerId: 'abu-bakr-zoud',
+    title: 'How to Endure Calamities With Patience and Faith',
+    youtubeId: 'DHlfK-ljWrs', durationSeconds: 0,
+    categories: ['patience', 'death-loss', 'healing'], tags: ['sabr', 'calamity', 'iman'],
+  },
+  {
+    id: 'abz-3', speakerId: 'abu-bakr-zoud',
+    title: 'A Message of Hope From the Graveyard of Al-Baqee\'',
+    youtubeId: 'J-MHZ9V1AAk', durationSeconds: 0,
+    categories: ['death-loss', 'hope', 'fear-of-allah'], tags: ['akhira', 'hereafter', 'death'],
+  },
+
+  // ── Dr Haifa Younis ──
+  {
+    id: 'haifa-1', speakerId: 'haifa-younis',
+    title: "Why Not Seek Forgiveness? | My Dear Heart",
+    youtubeId: 'v42eeEHU6h0', durationSeconds: 0,
+    categories: ['forgiveness', 'healing'], tags: ['tawbah', 'heart', 'mercy'],
+  },
+  {
+    id: 'haifa-2', speakerId: 'haifa-younis',
+    title: 'This Du\'a Will Help You Keep Your Heart Clean',
+    youtubeId: 'Qjrca8NUyMQ', durationSeconds: 0,
+    categories: ['healing', 'forgiveness', 'fear-of-allah'], tags: ['dua', 'heart', 'purify'],
+  },
+  {
+    id: 'haifa-3', speakerId: 'haifa-younis',
+    title: 'Purifying Our Hearts',
+    youtubeId: 'aVezUg_BiJs', durationSeconds: 0,
+    categories: ['healing', 'fear-of-allah', 'gratitude'], tags: ['tazkiyah', 'soul', 'purity'],
+  },
+
+  // ── Saad Tasleem ──
+  {
+    id: 'saad-1', speakerId: 'saad-tasleem',
+    title: 'Extinguishing Burnout',
+    youtubeId: 'KgCuKbG3JuM', durationSeconds: 0,
+    categories: ['stress', 'anxiety', 'depression'], tags: ['burnout', 'exhaustion', 'rest'],
+  },
+  {
+    id: 'saad-2', speakerId: 'saad-tasleem',
+    title: 'How Social Media Is Hijacking Our Imaan',
+    youtubeId: 'PtloYwc6fN8', durationSeconds: 0,
+    categories: ['anxiety', 'loneliness', 'stress'], tags: ['social media', 'distraction', 'iman'],
+  },
+
+  // ── Suleiman Hani ──
+  {
+    id: 'sul-1', speakerId: 'suleiman-hani',
+    title: 'When Your World Is Breaking — And How to Fix It',
+    youtubeId: 'yvKuBQO2P6A', durationSeconds: 0,
+    categories: ['stress', 'hopelessness', 'trust-in-allah'], tags: ['crisis', 'hardship', 'rebuilding'],
+  },
+  {
+    id: 'sul-2', speakerId: 'suleiman-hani',
+    title: 'When Allah Goes to War for You',
+    youtubeId: '9gwe-HMwZv0', durationSeconds: 0,
+    categories: ['trust-in-allah', 'hope', 'patience'], tags: ['quran', 'juz 10', 'reliance'],
+  },
+
+  // ── Iram bint Safia ──
+  {
+    id: 'iram-1', speakerId: 'iram-bint-safia',
+    title: 'Do Not Over Think!',
+    youtubeId: 'kNgTsSwvSuE', durationSeconds: 0,
+    categories: ['anxiety', 'stress'], tags: ['overthinking', 'peace', 'calm'],
+  },
+  {
+    id: 'iram-2', speakerId: 'iram-bint-safia',
+    title: 'Ya Al-Mughni — Ramadan Reflections',
+    youtubeId: 'Yz8dogPJDNc', durationSeconds: 0,
+    categories: ['rizq', 'trust-in-allah', 'gratitude'], tags: ['allah names', 'provision', 'contentment'],
   },
 ];
 

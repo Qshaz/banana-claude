@@ -6,14 +6,16 @@ import type { Category } from '../constants/categories';
 interface Props {
   category: Category;
   onPress: () => void;
+  onLongPress?: () => void;
   compact?: boolean;
 }
 
-export function CategoryCard({ category, onPress, compact }: Props) {
+export function CategoryCard({ category, onPress, onLongPress, compact }: Props) {
   return (
     <TouchableOpacity
       style={[styles.card, compact && styles.compact, { borderLeftColor: category.color }]}
       onPress={onPress}
+      onLongPress={onLongPress}
       activeOpacity={0.7}
     >
       <Text style={styles.icon}>{category.icon}</Text>

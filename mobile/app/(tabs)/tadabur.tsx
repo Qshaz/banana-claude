@@ -4,12 +4,54 @@ import {
   StyleSheet, SafeAreaView, Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors } from '../../constants/colors';
+import { useColors } from '../../hooks/useColors';
 import { CATEGORIES } from '../../constants/categories';
 import { CategoryCard } from '../../components/CategoryCard';
 import { CreateCategoryModal } from '../../components/CreateCategoryModal';
 import { useSessionStore } from '../../stores/session';
 import { useCustomCategories } from '../../stores/customCategories';
+
+function makeStyles(C: ReturnType<typeof useColors>) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: C.BACKGROUND },
+    list: { paddingBottom: 40 },
+    header: { padding: 20, paddingBottom: 8 },
+    titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
+    title: { fontSize: 26, fontWeight: '700', color: C.TEXT },
+    addBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: C.PRIMARY,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    addBtnText: { color: C.SURFACE, fontSize: 22, fontWeight: '400', lineHeight: 26 },
+    sub: { fontSize: 14, color: C.TEXT_MUTED, marginBottom: 16 },
+    searchRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
+    searchInput: {
+      flex: 1,
+      backgroundColor: C.SURFACE,
+      borderWidth: 1,
+      borderColor: C.BORDER,
+      borderRadius: 12,
+      padding: 14,
+      fontSize: 15,
+      color: C.TEXT,
+    },
+    searchBtn: {
+      backgroundColor: C.PRIMARY,
+      borderRadius: 12,
+      paddingHorizontal: 18,
+      justifyContent: 'center',
+    },
+    searchBtnText: { color: C.SURFACE, fontSize: 20, fontWeight: '600' },
+    orLabel: { fontSize: 13, color: C.TEXT_MUTED, textAlign: 'center', marginBottom: 10 },
+    item: { paddingHorizontal: 20 },
+    createLink: { alignItems: 'center', paddingVertical: 20 },
+    createLinkText: { fontSize: 14, color: C.TEXT_MUTED, textDecorationLine: 'underline' },
+  });
+}
 
 export default function TadaburScreen() {
   const [query, setQuery] = useState('');
@@ -17,6 +59,8 @@ export default function TadaburScreen() {
   const router = useRouter();
   const { setCategory, reset } = useSessionStore();
   const { customCategories, removeCategory } = useCustomCategories();
+  const C = useColors();
+  const styles = React.useMemo(() => makeStyles(C), [C]);
 
   const allCategories = [...CATEGORIES, ...customCategories];
 
@@ -66,7 +110,7 @@ export default function TadaburScreen() {
               <TextInput
                 style={styles.searchInput}
                 placeholder="e.g. I'm feeling anxious about the future…"
-                placeholderTextColor={Colors.TEXT_MUTED}
+                placeholderTextColor={C.TEXT_MUTED}
                 value={query}
                 onChangeText={setQuery}
                 returnKeyType="search"
@@ -104,43 +148,3 @@ export default function TadaburScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
-  list: { paddingBottom: 40 },
-  header: { padding: 20, paddingBottom: 8 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
-  title: { fontSize: 26, fontWeight: '700', color: Colors.TEXT },
-  addBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: Colors.PRIMARY,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addBtnText: { color: Colors.SURFACE, fontSize: 22, fontWeight: '400', lineHeight: 26 },
-  sub: { fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 16 },
-  searchRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-  searchInput: {
-    flex: 1,
-    backgroundColor: Colors.SURFACE,
-    borderWidth: 1,
-    borderColor: Colors.BORDER,
-    borderRadius: 12,
-    padding: 14,
-    fontSize: 15,
-    color: Colors.TEXT,
-  },
-  searchBtn: {
-    backgroundColor: Colors.PRIMARY,
-    borderRadius: 12,
-    paddingHorizontal: 18,
-    justifyContent: 'center',
-  },
-  searchBtnText: { color: Colors.SURFACE, fontSize: 20, fontWeight: '600' },
-  orLabel: { fontSize: 13, color: Colors.TEXT_MUTED, textAlign: 'center', marginBottom: 10 },
-  item: { paddingHorizontal: 20 },
-  createLink: { alignItems: 'center', paddingVertical: 20 },
-  createLinkText: { fontSize: 14, color: Colors.TEXT_MUTED, textDecorationLine: 'underline' },
-});

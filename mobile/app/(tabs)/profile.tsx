@@ -4,13 +4,52 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { useProfile } from '../../hooks/useProfile';
 import { supabase } from '../../lib/supabase';
-import { Colors } from '../../constants/colors';
+import { useColors } from '../../hooks/useColors';
 import { getCategoryIcon, getCategoryName } from '../../constants/categories';
+
+function makeStyles(C: ReturnType<typeof useColors>) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: C.BACKGROUND },
+    container: { padding: 24, alignItems: 'center', paddingBottom: 40 },
+    avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: C.PRIMARY, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
+    avatarText: { fontSize: 32, color: C.SURFACE, fontWeight: '700' },
+    name: { fontSize: 22, fontWeight: '700', color: C.TEXT, marginBottom: 4 },
+    joined: { fontSize: 13, color: C.TEXT_MUTED, marginBottom: 24 },
+    statsRow: { flexDirection: 'row', gap: 16, marginBottom: 28, width: '100%' },
+    statCard: { flex: 1, backgroundColor: C.SURFACE, borderRadius: 12, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: C.BORDER },
+    statValue: { fontSize: 28, fontWeight: '700', color: C.PRIMARY, marginBottom: 4 },
+    statLabel: { fontSize: 12, color: C.TEXT_MUTED },
+    section: { width: '100%', marginBottom: 24 },
+    sectionTitle: { fontSize: 16, fontWeight: '700', color: C.TEXT, marginBottom: 12 },
+    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    chip: { backgroundColor: C.PRIMARY_ULTRA_LIGHT, borderRadius: 20, paddingVertical: 6, paddingHorizontal: 12 },
+    chipText: { fontSize: 13, color: C.PRIMARY, fontWeight: '500' },
+    settingRow: {
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+      backgroundColor: C.SURFACE, borderRadius: 12, padding: 14,
+      borderWidth: 1, borderColor: C.BORDER, marginBottom: 8,
+    },
+    settingLabel: { fontSize: 15, color: C.TEXT },
+    settingValue: { fontSize: 15, color: C.TEXT_MUTED },
+    helpRow: {
+      flexDirection: 'row', alignItems: 'center', gap: 12, width: '100%',
+      backgroundColor: C.SURFACE, borderRadius: 12, padding: 16,
+      borderWidth: 1, borderColor: C.BORDER, marginBottom: 12,
+    },
+    helpIcon: { fontSize: 18 },
+    helpLabel: { flex: 1, fontSize: 15, color: C.TEXT, fontWeight: '500' },
+    helpArrow: { fontSize: 20, color: C.TEXT_MUTED },
+    signOut: { marginTop: 8, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: C.ERROR, width: '100%', alignItems: 'center' },
+    signOutText: { color: C.ERROR, fontSize: 15, fontWeight: '600' },
+  });
+}
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { userId } = useAuth();
   const { profile, update } = useProfile(userId);
+  const C = useColors();
+  const styles = React.useMemo(() => makeStyles(C), [C]);
 
   const signOut = () =>
     Alert.alert('Sign out', 'Are you sure?', [
@@ -60,7 +99,7 @@ export default function ProfileScreen() {
             <Switch
               value={profile.notification_enabled}
               onValueChange={(v) => update({ notification_enabled: v })}
-              trackColor={{ true: Colors.PRIMARY }}
+              trackColor={{ true: C.PRIMARY }}
             />
           </View>
           {profile.notification_enabled && (
@@ -84,38 +123,3 @@ export default function ProfileScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
-  container: { padding: 24, alignItems: 'center', paddingBottom: 40 },
-  avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.PRIMARY, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  avatarText: { fontSize: 32, color: Colors.SURFACE, fontWeight: '700' },
-  name: { fontSize: 22, fontWeight: '700', color: Colors.TEXT, marginBottom: 4 },
-  joined: { fontSize: 13, color: Colors.TEXT_MUTED, marginBottom: 24 },
-  statsRow: { flexDirection: 'row', gap: 16, marginBottom: 28, width: '100%' },
-  statCard: { flex: 1, backgroundColor: Colors.SURFACE, borderRadius: 12, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: Colors.BORDER },
-  statValue: { fontSize: 28, fontWeight: '700', color: Colors.PRIMARY, marginBottom: 4 },
-  statLabel: { fontSize: 12, color: Colors.TEXT_MUTED },
-  section: { width: '100%', marginBottom: 24 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.TEXT, marginBottom: 12 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { backgroundColor: Colors.PRIMARY_ULTRA_LIGHT, borderRadius: 20, paddingVertical: 6, paddingHorizontal: 12 },
-  chipText: { fontSize: 13, color: Colors.PRIMARY, fontWeight: '500' },
-  settingRow: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: Colors.SURFACE, borderRadius: 12, padding: 14,
-    borderWidth: 1, borderColor: Colors.BORDER, marginBottom: 8,
-  },
-  settingLabel: { fontSize: 15, color: Colors.TEXT },
-  settingValue: { fontSize: 15, color: Colors.TEXT_MUTED },
-  helpRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, width: '100%',
-    backgroundColor: Colors.SURFACE, borderRadius: 12, padding: 16,
-    borderWidth: 1, borderColor: Colors.BORDER, marginBottom: 12,
-  },
-  helpIcon: { fontSize: 18 },
-  helpLabel: { flex: 1, fontSize: 15, color: Colors.TEXT, fontWeight: '500' },
-  helpArrow: { fontSize: 20, color: Colors.TEXT_MUTED },
-  signOut: { marginTop: 8, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: Colors.ERROR, width: '100%', alignItems: 'center' },
-  signOutText: { color: Colors.ERROR, fontSize: 15, fontWeight: '600' },
-});

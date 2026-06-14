@@ -3,7 +3,7 @@ import {
   View, Text, TouchableOpacity, FlatList, ScrollView,
   StyleSheet, SafeAreaView, Alert, Linking, Modal,
 } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { useColors } from '../../hooks/useColors';
 import { CATEGORIES } from '../../constants/categories';
 import { CLIPS, SPEAKERS, getClipsForCategory } from '../../constants/speakers';
 import { ClipCard } from '../../components/ClipCard';
@@ -11,10 +11,133 @@ import type { Clip, Speaker } from '../../constants/speakers';
 
 type SubTab = 'category' | 'speaker';
 
+function makeStyles(C: ReturnType<typeof useColors>) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: C.BACKGROUND },
+    header: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 },
+    title: { fontSize: 26, fontWeight: '700', color: C.TEXT },
+    subTabRow: {
+      flexDirection: 'row',
+      paddingHorizontal: 20,
+      paddingBottom: 12,
+      gap: 10,
+    },
+    subTabPill: {
+      paddingHorizontal: 18,
+      paddingVertical: 9,
+      borderRadius: 20,
+      borderWidth: 1.5,
+      borderColor: C.BORDER,
+      backgroundColor: C.SURFACE,
+    },
+    subTabPillActive: {
+      borderColor: C.PRIMARY,
+      backgroundColor: C.PRIMARY,
+    },
+    subTabText: { fontSize: 14, fontWeight: '600', color: C.TEXT_MUTED },
+    subTabTextActive: { color: C.SURFACE },
+    // Category grid
+    grid: { paddingHorizontal: 16, paddingBottom: 40 },
+    gridRow: { gap: 12, marginBottom: 12 },
+    categoryCard: {
+      flex: 1,
+      backgroundColor: C.SURFACE,
+      borderWidth: 1,
+      borderColor: C.BORDER,
+      borderRadius: 14,
+      padding: 16,
+      alignItems: 'center',
+      minHeight: 100,
+      justifyContent: 'center',
+      gap: 6,
+    },
+    categoryCardIcon: { fontSize: 30 },
+    categoryCardName: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: C.TEXT,
+      textAlign: 'center',
+    },
+    countBadge: {
+      backgroundColor: C.PRIMARY_ULTRA_LIGHT,
+      borderRadius: 10,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      marginTop: 2,
+    },
+    countBadgeText: { fontSize: 11, fontWeight: '700', color: C.PRIMARY },
+    // Speaker list
+    speakerList: { paddingHorizontal: 20, paddingBottom: 40 },
+    speakerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: C.SURFACE,
+      borderWidth: 1,
+      borderColor: C.BORDER,
+      borderRadius: 14,
+      padding: 14,
+      marginBottom: 10,
+    },
+    speakerAvatar: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: C.PRIMARY,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 14,
+    },
+    speakerAvatarText: { fontSize: 16, fontWeight: '700', color: C.SURFACE },
+    speakerInfo: { flex: 1, gap: 4 },
+    speakerName: { fontSize: 15, fontWeight: '600', color: C.TEXT },
+    langBadge: {
+      alignSelf: 'flex-start',
+      backgroundColor: C.ACCENT_LIGHT,
+      borderRadius: 6,
+      paddingHorizontal: 7,
+      paddingVertical: 2,
+    },
+    langBadgeText: { fontSize: 10, fontWeight: '700', color: C.ACCENT },
+    speakerArrow: { fontSize: 22, color: C.BORDER, lineHeight: 24 },
+    // Modal
+    modalSafe: { flex: 1, backgroundColor: C.BACKGROUND },
+    modalHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: C.BORDER,
+      gap: 12,
+    },
+    backBtn: { paddingVertical: 4, paddingRight: 8 },
+    backBtnText: { fontSize: 15, color: C.PRIMARY, fontWeight: '600' },
+    modalTitle: { fontSize: 17, fontWeight: '700', color: C.TEXT, flex: 1 },
+    modalList: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 },
+    emptyText: {
+      fontSize: 15,
+      color: C.TEXT_MUTED,
+      textAlign: 'center',
+      marginTop: 40,
+    },
+    speakerSection: { marginBottom: 24 },
+    speakerSectionHeader: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: C.TEXT_MUTED,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+      marginBottom: 10,
+    },
+  });
+}
+
 export default function ClipsScreen() {
   const [subTab, setSubTab] = useState<SubTab>('category');
   const [categoryModal, setCategoryModal] = useState<string | null>(null); // slug
   const [speakerModal, setSpeakerModal] = useState<string | null>(null);  // speaker id
+  const C = useColors();
+  const styles = React.useMemo(() => makeStyles(C), [C]);
 
   const handleClipPress = (clip: Clip) => {
     if (clip.youtubeId) {
@@ -210,122 +333,3 @@ export default function ClipsScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
-  header: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 },
-  title: { fontSize: 26, fontWeight: '700', color: Colors.TEXT },
-  subTabRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-    gap: 10,
-  },
-  subTabPill: {
-    paddingHorizontal: 18,
-    paddingVertical: 9,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: Colors.BORDER,
-    backgroundColor: Colors.SURFACE,
-  },
-  subTabPillActive: {
-    borderColor: Colors.PRIMARY,
-    backgroundColor: Colors.PRIMARY,
-  },
-  subTabText: { fontSize: 14, fontWeight: '600', color: Colors.TEXT_MUTED },
-  subTabTextActive: { color: Colors.SURFACE },
-  // Category grid
-  grid: { paddingHorizontal: 16, paddingBottom: 40 },
-  gridRow: { gap: 12, marginBottom: 12 },
-  categoryCard: {
-    flex: 1,
-    backgroundColor: Colors.SURFACE,
-    borderWidth: 1,
-    borderColor: Colors.BORDER,
-    borderRadius: 14,
-    padding: 16,
-    alignItems: 'center',
-    minHeight: 100,
-    justifyContent: 'center',
-    gap: 6,
-  },
-  categoryCardIcon: { fontSize: 30 },
-  categoryCardName: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: Colors.TEXT,
-    textAlign: 'center',
-  },
-  countBadge: {
-    backgroundColor: Colors.PRIMARY_ULTRA_LIGHT,
-    borderRadius: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginTop: 2,
-  },
-  countBadgeText: { fontSize: 11, fontWeight: '700', color: Colors.PRIMARY },
-  // Speaker list
-  speakerList: { paddingHorizontal: 20, paddingBottom: 40 },
-  speakerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.SURFACE,
-    borderWidth: 1,
-    borderColor: Colors.BORDER,
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 10,
-  },
-  speakerAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.PRIMARY,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 14,
-  },
-  speakerAvatarText: { fontSize: 16, fontWeight: '700', color: Colors.SURFACE },
-  speakerInfo: { flex: 1, gap: 4 },
-  speakerName: { fontSize: 15, fontWeight: '600', color: Colors.TEXT },
-  langBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: Colors.ACCENT_LIGHT,
-    borderRadius: 6,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-  },
-  langBadgeText: { fontSize: 10, fontWeight: '700', color: Colors.ACCENT },
-  speakerArrow: { fontSize: 22, color: Colors.BORDER, lineHeight: 24 },
-  // Modal
-  modalSafe: { flex: 1, backgroundColor: Colors.BACKGROUND },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.BORDER,
-    gap: 12,
-  },
-  backBtn: { paddingVertical: 4, paddingRight: 8 },
-  backBtnText: { fontSize: 15, color: Colors.PRIMARY, fontWeight: '600' },
-  modalTitle: { fontSize: 17, fontWeight: '700', color: Colors.TEXT, flex: 1 },
-  modalList: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 },
-  emptyText: {
-    fontSize: 15,
-    color: Colors.TEXT_MUTED,
-    textAlign: 'center',
-    marginTop: 40,
-  },
-  speakerSection: { marginBottom: 24 },
-  speakerSectionHeader: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.TEXT_MUTED,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 10,
-  },
-});

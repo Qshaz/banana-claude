@@ -5,17 +5,48 @@ import {
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { useJournal } from '../../hooks/useJournal';
-import { Colors } from '../../constants/colors';
+import { useColors } from '../../hooks/useColors';
 import { JournalEntryCard } from '../../components/JournalEntryCard';
 import type { JournalEntry } from '../../types';
 
 type Tab = 'private' | 'community';
+
+function makeStyles(C: ReturnType<typeof useColors>) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: C.BACKGROUND },
+    container: { flex: 1, padding: 20 },
+    title: { fontSize: 26, fontWeight: '700', color: C.TEXT, marginBottom: 16 },
+    tabs: { flexDirection: 'row', gap: 10, marginBottom: 16 },
+    tab: { flex: 1, padding: 10, borderRadius: 10, backgroundColor: C.SURFACE, alignItems: 'center', borderWidth: 1, borderColor: C.BORDER },
+    tabActive: { backgroundColor: C.PRIMARY, borderColor: C.PRIMARY },
+    tabText: { fontSize: 13, color: C.TEXT_MUTED, fontWeight: '600' },
+    tabTextActive: { color: C.SURFACE },
+    list: { paddingBottom: 20 },
+    empty: { alignItems: 'center', paddingVertical: 60 },
+    emptyText: { fontSize: 16, color: C.TEXT_MUTED, fontWeight: '600', marginBottom: 8 },
+    emptyHint: { fontSize: 13, color: C.TEXT_MUTED, textAlign: 'center' },
+    modal: { flex: 1, backgroundColor: C.BACKGROUND },
+    closeBtn: { padding: 20, paddingBottom: 8 },
+    closeBtnText: { fontSize: 15, color: C.TEXT_MUTED },
+    detail: { padding: 20, paddingBottom: 40 },
+    detailRef: { fontSize: 13, color: C.ACCENT, fontWeight: '600', marginBottom: 16 },
+    detailArabic: { fontSize: 24, lineHeight: 40, textAlign: 'right', color: C.TEXT, marginBottom: 12 },
+    detailTranslation: { fontSize: 15, lineHeight: 24, color: C.TEXT, fontStyle: 'italic', marginBottom: 20 },
+    tafsirBox: { backgroundColor: C.ACCENT_LIGHT, borderRadius: 12, padding: 16, marginBottom: 20 },
+    tafsirLabel: { fontSize: 12, color: C.ACCENT, fontWeight: '700', marginBottom: 8 },
+    tafsirText: { fontSize: 14, lineHeight: 22, color: C.TEXT },
+    journalLabel: { fontSize: 16, fontWeight: '700', color: C.TEXT, marginBottom: 10 },
+    journalText: { fontSize: 15, lineHeight: 24, color: C.TEXT },
+  });
+}
 
 export default function JournalScreen() {
   const { userId } = useAuth();
   const { entries, loading, fetchEntries } = useJournal(userId);
   const [tab, setTab] = useState<Tab>('private');
   const [selected, setSelected] = useState<JournalEntry | null>(null);
+  const C = useColors();
+  const styles = React.useMemo(() => makeStyles(C), [C]);
 
   useEffect(() => { fetchEntries(tab); }, [tab]);
 
@@ -78,30 +109,3 @@ export default function JournalScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 26, fontWeight: '700', color: Colors.TEXT, marginBottom: 16 },
-  tabs: { flexDirection: 'row', gap: 10, marginBottom: 16 },
-  tab: { flex: 1, padding: 10, borderRadius: 10, backgroundColor: Colors.SURFACE, alignItems: 'center', borderWidth: 1, borderColor: Colors.BORDER },
-  tabActive: { backgroundColor: Colors.PRIMARY, borderColor: Colors.PRIMARY },
-  tabText: { fontSize: 13, color: Colors.TEXT_MUTED, fontWeight: '600' },
-  tabTextActive: { color: Colors.SURFACE },
-  list: { paddingBottom: 20 },
-  empty: { alignItems: 'center', paddingVertical: 60 },
-  emptyText: { fontSize: 16, color: Colors.TEXT_MUTED, fontWeight: '600', marginBottom: 8 },
-  emptyHint: { fontSize: 13, color: Colors.TEXT_MUTED, textAlign: 'center' },
-  modal: { flex: 1, backgroundColor: Colors.BACKGROUND },
-  closeBtn: { padding: 20, paddingBottom: 8 },
-  closeBtnText: { fontSize: 15, color: Colors.TEXT_MUTED },
-  detail: { padding: 20, paddingBottom: 40 },
-  detailRef: { fontSize: 13, color: Colors.ACCENT, fontWeight: '600', marginBottom: 16 },
-  detailArabic: { fontSize: 24, lineHeight: 40, textAlign: 'right', color: Colors.TEXT, marginBottom: 12 },
-  detailTranslation: { fontSize: 15, lineHeight: 24, color: Colors.TEXT, fontStyle: 'italic', marginBottom: 20 },
-  tafsirBox: { backgroundColor: Colors.ACCENT_LIGHT, borderRadius: 12, padding: 16, marginBottom: 20 },
-  tafsirLabel: { fontSize: 12, color: Colors.ACCENT, fontWeight: '700', marginBottom: 8 },
-  tafsirText: { fontSize: 14, lineHeight: 22, color: Colors.TEXT },
-  journalLabel: { fontSize: 16, fontWeight: '700', color: Colors.TEXT, marginBottom: 10 },
-  journalText: { fontSize: 15, lineHeight: 24, color: Colors.TEXT },
-});

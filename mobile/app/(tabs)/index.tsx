@@ -5,7 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { useProfile } from '../../hooks/useProfile';
 import { useJournal } from '../../hooks/useJournal';
-import { Colors } from '../../constants/colors';
+import { useColors } from '../../hooks/useColors';
 import { Fonts, Typography, Spacing, Radii } from '../../constants/typography';
 import { VerseOfDay } from '../../components/VerseOfDay';
 import { StatsRow } from '../../components/StatsRow';
@@ -15,6 +15,102 @@ import type { Verse } from '../../types';
 
 const VOTD_FALLBACK = { surah: 2, ayah: 286 };
 
+function makeStyles(C: ReturnType<typeof useColors>) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: C.BACKGROUND },
+    container: { padding: Spacing.sm, paddingBottom: 48 },
+
+    header: {
+      flexDirection: 'row', justifyContent: 'space-between',
+      alignItems: 'flex-start', marginBottom: Spacing.md,
+    },
+    greeting: { fontFamily: Fonts.BODY, fontSize: 14, color: C.TEXT_MUTED },
+    name: { fontFamily: Fonts.HEADING_SEMIBOLD, fontSize: 26, color: C.TEXT, marginTop: 2 },
+    logoArabic: { fontFamily: Fonts.ARABIC, fontSize: 28, color: C.ACCENT },
+
+    // ── Hero tadabur block ────────────────────────────────────────
+    tadaburHero: {
+      backgroundColor: C.PRIMARY,
+      borderRadius: Radii.card,
+      padding: Spacing.md,
+      marginBottom: Spacing.md,
+      alignItems: 'center',
+    },
+    tadaburArabic: {
+      fontFamily: Fonts.ARABIC,
+      fontSize: 42,
+      color: C.ACCENT,
+      marginBottom: 4,
+    },
+    tadaburTitle: {
+      fontFamily: Fonts.HEADING_SEMIBOLD,
+      fontSize: 22,
+      color: C.SURFACE,
+      marginBottom: 6,
+    },
+    tadaburSub: {
+      fontFamily: Fonts.BODY,
+      fontSize: 13,
+      color: C.SURFACE,
+      opacity: 0.75,
+      marginBottom: 20,
+    },
+    tadaburBtn: {
+      backgroundColor: C.SURFACE,
+      borderRadius: Radii.button,
+      paddingVertical: 10,
+      paddingHorizontal: 28,
+    },
+    tadaburBtnText: {
+      fontFamily: Fonts.BODY_MEDIUM,
+      fontSize: 14,
+      color: C.PRIMARY,
+    },
+
+    // ── Sections ─────────────────────────────────────────────────
+    section: { marginBottom: Spacing.md },
+    sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+    sectionTitle: {
+      fontFamily: Fonts.HEADING_MEDIUM,
+      fontSize: 17,
+      color: C.TEXT,
+      marginBottom: 12,
+    },
+    sectionLink: { fontFamily: Fonts.BODY, fontSize: 13, color: C.PRIMARY },
+
+    // ── Category bar chart ────────────────────────────────────────
+    catRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap: 10 },
+    catName: {
+      width: 120, fontFamily: Fonts.BODY, fontSize: 13,
+      color: C.TEXT_SECONDARY, textTransform: 'capitalize',
+    },
+    barTrack: { flex: 1, height: 5, backgroundColor: C.BORDER, borderRadius: 3, overflow: 'hidden' },
+    barFill: { height: '100%', backgroundColor: C.PRIMARY, borderRadius: 3 },
+    catCount: { fontFamily: Fonts.BODY, fontSize: 12, color: C.TEXT_MUTED, width: 16, textAlign: 'right' },
+
+    // ── Empty state ───────────────────────────────────────────────
+    emptyState: {
+      alignItems: 'center', paddingVertical: 40,
+      backgroundColor: C.SURFACE, borderRadius: Radii.card,
+      borderWidth: 1, borderColor: C.BORDER, padding: Spacing.md,
+    },
+    emptyArabic: {
+      fontFamily: Fonts.ARABIC, fontSize: 20, color: C.TEXT,
+      textAlign: 'center', lineHeight: 36, marginBottom: 8,
+    },
+    emptyTrans: {
+      fontFamily: Fonts.BODY, fontSize: 14, color: C.TEXT_SECONDARY,
+      fontStyle: 'italic', textAlign: 'center', marginBottom: 4,
+    },
+    emptyRef: {
+      fontFamily: Fonts.BODY, fontSize: 12, color: C.ACCENT, marginBottom: 20,
+    },
+    emptyHint: {
+      fontFamily: Fonts.BODY, fontSize: 13, color: C.TEXT_MUTED,
+    },
+  });
+}
+
 export default function DashboardScreen() {
   const router = useRouter();
   const { userId } = useAuth();
@@ -22,6 +118,8 @@ export default function DashboardScreen() {
   const { entries, fetchEntries } = useJournal(userId);
   const [votd, setVotd] = useState<Verse | null>(null);
   const [votdLoading, setVotdLoading] = useState(true);
+  const C = useColors();
+  const styles = React.useMemo(() => makeStyles(C), [C]);
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -132,97 +230,3 @@ export default function DashboardScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
-  container: { padding: Spacing.sm, paddingBottom: 48 },
-
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'flex-start', marginBottom: Spacing.md,
-  },
-  greeting: { fontFamily: Fonts.BODY, fontSize: 14, color: Colors.TEXT_MUTED },
-  name: { fontFamily: Fonts.HEADING_SEMIBOLD, fontSize: 26, color: Colors.TEXT, marginTop: 2 },
-  logoArabic: { fontFamily: Fonts.ARABIC, fontSize: 28, color: Colors.ACCENT },
-
-  // ── Hero tadabur block ────────────────────────────────────────
-  tadaburHero: {
-    backgroundColor: Colors.PRIMARY,
-    borderRadius: Radii.card,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-    alignItems: 'center',
-  },
-  tadaburArabic: {
-    fontFamily: Fonts.ARABIC,
-    fontSize: 42,
-    color: Colors.ACCENT,
-    marginBottom: 4,
-  },
-  tadaburTitle: {
-    fontFamily: Fonts.HEADING_SEMIBOLD,
-    fontSize: 22,
-    color: Colors.SURFACE,
-    marginBottom: 6,
-  },
-  tadaburSub: {
-    fontFamily: Fonts.BODY,
-    fontSize: 13,
-    color: Colors.SURFACE,
-    opacity: 0.75,
-    marginBottom: 20,
-  },
-  tadaburBtn: {
-    backgroundColor: Colors.SURFACE,
-    borderRadius: Radii.button,
-    paddingVertical: 10,
-    paddingHorizontal: 28,
-  },
-  tadaburBtnText: {
-    fontFamily: Fonts.BODY_MEDIUM,
-    fontSize: 14,
-    color: Colors.PRIMARY,
-  },
-
-  // ── Sections ─────────────────────────────────────────────────
-  section: { marginBottom: Spacing.md },
-  sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  sectionTitle: {
-    fontFamily: Fonts.HEADING_MEDIUM,
-    fontSize: 17,
-    color: Colors.TEXT,
-    marginBottom: 12,
-  },
-  sectionLink: { fontFamily: Fonts.BODY, fontSize: 13, color: Colors.PRIMARY },
-
-  // ── Category bar chart ────────────────────────────────────────
-  catRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap: 10 },
-  catName: {
-    width: 120, fontFamily: Fonts.BODY, fontSize: 13,
-    color: Colors.TEXT_SECONDARY, textTransform: 'capitalize',
-  },
-  barTrack: { flex: 1, height: 5, backgroundColor: Colors.BORDER, borderRadius: 3, overflow: 'hidden' },
-  barFill: { height: '100%', backgroundColor: Colors.PRIMARY, borderRadius: 3 },
-  catCount: { fontFamily: Fonts.BODY, fontSize: 12, color: Colors.TEXT_MUTED, width: 16, textAlign: 'right' },
-
-  // ── Empty state ───────────────────────────────────────────────
-  emptyState: {
-    alignItems: 'center', paddingVertical: 40,
-    backgroundColor: Colors.SURFACE, borderRadius: Radii.card,
-    borderWidth: 1, borderColor: Colors.BORDER, padding: Spacing.md,
-  },
-  emptyArabic: {
-    fontFamily: Fonts.ARABIC, fontSize: 20, color: Colors.TEXT,
-    textAlign: 'center', lineHeight: 36, marginBottom: 8,
-  },
-  emptyTrans: {
-    fontFamily: Fonts.BODY, fontSize: 14, color: Colors.TEXT_SECONDARY,
-    fontStyle: 'italic', textAlign: 'center', marginBottom: 4,
-  },
-  emptyRef: {
-    fontFamily: Fonts.BODY, fontSize: 12, color: Colors.ACCENT, marginBottom: 20,
-  },
-  emptyHint: {
-    fontFamily: Fonts.BODY, fontSize: 13, color: Colors.TEXT_MUTED,
-  },
-});

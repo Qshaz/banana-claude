@@ -377,6 +377,16 @@ body {
 .done-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: var(--primary); margin-bottom: 12px; }
 .done-sub { font-size: 14px; color: var(--text2); line-height: 22px; margin-bottom: 36px; max-width: 260px; }
 
+/* ── TAWAKKUL CARD ── */
+.tawakkul-card {
+  background: var(--accent-l); border-radius: 20px; padding: 16px;
+  border-left: 3px solid var(--accent); margin-bottom: 16px;
+}
+.tawakkul-lbl { font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.tawakkul-ar { font-size: 18px; line-height: 36px; color: var(--text); text-align: right; margin-bottom: 6px; }
+.tawakkul-tr { font-size: 12px; color: var(--text2); font-style: italic; line-height: 18px; margin-bottom: 4px; }
+.tawakkul-ref { font-size: 11px; color: var(--accent); text-align: right; }
+
 /* ── JOURNAL LIST ── */
 .j-pills { display: flex; gap: 8px; margin-bottom: 16px; }
 .j-pill { flex: 1; padding: 10px; border-radius: 14px; background: var(--surf); text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); border: 1px solid var(--border); }
@@ -435,7 +445,7 @@ body {
       </div>
       <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
       <div class="ob-title">Welcome to Hikmah</div>
-      <div class="ob-sub">A space for deep Quranic reflection — finding verses that speak to your heart, understanding them through tafsir, and writing what Allah brings to your mind.</div>
+      <div class="ob-sub">A space for Tadabur &amp; Tawakkul — sit with the Quran, reflect deeply, and learn to trust Allah with what's in your heart.</div>
       <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;">What should we call you?</div>
       <div class="fake-input">Shazia</div>
       <a class="btn" href="#onboard2">Continue →</a>
@@ -515,6 +525,7 @@ body {
   <!-- ══════════ DASHBOARD ══════════ -->
   <div class="screen" id="dashboard">
     <div class="safe-tabs">
+      <div class="arabic" style="font-size:14px;text-align:center;color:var(--muted);margin-bottom:14px;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
       <div class="dash-hdr">
         <div>
           <div class="dash-greet">Assalamu alaikum,</div>
@@ -527,8 +538,16 @@ body {
       <div class="tadabur-hero">
         <div class="hero-arabic">تدبّر</div>
         <div class="hero-title">Begin Tadabur</div>
-        <div class="hero-sub">Sit with the Quran. Reflect. Write.</div>
+        <div class="hero-sub">Sit with the Quran. Reflect deeply. Trust Allah.</div>
         <a class="hero-btn" href="#tadabur">Open session  ›</a>
+      </div>
+
+      <!-- Tawakkul Moment -->
+      <div class="tawakkul-card">
+        <div class="tawakkul-lbl">التوكل · Tawakkul Moment</div>
+        <div class="arabic tawakkul-ar">﴿ وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ ﴾</div>
+        <div class="tawakkul-tr">Whoever relies upon Allah — He is sufficient for him.</div>
+        <div class="tawakkul-ref">At-Talaq 65:3</div>
       </div>
 
       <div class="sec-title">Verse of the day</div>
@@ -841,8 +860,16 @@ I think Allah is telling me that the thing I keep running away from — stillnes
         <div class="tag">🍂 Depression</div>
         <div class="tag">🤍 Forgiveness</div>
       </div>
+      <div class="sec-title">Appearance</div>
+      <div class="set-row" style="margin-bottom:16px;">
+        <span class="set-lb">Dark mode</span>
+        <label for="dm" style="cursor:pointer;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);">
+          <div class="tog" id="dm-tog"><div class="tog-thumb"></div></div>
+          <span id="dm-lbl">Off</span>
+        </label>
+      </div>
       <div class="sec-title">Daily reminder</div>
-      <div class="set-row"><span class="set-lb">Enable reminders</span><div class="tog"><div class="tog-thumb"></div></div></div>
+      <div class="set-row"><span class="set-lb">Enable reminders</span><div class="tog on"><div class="tog-thumb on"></div></div></div>
       <div class="set-row"><span class="set-lb">Reminder time</span><span style="font-size:13px;color:var(--muted);">08:00</span></div>
       <a class="help-row" href="#profile">
         <span style="font-size:18px;">❓</span>
@@ -863,9 +890,10 @@ I think Allah is telling me that the thing I keep running away from — stillnes
   <!-- ══════════ LOGIN (last) ══════════ -->
   <div class="screen" id="login">
     <div class="safe" style="display:flex;flex-direction:column;justify-content:center;min-height:100%;">
-      <div style="font-family:'Noto Naskh Arabic',serif;font-size:54px;text-align:center;color:var(--primary);margin-bottom:4px;line-height:1.3;">حكمة</div>
-      <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:600;text-align:center;color:var(--text);margin-bottom:4px;">Hikmah</div>
-      <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:36px;">Your Quranic reflection journal</p>
+      <div class="arabic" style="font-size:16px;text-align:center;color:var(--muted);margin-bottom:20px;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+      <div class="arabic" style="font-size:54px;text-align:center;color:var(--primary);margin-bottom:4px;line-height:1.3;">حكمة</div>
+      <div class="serif" style="font-size:28px;font-weight:600;text-align:center;color:var(--text);margin-bottom:4px;">Hikmah</div>
+      <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:36px;">A space for Tadabur &amp; Tawakkul</p>
       <div class="fake-input">Email address</div>
       <div class="fake-input">Password</div>
       <a class="btn" href="#onboard1">Sign In</a>
@@ -881,7 +909,37 @@ I think Allah is telling me that the thing I keep running away from — stillnes
 <style>
   #tafsir-toggle:checked ~ label .tafsir-body { display: block; }
   #tafsir-toggle:checked ~ label .arr-t::after { content: '▲'; }
+
+  /* Dark mode applied to phone-inner */
+  .phone-inner.dark {
+    --bg: #1A1D13; --bg2: #20241A; --surf: #242818; --surf2: #2C3020;
+    --text: #F2EDE6; --text2: #B8B0A6; --muted: #7D7669;
+    --border: #323626; --divider: #2B2F1E;
+    --primary: #8A9470; --primary-l: #A8B08C; --primary-u: #252A1A;
+    --accent: #C9A96E; --accent-l: #2A2214;
+    --success: #7BA668; --error: #C47A72;
+    --badge-priv: #252A1A; --badge-comm: #1A2414;
+    --shadow: rgba(0,0,0,0.4);
+    background: #1A1D13;
+  }
+  .tog { width: 40px; height: 22px; border-radius: 11px; background: var(--border); position: relative; transition: background 0.2s; }
+  .tog.on { background: var(--primary); }
+  .tog-thumb { width: 18px; height: 18px; border-radius: 9px; background: #fff; position: absolute; top: 2px; left: 2px; transition: left 0.2s; }
+  .tog-thumb.on { left: 20px; }
 </style>
+<script>
+  const dmTog = document.getElementById('dm-tog');
+  const dmLbl = document.getElementById('dm-lbl');
+  const phoneInner = document.querySelector('.phone-inner');
+  if (dmTog) {
+    dmTog.addEventListener('click', () => {
+      const isDark = phoneInner.classList.toggle('dark');
+      dmTog.classList.toggle('on', isDark);
+      dmTog.querySelector('.tog-thumb').classList.toggle('on', isDark);
+      dmLbl.textContent = isDark ? 'On' : 'Off';
+    });
+  }
+</script>
 
 <p style="color:#6B7280;font-size:11px;margin-top:22px;text-align:center;line-height:20px;">
   Use the buttons above or tap links inside the phone to navigate<br>

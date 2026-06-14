@@ -11,7 +11,7 @@ export async function transcribeAudio(audioUri: string): Promise<string> {
     type: 'audio/m4a',
   } as any);
   formData.append('model', 'whisper-1');
-  formData.append('language', 'en');
+  // No language param — Whisper auto-detects (supports Arabic, Urdu, English, etc.)
 
   const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
     method: 'POST',

@@ -5,6 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useProfile } from '../../hooks/useProfile';
 import { supabase } from '../../lib/supabase';
 import { useColors } from '../../hooks/useColors';
+import { useThemeStore } from '../../stores/theme';
 import { getCategoryIcon, getCategoryName } from '../../constants/categories';
 
 function makeStyles(C: ReturnType<typeof useColors>) {
@@ -50,6 +51,7 @@ export default function ProfileScreen() {
   const { profile, update } = useProfile(userId);
   const C = useColors();
   const styles = React.useMemo(() => makeStyles(C), [C]);
+  const { isDark, toggle: toggleTheme } = useThemeStore();
 
   const signOut = () =>
     Alert.alert('Sign out', 'Are you sure?', [
@@ -108,6 +110,18 @@ export default function ProfileScreen() {
               <Text style={styles.settingValue}>{profile.notification_time}</Text>
             </View>
           )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Appearance</Text>
+          <View style={styles.settingRow}>
+            <Text style={styles.settingLabel}>Dark mode</Text>
+            <Switch
+              value={isDark}
+              onValueChange={toggleTheme}
+              trackColor={{ true: C.PRIMARY }}
+            />
+          </View>
         </View>
 
         <TouchableOpacity style={styles.helpRow} onPress={() => router.push('/help')}>

@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../hooks/useAuth';
 import { useJournal } from '../hooks/useJournal';
 import { useSessionStore } from '../stores/session';
-import { Colors } from '../constants/colors';
+import { useColors } from '../hooks/useColors';
 import { Fonts, Radii } from '../constants/typography';
 import { getCategoryBySlug } from '../constants/categories';
 import { VerseCard } from '../components/VerseCard';
@@ -52,6 +52,8 @@ export default function SessionScreen() {
     nextQuestion, setJournalText, appendJournalText, setVisibility,
   } = useSessionStore();
 
+  const Colors = useColors();
+  const styles = React.useMemo(() => makeStyles(Colors), [Colors]);
   const [activeTab, setActiveTab] = useState<TabId>('verses');
   const [loading, setLoading] = useState(false);
   const [tafsirLoading, setTafsirLoading] = useState(false);
@@ -509,7 +511,7 @@ export default function SessionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function makeStyles(Colors: ReturnType<typeof useColors>) { return StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
   tabBar: {
     flexDirection: 'row',
@@ -699,4 +701,4 @@ const styles = StyleSheet.create({
   communityName: { fontSize: 14, fontWeight: '600', color: Colors.TEXT },
   communityDate: { fontSize: 12, color: Colors.TEXT_MUTED, marginTop: 1 },
   communityText: { fontSize: 14, color: Colors.TEXT, lineHeight: 22 },
-});
+}); }

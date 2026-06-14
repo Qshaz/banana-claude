@@ -1,21 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors } from '../constants/colors';
+import { useColors } from '../hooks/useColors';
 import { Fonts, Radii } from '../constants/typography';
 
-interface Props {
-  question: string;
-  index: number;
-  total: number;
-}
+interface Props { question: string; index: number; total: number; }
 
 export function ReflectionPrompt({ question, index, total }: Props) {
+  const C = useColors();
   return (
     <View style={styles.container}>
-      <Text style={styles.counter}>Question {index + 1} of {total}</Text>
-      <View style={styles.card}>
-        <Text style={styles.ornament}>✦</Text>
-        <Text style={styles.question}>{question}</Text>
+      <Text style={[styles.counter, { color: C.TEXT_MUTED }]}>Question {index + 1} of {total}</Text>
+      <View style={[styles.card, { backgroundColor: C.SURFACE_ELEVATED, borderLeftColor: C.ACCENT }]}>
+        <Text style={[styles.ornament, { color: C.ACCENT }]}>✦</Text>
+        <Text style={[styles.question, { color: C.TEXT }]}>{question}</Text>
       </View>
     </View>
   );
@@ -23,28 +20,8 @@ export function ReflectionPrompt({ question, index, total }: Props) {
 
 const styles = StyleSheet.create({
   container: { marginBottom: 20 },
-  counter: {
-    fontFamily: Fonts.BODY,
-    fontSize: 12,
-    color: Colors.TEXT_MUTED,
-    marginBottom: 8,
-  },
-  card: {
-    backgroundColor: Colors.SURFACE_ELEVATED,
-    borderRadius: 24,
-    padding: 20,
-    borderLeftWidth: 3,
-    borderLeftColor: Colors.ACCENT,
-  },
-  ornament: {
-    fontSize: 16,
-    color: Colors.ACCENT,
-    marginBottom: 10,
-  },
-  question: {
-    fontFamily: Fonts.HEADING_MEDIUM,
-    fontSize: 18,
-    lineHeight: 28,
-    color: Colors.TEXT,
-  },
+  counter: { fontFamily: Fonts.BODY, fontSize: 12, marginBottom: 8 },
+  card: { borderRadius: 24, padding: 20, borderLeftWidth: 3 },
+  ornament: { fontSize: 16, marginBottom: 10 },
+  question: { fontFamily: Fonts.HEADING_MEDIUM, fontSize: 18, lineHeight: 28 },
 });

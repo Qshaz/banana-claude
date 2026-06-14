@@ -4,7 +4,7 @@ import {
   SafeAreaView, TextInput, Alert, Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors } from '../constants/colors';
+import { useColors } from '../hooks/useColors';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 
@@ -67,9 +67,39 @@ const FAQS = [
   },
 ];
 
+function makeStyles(C: ReturnType<typeof useColors>) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: C.BACKGROUND },
+    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: C.BORDER },
+    back: { marginRight: 12 },
+    backText: { fontSize: 15, color: C.PRIMARY, fontWeight: '600' },
+    title: { fontSize: 18, fontWeight: '700', color: C.TEXT },
+    container: { padding: 20 },
+    sectionTitle: { fontSize: 13, fontWeight: '700', color: C.TEXT_MUTED, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 },
+    faqItem: { backgroundColor: C.SURFACE, borderRadius: 12, padding: 16, marginBottom: 8, borderWidth: 1, borderColor: C.BORDER },
+    faqRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
+    faqQ: { flex: 1, fontSize: 15, fontWeight: '600', color: C.TEXT, lineHeight: 22 },
+    faqChevron: { fontSize: 11, color: C.TEXT_MUTED, marginTop: 2 },
+    faqA: { marginTop: 12, fontSize: 14, color: C.TEXT_MUTED, lineHeight: 22, borderTopWidth: 1, borderTopColor: C.BORDER, paddingTop: 12 },
+    actionRow: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: C.SURFACE, borderRadius: 12, padding: 16, marginBottom: 8, borderWidth: 1, borderColor: C.BORDER },
+    actionIcon: { fontSize: 22 },
+    actionText: { flex: 1 },
+    actionLabel: { fontSize: 15, fontWeight: '600', color: C.TEXT },
+    actionSub: { fontSize: 13, color: C.TEXT_MUTED, marginTop: 2 },
+    arrow: { fontSize: 20, color: C.TEXT_MUTED },
+    feedbackHint: { fontSize: 14, color: C.TEXT_MUTED, marginBottom: 12, lineHeight: 20 },
+    feedbackInput: { backgroundColor: C.SURFACE, borderWidth: 1, borderColor: C.BORDER, borderRadius: 14, padding: 16, fontSize: 15, color: C.TEXT, minHeight: 120, lineHeight: 24, marginBottom: 12 },
+    sendBtn: { backgroundColor: C.PRIMARY, borderRadius: 12, padding: 16, alignItems: 'center' },
+    sendBtnDisabled: { opacity: 0.4 },
+    sendBtnText: { color: C.SURFACE, fontSize: 16, fontWeight: '600' },
+  });
+}
+
 export default function HelpScreen() {
   const router = useRouter();
   const { userId } = useAuth();
+  const C = useColors();
+  const styles = React.useMemo(() => makeStyles(C), [C]);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [feedback, setFeedback] = useState('');
   const [sending, setSending] = useState(false);
@@ -162,7 +192,7 @@ export default function HelpScreen() {
           style={styles.feedbackInput}
           multiline
           placeholder="Tell us what you think or what you'd like to see…"
-          placeholderTextColor={Colors.TEXT_MUTED}
+          placeholderTextColor={C.TEXT_MUTED}
           value={feedback}
           onChangeText={setFeedback}
           textAlignVertical="top"
@@ -181,51 +211,3 @@ export default function HelpScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.BACKGROUND },
-  header: {
-    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20,
-    paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: Colors.BORDER,
-  },
-  back: { marginRight: 12 },
-  backText: { fontSize: 15, color: Colors.PRIMARY, fontWeight: '600' },
-  title: { fontSize: 18, fontWeight: '700', color: Colors.TEXT },
-  container: { padding: 20 },
-  sectionTitle: {
-    fontSize: 13, fontWeight: '700', color: Colors.TEXT_MUTED,
-    textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12,
-  },
-  faqItem: {
-    backgroundColor: Colors.SURFACE, borderRadius: 12, padding: 16,
-    marginBottom: 8, borderWidth: 1, borderColor: Colors.BORDER,
-  },
-  faqRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
-  faqQ: { flex: 1, fontSize: 15, fontWeight: '600', color: Colors.TEXT, lineHeight: 22 },
-  faqChevron: { fontSize: 11, color: Colors.TEXT_MUTED, marginTop: 2 },
-  faqA: {
-    marginTop: 12, fontSize: 14, color: Colors.TEXT_MUTED,
-    lineHeight: 22, borderTopWidth: 1, borderTopColor: Colors.BORDER, paddingTop: 12,
-  },
-  actionRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: Colors.SURFACE, borderRadius: 12, padding: 16,
-    marginBottom: 8, borderWidth: 1, borderColor: Colors.BORDER,
-  },
-  actionIcon: { fontSize: 22 },
-  actionText: { flex: 1 },
-  actionLabel: { fontSize: 15, fontWeight: '600', color: Colors.TEXT },
-  actionSub: { fontSize: 13, color: Colors.TEXT_MUTED, marginTop: 2 },
-  arrow: { fontSize: 20, color: Colors.TEXT_MUTED },
-  feedbackHint: { fontSize: 14, color: Colors.TEXT_MUTED, marginBottom: 12, lineHeight: 20 },
-  feedbackInput: {
-    backgroundColor: Colors.SURFACE, borderWidth: 1, borderColor: Colors.BORDER,
-    borderRadius: 14, padding: 16, fontSize: 15, color: Colors.TEXT,
-    minHeight: 120, lineHeight: 24, marginBottom: 12,
-  },
-  sendBtn: {
-    backgroundColor: Colors.PRIMARY, borderRadius: 12,
-    padding: 16, alignItems: 'center',
-  },
-  sendBtnDisabled: { opacity: 0.4 },
-  sendBtnText: { color: Colors.SURFACE, fontSize: 16, fontWeight: '600' },
-});

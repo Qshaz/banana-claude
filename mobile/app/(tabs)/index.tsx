@@ -15,6 +15,16 @@ import type { Verse } from '../../types';
 
 const VOTD_FALLBACK = { surah: 2, ayah: 286 };
 
+const TAWAKKUL_VERSES = [
+  { arabic: '﴿ وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ ﴾', trans: 'Whoever relies upon Allah — He is sufficient for him.', ref: 'At-Talaq 65:3' },
+  { arabic: '﴿ إِنَّ اللَّهَ يُحِبُّ الْمُتَوَكِّلِينَ ﴾', trans: 'Indeed, Allah loves those who rely upon Him.', ref: "Ali Imran 3:159" },
+  { arabic: '﴿ وَتَوَكَّلْ عَلَى الْحَيِّ الَّذِي لَا يَمُوتُ ﴾', trans: 'Rely upon the Ever-Living who does not die.', ref: 'Al-Furqan 25:58' },
+  { arabic: '﴿ حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ ﴾', trans: 'Sufficient for us is Allah — the best Disposer of affairs.', ref: 'Ali Imran 3:173' },
+  { arabic: '﴿ وَعَلَى اللَّهِ فَتَوَكَّلُوا إِن كُنتُم مُّؤْمِنِينَ ﴾', trans: 'Upon Allah rely, if you are believers.', ref: "Al-Ma'idah 5:23" },
+  { arabic: '﴿ وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ ﴾', trans: 'My success is not but through Allah.', ref: 'Hud 11:88' },
+  { arabic: '﴿ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى اللَّهِ ﴾', trans: 'When you have decided, then rely upon Allah.', ref: 'Ali Imran 3:159' },
+];
+
 function makeStyles(C: ReturnType<typeof useColors>) {
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: C.BACKGROUND },
@@ -88,6 +98,56 @@ function makeStyles(C: ReturnType<typeof useColors>) {
     barFill: { height: '100%', backgroundColor: C.PRIMARY, borderRadius: 3 },
     catCount: { fontFamily: Fonts.BODY, fontSize: 12, color: C.TEXT_MUTED, width: 16, textAlign: 'right' },
 
+    // ── Bismillah ─────────────────────────────────────────────────
+    bismillah: {
+      fontFamily: Fonts.ARABIC,
+      fontSize: 16,
+      color: C.TEXT_MUTED,
+      textAlign: 'center',
+      marginBottom: Spacing.sm,
+      letterSpacing: 0.5,
+    },
+
+    // ── Tawakkul card ─────────────────────────────────────────────
+    tawakkulCard: {
+      backgroundColor: C.ACCENT_LIGHT,
+      borderRadius: Radii.card,
+      padding: Spacing.sm,
+      marginBottom: Spacing.md,
+      borderLeftWidth: 3,
+      borderLeftColor: C.ACCENT,
+    },
+    tawakkulLabel: {
+      fontFamily: Fonts.BODY,
+      fontSize: 11,
+      color: C.ACCENT,
+      letterSpacing: 1,
+      textTransform: 'uppercase',
+      marginBottom: 10,
+    },
+    tawakkulArabic: {
+      fontFamily: Fonts.ARABIC,
+      fontSize: 20,
+      lineHeight: 38,
+      color: C.TEXT_ARABIC,
+      textAlign: 'right',
+      marginBottom: 8,
+    },
+    tawakkulTrans: {
+      fontFamily: Fonts.BODY,
+      fontSize: 13,
+      lineHeight: 20,
+      color: C.TEXT_SECONDARY,
+      fontStyle: 'italic',
+      marginBottom: 4,
+    },
+    tawakkulRef: {
+      fontFamily: Fonts.BODY,
+      fontSize: 11,
+      color: C.ACCENT,
+      textAlign: 'right',
+    },
+
     // ── Empty state ───────────────────────────────────────────────
     emptyState: {
       alignItems: 'center', paddingVertical: 40,
@@ -144,6 +204,8 @@ export default function DashboardScreen() {
     setVotdLoading(false);
   };
 
+  const todayTawakkul = TAWAKKUL_VERSES[new Date().getDay()];
+
   const categoryBreakdown = entries.reduce<Record<string, number>>((acc, e) => {
     acc[e.category] = (acc[e.category] ?? 0) + 1;
     return acc;
@@ -153,6 +215,9 @@ export default function DashboardScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+
+        {/* Bismillah */}
+        <Text style={styles.bismillah}>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</Text>
 
         {/* Header */}
         <View style={styles.header}>
@@ -167,11 +232,19 @@ export default function DashboardScreen() {
         <TouchableOpacity style={styles.tadaburHero} onPress={() => router.push('/(tabs)/tadabur')} activeOpacity={0.85}>
           <Text style={styles.tadaburArabic}>تدبّر</Text>
           <Text style={styles.tadaburTitle}>Begin Tadabur</Text>
-          <Text style={styles.tadaburSub}>Sit with the Quran. Reflect. Write.</Text>
+          <Text style={styles.tadaburSub}>Sit with the Quran. Reflect deeply. Trust Allah.</Text>
           <View style={styles.tadaburBtn}>
             <Text style={styles.tadaburBtnText}>Open session  ›</Text>
           </View>
         </TouchableOpacity>
+
+        {/* ── Tawakkul Moment ── */}
+        <View style={styles.tawakkulCard}>
+          <Text style={styles.tawakkulLabel}>التوكل · Tawakkul Moment</Text>
+          <Text style={styles.tawakkulArabic}>{todayTawakkul.arabic}</Text>
+          <Text style={styles.tawakkulTrans}>{todayTawakkul.trans}</Text>
+          <Text style={styles.tawakkulRef}>{todayTawakkul.ref}</Text>
+        </View>
 
         {/* Verse of the Day */}
         <View style={styles.section}>

@@ -1,0 +1,9 @@
+uploads/
+expenses.db
+.env
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/

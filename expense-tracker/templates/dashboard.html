@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+    }
+
+    /* ---- Header ---- */
+    header {
+      background: #1a3c5e;
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-title { font-size: 19px; font-weight: 700; }
+
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-green  { background: #22c55e; color: #fff; }
+    .btn-navy   { background: #2d5986; color: #fff; }
+
+    .btn:active { opacity: 0.85; }
+
+    /* ---- Layout ---- */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    /* ---- Month section ---- */
+    .month-section { margin-bottom: 32px; }
+
+    .month-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1a3c5e;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .month-name  { font-size: 16px; font-weight: 700; }
+    .month-total { font-size: 16px; font-weight: 700; color: #86efac; }
+
+    /* ---- Table ---- */
+    .table-wrap {
+      overflow-x: auto;
+      background: #fff;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    table { width: 100%; border-collapse: collapse; min-width: 580px; }
+
+    th {
+      background: #f8fafc;
+      color: #6b7280;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 2px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+      color: #1f2937;
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f9fafb; }
+
+    .col-amount {
+      text-align: right;
+      font-weight: 700;
+      color: #1a3c5e;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .col-actions { white-space: nowrap; text-align: right; }
+
+    /* ---- Category badge ---- */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* ---- Action buttons ---- */
+    .btn-edit, .btn-del {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      margin-left: 4px;
+    }
+
+    .btn-edit { background: #dbeafe; color: #1d4ed8; }
+    .btn-del  { background: #fee2e2; color: #b91c1c; }
+
+    .btn-edit:hover { background: #bfdbfe; }
+    .btn-del:hover  { background: #fecaca; }
+
+    /* ---- Image thumbnail ---- */
+    .vendor-link { text-decoration: none; color: inherit; }
+    .vendor-link:hover { text-decoration: underline; color: #1a3c5e; }
+
+    /* ---- Empty state ---- */
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+      color: #9ca3af;
+    }
+
+    .empty-icon  { font-size: 52px; margin-bottom: 16px; }
+    .empty-title { font-size: 18px; color: #6b7280; margin-bottom: 8px; }
+    .empty-sub   { font-size: 14px; }
+
+    @media (max-width: 600px) {
+      .hide-sm { display: none; }
+      .header-title { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="header-title">🧾 Expense Dashboard</span>
+    <div class="header-actions">
+      <a href="/export" class="btn btn-green">⬇ Excel</a>
+      <a href="/"       class="btn btn-navy">+ Upload</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    {% if monthly %}
+
+      {% for month_key, month_data in monthly.items() %}
+      <div class="month-section">
+
+        <div class="month-header">
+          <span class="month-name">{{ month_data.label }}</span>
+          <span class="month-total">PKR {{ '{:,.0f}'.format(month_data.total) }}</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Vendor</th>
+                <th>Category</th>
+                <th class="hide-sm">Description</th>
+                <th style="text-align:right">Amount</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for bill in month_data.bills %}
+              {% set colors = category_colors.get(bill.category, ('#f3f4f6','#374151')) %}
+              <tr>
+                <td style="white-space:nowrap; color:#6b7280; font-size:13px">
+                  {{ bill.bill_date or bill.upload_date }}
+                </td>
+                <td>
+                  {% if bill.filename %}
+                  <a href="/image/{{ bill.filename }}" target="_blank" class="vendor-link">
+                    {{ bill.vendor }}
+                  </a>
+                  {% else %}
+                  {{ bill.vendor }}
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="badge"
+                    style="background:{{ colors[0] }}; color:{{ colors[1] }}">
+                    {{ bill.category }}
+                  </span>
+                </td>
+                <td class="hide-sm" style="color:#6b7280; font-size:13px">
+                  {{ bill.description or '—' }}
+                </td>
+                <td class="col-amount">{{ '{:,.0f}'.format(bill.amount | float) }}</td>
+                <td class="col-actions">
+                  <a href="/edit/{{ bill.id }}" class="btn-edit">Edit</a>
+                  <form method="post" action="/delete/{{ bill.id }}" style="display:inline"
+                        onsubmit="return confirm('Delete this bill?')">
+                    <button type="submit" class="btn-del">Del</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      {% endfor %}
+
+    {% else %}
+
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">No bills uploaded yet</div>
+        <div class="empty-sub">
+          Share the main page URL with your driver to start uploading bills.
+        </div>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</body>
+</html>

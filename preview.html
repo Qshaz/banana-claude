@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hikmah — Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#B5976A;--gold-l:#D4B896;--navy:#1C1C2E;--bg:#F7F6F3;--card:#fff;--text:#1C1C2E;--muted:#6B6B8A}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* Sidebar */
+#sidebar{width:70px;background:var(--navy);position:fixed;left:0;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;padding:20px 0;z-index:50}
+.logo{color:var(--gold);font-family:'Lora',serif;font-size:.95rem;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.1em;margin-bottom:28px}
+.nb{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#5A5A7A;cursor:pointer;margin:3px 0;transition:.15s}
+.nb:hover{background:rgba(181,151,106,.15);color:var(--gold-l)}
+.nb.on{background:rgba(181,151,106,.22);color:var(--gold)}
+.nb svg{width:21px;height:21px}
+
+/* Bottom nav mobile */
+#bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);z-index:50}
+.bnav-row{display:flex;justify-content:space-around;padding:8px 0}
+
+/* Main */
+#main{margin-left:70px;min-height:100vh}
+.ph{padding:28px 28px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.pt{font-family:'Lora',serif;font-size:1.9rem;font-weight:600;line-height:1.2}
+.ps{color:var(--muted);font-size:.88rem;margin-top:4px}
+
+/* Chips */
+.chips{display:flex;gap:7px;flex-wrap:wrap;padding:14px 28px 0;overflow-x:auto}
+.chip{padding:5px 13px;border-radius:99px;font-size:.8rem;font-weight:500;border:1.5px solid #E0DDD8;background:#fff;cursor:pointer;white-space:nowrap;color:var(--muted)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* Book grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:14px;padding:18px 28px}
+.bk{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);cursor:pointer;transition:.15s;position:relative}
+.bk:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.bk-cover{height:130px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;position:relative}
+.bk-cover-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,rgba(0,0,0,.1) 100%)}
+.bk-info{padding:11px 13px 13px}
+.bk-title{font-weight:600;font-size:.88rem;line-height:1.3;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bk-author{font-size:.76rem;color:var(--muted);margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{display:inline-block;font-size:.68rem;font-weight:500;padding:2px 7px;border-radius:99px;color:#fff}
+.dot{position:absolute;top:9px;right:9px;width:9px;height:9px;border-radius:50%}
+.dot-ready{background:#4CAF50}
+.dot-proc{background:#FF9800;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Buttons */
+.btn{padding:9px 18px;border-radius:9px;font-size:.86rem;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-navy:hover{background:#2A2A40}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:#9E845A}
+.btn-ghost{background:transparent;border:1.5px solid #DDD8D2;color:var(--text)}
+.btn-ghost:hover{background:#EEE9E3}
+
+/* Import page */
+.imp{padding:20px 28px;max-width:760px}
+.drive-box{background:#fff;border-radius:15px;border:1.5px solid #E8E5E0;overflow:hidden;margin-top:14px}
+.folder-row{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;border-bottom:1px solid #F0EDE8;color:var(--navy);font-size:.88rem;font-weight:500;transition:.12s}
+.folder-row:hover{background:#F7F5F2}
+.file-row{display:flex;align-items:center;gap:11px;padding:11px 14px;cursor:pointer;transition:.12s;border-bottom:1px solid #F5F3F0}
+.file-row:last-child{border-bottom:none}
+.file-row:hover{background:#FAF8F5}
+.file-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--gold);cursor:pointer;flex-shrink:0}
+
+/* Ask page */
+#ask-pg{display:none;flex-direction:column;height:100vh}
+#chat-msgs{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:20px}
+.msg-u{align-self:flex-end;background:var(--navy);color:#fff;padding:13px 17px;border-radius:17px 17px 4px 17px;max-width:74%;font-size:.93rem;line-height:1.5}
+.msg-a{align-self:flex-start;max-width:88%}
+.msg-a-b{background:#fff;border-radius:4px 17px 17px 17px;padding:17px 19px;font-size:.93rem;line-height:1.7;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.msg-a-b p{margin:0 0 9px}
+.msg-a-b p:last-child{margin:0}
+.src-sec{margin-top:11px;border-top:1px solid #F0EDE8;padding-top:11px}
+.src-lbl{font-size:.73rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.src-chip{display:inline-flex;align-items:center;gap:4px;background:#F7F6F3;border:1px solid #E8E5E0;border-radius:7px;padding:4px 9px;font-size:.76rem;color:var(--muted);margin:2px 3px 2px 0;cursor:pointer;transition:.12s}
+.src-chip:hover{background:#EEEAE3;color:var(--text)}
+.src-detail{background:#F7F6F3;border-radius:9px;padding:11px 13px;margin-top:7px;font-size:.8rem;line-height:1.6;color:#4A4A60;display:none;font-style:italic}
+.src-detail.open{display:block}
+.thinking{display:flex;gap:5px;align-items:center;padding:6px 0}
+.thinking span{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:bop 1.1s infinite}
+.thinking span:nth-child(2){animation-delay:.18s}
+.thinking span:nth-child(3){animation-delay:.36s}
+@keyframes bop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+
+/* Chat bar */
+#chat-bar{padding:14px 28px;background:var(--bg);border-top:1px solid #E8E5E0;display:flex;gap:9px;align-items:flex-end}
+#wrap{flex:1;background:#fff;border:1.5px solid #E0DDD8;border-radius:13px;display:flex;align-items:flex-end;padding:3px 3px 3px 13px;transition:.15s}
+#wrap:focus-within{border-color:var(--gold)}
+#inp{flex:1;border:none;outline:none;background:transparent;font-family:'Inter',sans-serif;font-size:.93rem;line-height:1.5;resize:none;max-height:110px;padding:7px 0;color:var(--text)}
+#inp::placeholder{color:#B0ADB8}
+#sbtn{width:36px;height:36px;border-radius:9px;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s}
+#sbtn:hover{background:#9E845A}
+#sbtn svg{width:16px;height:16px;color:#fff}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(28,28,46,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.modal{background:#fff;border-radius:19px;padding:26px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-title{font-family:'Lora',serif;font-size:1.25rem;font-weight:600;margin-bottom:14px}
+label{font-size:.8rem;font-weight:600;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.fi{width:100%;padding:9px 13px;border:1.5px solid #E0DDD8;border-radius:9px;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;margin-bottom:13px;transition:.15s}
+.fi:focus{border-color:var(--gold)}
+
+/* Toast */
+#toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:9px 18px;border-radius:99px;font-size:.83rem;font-weight:500;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:#D4D1CB;border-radius:3px}
+
+/* Responsive */
+@media(max-width:600px){
+  #sidebar{display:none}
+  #bnav{display:block}
+  #main{margin-left:0;padding-bottom:72px}
+  .ph{padding:18px 15px 0}
+  .pt{font-size:1.55rem}
+  .chips{padding:12px 15px 0}
+  .grid{padding:14px 15px;grid-template-columns:repeat(2,1fr)}
+  .imp{padding:15px}
+  #chat-msgs{padding:15px}
+  #chat-bar{padding:11px 15px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+<!-- Sidebar -->
+<nav id="sidebar">
+  <div class="logo">Hikmah</div>
+  <button class="nb on" id="n-lib" onclick="go('lib')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+  </button>
+  <button class="nb" id="n-imp" onclick="go('imp')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+  </button>
+  <button class="nb" id="n-ask" onclick="go('ask')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+  </button>
+</nav>
+
+<!-- Bottom nav -->
+<nav id="bnav">
+  <div class="bnav-row">
+    <button class="nb on" id="b-lib" onclick="go('lib')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+    </button>
+    <button class="nb" id="b-imp" onclick="go('imp')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+    </button>
+    <button class="nb" id="b-ask" onclick="go('ask')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div id="main">
+
+  <!-- ===== LIBRARY ===== -->
+  <div id="pg-lib">
+    <div class="ph">
+      <div>
+        <div class="pt">Your Library</div>
+        <div class="ps">8 books · 7 indexed</div>
+      </div>
+      <button class="btn btn-navy" onclick="go('imp')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        Add Books
+      </button>
+    </div>
+
+    <div class="chips">
+      <button class="chip on">All</button>
+      <button class="chip" onclick="toast('Filtered to Personal Development')">Personal Development</button>
+      <button class="chip" onclick="toast('Filtered to Fiction')">Fiction</button>
+      <button class="chip" onclick="toast('Filtered to Health')">Health</button>
+      <button class="chip" onclick="toast('Filtered to Relationships')">Relationships</button>
+      <button class="chip" onclick="toast('Filtered to Spirituality')">Spirituality</button>
+      <button class="chip" onclick="toast('Filtered to Business')">Business</button>
+    </div>
+
+    <div class="grid">
+
+      <div class="bk" onclick="openModal('Daring Greatly','Brené Brown','Personal Development')">
+        <div class="bk-cover" style="background:#E8A87C"><div class="bk-cover-overlay"></div><span style="position:relative">🌱</span></div>
+        <div class="dot dot-ready"></div>
+        <div class="bk-info">
+          <div class="bk-title">Daring Greatly</div>
+          <div class="bk-author">Brené Brown</div>
+          <span class="badge" style="background:#E8A87C">Personal Development</span>
+        </div>
+      </div>
+
+      <div class="bk" onclick="openModal('The Body Keeps the Score','Bessel van der Kolk','Health')">
+        <div class="bk-cover" style="background:#7FB3A6"><div class="bk-cover-overlay"></div><span style="position:relative">🌿</span></div>
+        <div class="dot dot-ready"></div>
+        <div class="bk-info">
+          <div class="bk-title">The Body Keeps the Score</div>
+          <div class="bk-author">Bessel van der Kolk</div>
+          <span class="badge" style="background:#7FB3A6">Health</span>
+        </div>
+      </div>
+
+      <div class="bk" onclick="openModal('Attached','Amir Levine','Relationships')">
+        <div class="bk-cover" style="background:#C4858A"><div class="bk-cover-overlay"></div><span style="position:relative">❤️</span></div>
+        <div class="dot dot-ready"></div>
+        <div class="bk-info">
+          <div class="bk-title">Attached</div>
+          <div class="bk-author">Amir Levine</div>
+          <span class="badge" style="background:#C4858A">Relationships</span>
+        </div>
+      </div>
+
+      <div class="bk" onclick="openModal('The Alchemist','Paulo Coelho','Fiction')">
+        <div class="bk-cover" style="background:#9B7FA6"><div class="bk-cover-overlay"></div><span style="position:relative">📖</span></div>
+        <div class="dot dot-ready"></div>
+        <div class="bk-info">
+          <div class="bk-title">The Alchemist</div>
+          <div class="bk-author">Paulo Coelho</div>
+          <span class="badge" style="background:#9B7FA6">Fiction</span>
+        </div>
+      </div>
+
+      <div class="bk" onclick="openModal('Man\'s Search for Meaning','Viktor Frankl','Spirituality')">
+        <div class="bk-cover" style="background:#B5976A"><div class="bk-cover-overlay"></div><span style="position:relative">✨</span></div>
+        <div class="dot dot-ready"></div>
+        <div class="bk-info">
+          <div class="bk-title">Man's Search for Meaning</div>
+          <div class="bk-author">Viktor Frankl</div>
+          <span class="badge" style="background:#B5976A">Spirituality</span>
+        </div>
+      </div>
+
+      <div class="bk" onclick="openModal('Cold Calling Techniques','Stephan Schiffman','Business')">
+        <div class="bk-cover" style="background:#85C1AE"><div class="bk-cover-overlay"></div><span style="position:relative">💼</span></div>
+        <div class="dot dot-ready"></div>
+        <div class="bk-info">
+          <div class="bk-title">Cold Calling Techniques</div>
+          <div class="bk-author">Stephan Schiffman</div>
+          <span class="badge" style="background:#85C1AE">Business</span>
+        </div>
+      </div>
+
+      <div class="bk" onclick="openModal('The Kite Runner','Khaled Hosseini','Fiction')">
+        <div class="bk-cover" style="background:#9B7FA6"><div class="bk-cover-overlay"></div><span style="position:relative">📖</span></div>
+        <div class="dot dot-proc"></div>
+        <div class="bk-info">
+          <div class="bk-title">The Kite Runner</div>
+          <div class="bk-author">Khaled Hosseini</div>
+          <span class="badge" style="background:#9B7FA6">Fiction</span>
+          <div style="font-size:.7rem;color:#FF9800;margin-top:5px">Indexing…</div>
+        </div>
+      </div>
+
+      <div class="bk" onclick="openModal('Atlas of the Heart','Brené Brown','Personal Development')">
+        <div class="bk-cover" style="background:#E8A87C"><div class="bk-cover-overlay"></div><span style="position:relative">🌱</span></div>
+        <div class="dot dot-ready"></div>
+        <div class="bk-info">
+          <div class="bk-title">Atlas of the Heart</div>
+          <div class="bk-author">Brené Brown</div>
+          <span class="badge" style="background:#E8A87C">Personal Development</span>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /library -->
+
+  <!-- ===== IMPORT ===== -->
+  <div id="pg-imp" style="display:none">
+    <div class="ph">
+      <div>
+        <div class="pt">Add Books</div>
+        <div class="ps">Browse your Google Drive and pick PDFs to import</div>
+      </div>
+    </div>
+
+    <div class="imp">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+        <span style="font-size:.82rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Category:</span>
+        <select class="fi" style="margin:0;width:auto;min-width:170px">
+          <option>Personal Development</option>
+          <option>Fiction</option>
+          <option>Relationships</option>
+          <option>Health</option>
+          <option>Spirituality</option>
+          <option>Business</option>
+          <option>Uncategorized</option>
+        </select>
+        <button class="btn btn-gold" onclick="toast('3 books added to library and queued for indexing!')">
+          Import Selected (3)
+        </button>
+      </div>
+
+      <div style="font-size:.83rem;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;gap:6px">
+        <span style="color:var(--gold);cursor:pointer">My Drive</span>
+        <span>/</span>
+        <span>Self Help</span>
+      </div>
+
+      <div class="drive-box">
+        <div class="folder-row" onclick="toast('Opening Fiction Books folder…')">
+          <span>📁</span><span>Fiction Books</span>
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-left:auto;color:#BBB"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </div>
+        <div class="file-row">
+          <input type="checkbox" checked onchange="toast('Selection updated')"/>
+          <span>📄</span>
+          <span style="flex:1;font-size:.88rem;font-weight:500">Atomic_Habits.pdf</span>
+          <span style="font-size:.76rem;color:var(--muted)">5.6 MB</span>
+        </div>
+        <div class="file-row">
+          <input type="checkbox" checked onchange="toast('Selection updated')"/>
+          <span>📄</span>
+          <span style="flex:1;font-size:.88rem;font-weight:500">The_Power_of_Now.pdf</span>
+          <span style="font-size:.76rem;color:var(--muted)">4.1 MB</span>
+        </div>
+        <div class="file-row">
+          <input type="checkbox" checked onchange="toast('Selection updated')"/>
+          <span>📄</span>
+          <span style="flex:1;font-size:.88rem;font-weight:500">Educated_Memoir.pdf</span>
+          <span style="font-size:.76rem;color:var(--muted)">6.2 MB</span>
+        </div>
+        <div class="file-row">
+          <input type="checkbox" onchange="toast('Selection updated')"/>
+          <span>✅</span>
+          <span style="flex:1;font-size:.88rem;font-weight:500">The_4_Hour_Workweek.pdf</span>
+          <span style="font-size:.76rem;color:var(--muted)">In library</span>
+        </div>
+        <div class="file-row">
+          <input type="checkbox" onchange="toast('Selection updated')"/>
+          <span>📄</span>
+          <span style="flex:1;font-size:.88rem;font-weight:500">Think_and_Grow_Rich.pdf</span>
+          <span style="font-size:.76rem;color:var(--muted)">3.8 MB</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /import -->
+
+  <!-- ===== ASK ===== -->
+  <div id="pg-ask" style="display:none;flex-direction:column;height:100vh">
+    <div class="ph" style="padding-bottom:12px">
+      <div>
+        <div class="pt">Ask Hikmah</div>
+        <div class="ps">Ask anything across your entire library</div>
+      </div>
+    </div>
+
+    <div class="chips" style="border-bottom:1px solid #E8E5E0;padding-bottom:12px">
+      <button class="chip on">All Books</button>
+      <button class="chip" onclick="this.classList.toggle('on')">Daring Greatly</button>
+      <button class="chip" onclick="this.classList.toggle('on')">Body Keeps the Score</button>
+      <button class="chip" onclick="this.classList.toggle('on')">Attached</button>
+      <button class="chip" onclick="this.classList.toggle('on')">Man's Search for Meaning</button>
+    </div>
+
+    <div id="chat-msgs">
+      <div class="msg-u">What do my books say about healing from trauma?</div>
+
+      <div class="msg-a"><div class="msg-a-b">
+        <p>Across your library, several books converge on a powerful insight: healing from trauma is not about erasing the past, but about changing your <em>relationship</em> with it.</p>
+        <p><span style="background:#F0EDE8;border-radius:4px;padding:1px 7px;font-size:.8rem;font-weight:600;color:var(--muted)">Src 1</span> <strong>Bessel van der Kolk</strong> argues in <em>The Body Keeps the Score</em> that trauma is stored physically in the body, not just in memory — which is why talk therapy alone often isn't enough. He emphasises movement, breath work, and body-awareness practices as essential pathways.</p>
+        <p><span style="background:#F0EDE8;border-radius:4px;padding:1px 7px;font-size:.8rem;font-weight:600;color:var(--muted)">Src 2</span> <strong>Brené Brown</strong> in <em>Daring Greatly</em> connects healing to vulnerability — the courage to be seen despite pain. She writes that shame compounds trauma, and that speaking our story to someone who has earned the right to hear it is a critical turning point.</p>
+        <p><span style="background:#F0EDE8;border-radius:4px;padding:1px 7px;font-size:.8rem;font-weight:600;color:var(--muted)">Src 3</span> <strong>Viktor Frankl</strong> offers a different lens: even in extreme suffering, finding meaning transforms the experience. "When we are no longer able to change a situation, we are challenged to change ourselves."</p>
+        <div class="src-sec">
+          <div class="src-lbl">Sources — tap to expand</div>
+          <span class="src-chip" onclick="toggle('s1')">📖 Body Keeps the Score · p.47</span>
+          <div id="s1" class="src-detail">"Trauma is not just an event that took place sometime in the past; it is also the imprint left by that experience on mind, brain, and body — an imprint that changes the way we manage responses in the present."</div>
+          <span class="src-chip" onclick="toggle('s2')">📖 Daring Greatly · p.112</span>
+          <div id="s2" class="src-detail">"Vulnerability is not winning or losing. It's having the courage to show up when you can't control the outcome. Shame corrodes the very part of us that believes we are capable of change."</div>
+          <span class="src-chip" onclick="toggle('s3')">📖 Man's Search for Meaning · p.86</span>
+          <div id="s3" class="src-detail">"Everything can be taken from a man but one thing: the last of the human freedoms — to choose one's attitude in any given set of circumstances, to choose one's own way."</div>
+        </div>
+      </div></div>
+
+      <div class="msg-u">Which of my books would help most with getting over rejection at work?</div>
+      <div class="msg-a" id="thinking-msg">
+        <div class="msg-a-b"><div class="thinking"><span></span><span></span><span></span></div></div>
+      </div>
+    </div>
+
+    <div id="chat-bar">
+      <div id="wrap">
+        <textarea id="inp" placeholder="Ask anything about your books…" rows="1"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';document.getElementById('sbtn').style.opacity=this.value.trim()?'1':'.45'"
+          onkeydown="if(e=event,e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendQ()}"></textarea>
+        <button id="sbtn" onclick="sendQ()" style="opacity:.45">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        </button>
+      </div>
+    </div>
+  </div><!-- /ask -->
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- Book edit modal -->
+<div id="modal" class="overlay" style="display:none" onclick="if(event.target===this)closeM()">
+  <div class="modal">
+    <div class="modal-title" id="m-title">Edit Book</div>
+    <label>Title</label>
+    <input class="fi" id="m-t" type="text"/>
+    <label>Author</label>
+    <input class="fi" id="m-a" type="text"/>
+    <label>Category</label>
+    <select class="fi" id="m-c">
+      <option>Personal Development</option><option>Fiction</option>
+      <option>Relationships</option><option>Health</option>
+      <option>Spirituality</option><option>Business</option><option>Uncategorized</option>
+    </select>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+      <button class="btn btn-ghost" style="color:#DC2626;border-color:#FECACA" onclick="closeM();toast('Book removed from library')">Delete</button>
+      <button class="btn btn-ghost" onclick="closeM()">Cancel</button>
+      <button class="btn btn-gold" onclick="closeM();toast('Changes saved!')">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+function go(page) {
+  ['lib','imp','ask'].forEach(p => {
+    const el = document.getElementById('pg-' + p);
+    el.style.display = p === page ? (p === 'ask' ? 'flex' : 'block') : 'none';
+  });
+  ['n-lib','n-imp','n-ask','b-lib','b-imp','b-ask'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('on', id.endsWith(page.slice(0,3)));
+  });
+  if (page === 'ask') {
+    // resolve the thinking bubble after a moment
+    setTimeout(() => {
+      const t = document.getElementById('thinking-msg');
+      if (t) t.outerHTML = `<div class="msg-a"><div class="msg-a-b">
+        <p>Based on your library, I'd point you to two books in particular:</p>
+        <p><span style="background:#F0EDE8;border-radius:4px;padding:1px 7px;font-size:.8rem;font-weight:600;color:var(--muted)">Src 1</span> <strong>Daring Greatly</strong> (Brené Brown) speaks directly to the fear of rejection — she reframes it as the cost of showing up, and argues that the people who never experience rejection are the ones who never try. Her research shows resilience to rejection is built through <em>connection</em>, not through becoming tougher.</p>
+        <p><span style="background:#F0EDE8;border-radius:4px;padding:1px 7px;font-size:.8rem;font-weight:600;color:var(--muted)">Src 2</span> <strong>Man's Search for Meaning</strong> (Frankl) offers a deeper frame — that suffering and rejection lose their power when you have a clear sense of purpose. He writes that meaning can be found even in the most painful experiences.</p>
+        <div class="src-sec"><div class="src-lbl">Sources</div>
+          <span class="src-chip">📖 Daring Greatly · p.64</span>
+          <span class="src-chip">📖 Man's Search for Meaning · p.103</span>
+        </div>
+      </div></div>`;
+    }, 1400);
+    setTimeout(() => { const m = document.getElementById('chat-msgs'); if(m) m.scrollTop = m.scrollHeight; }, 100);
+  }
+}
+
+function openModal(title, author, cat) {
+  document.getElementById('m-title').textContent = title;
+  document.getElementById('m-t').value = title;
+  document.getElementById('m-a').value = author;
+  document.getElementById('m-c').value = cat;
+  document.getElementById('modal').style.display = 'flex';
+}
+function closeM() { document.getElementById('modal').style.display = 'none'; }
+
+function toggle(id) { document.getElementById(id).classList.toggle('open'); }
+
+function sendQ() {
+  const v = document.getElementById('inp').value.trim();
+  if (!v) return;
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML += `<div class="msg-u">${v.replace(/</g,'&lt;')}</div>`;
+  msgs.innerHTML += `<div class="msg-a" id="tq"><div class="msg-a-b"><div class="thinking"><span></span><span></span><span></span></div></div></div>`;
+  document.getElementById('inp').value = '';
+  document.getElementById('inp').style.height = 'auto';
+  document.getElementById('sbtn').style.opacity = '.45';
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    const t = document.getElementById('tq');
+    if (t) t.outerHTML = `<div class="msg-a"><div class="msg-a-b">
+      <p>Great question. Here's what your library says about <em>${v.replace(/</g,'&lt;')}</em>:</p>
+      <p>In the real app, Hikmah searches across all your indexed books and finds the most relevant passages, then Claude weaves them into a connected answer with citations like the ones above. Tap any source chip to read the exact passage.</p>
+      <div class="src-sec"><div class="src-lbl">Sources</div>
+        <span class="src-chip">📖 Daring Greatly · p.38</span>
+        <span class="src-chip">📖 Attached · p.91</span>
+        <span class="src-chip">📖 The Body Keeps the Score · p.204</span>
+      </div>
+    </div></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 1600);
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
